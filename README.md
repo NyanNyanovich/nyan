@@ -1,3 +1,7 @@
+# НЯН
+
+Сам канал: https://t.me/nyannews
+
 ## Install
 
 Install git and pip
