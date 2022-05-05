@@ -1,3 +1,4 @@
+mkdir -p data;
 python3 -m nyan.send \
     --channels-info-path channels.json \
     --posted-clusters data/posted_clusters.jsonl \
