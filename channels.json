@@ -43,5 +43,9 @@
     {"name": "vcnews", "group": "purple", "alias": "VC"},
     {"name": "currenttime", "group": "blue", "alias": "Настоящее Время"},
     {"name": "ovdinfolive", "group": "blue", "alias": "ОВД-Инфо LIVE"},
-    {"name": "avtozaklive", "group": "blue", "alias": "Avtozak LIVE"}
+    {"name": "avtozaklive", "group": "blue", "alias": "Avtozak LIVE"},
+    {"name": "tele_eve", "group": "purple", "alias": "Вечерний Телеграмъ"},
+    {"name": "pdmnews", "group": "purple", "alias": "Подъём"},
+    {"name": "concertzaal", "group": "purple", "alias": "Concertzaal"},
+    {"name": "taboo_news", "group": "purple", "alias": "TABOO"}
 ]

@@ -14,7 +14,6 @@ def main(
     with open(channels_path) as r:
         channels = json.load(r)
         channels = {channel["name"]: channel for channel in channels}
-        print(channels)
 
     with open(clusters_path) as r:
         clusters = [json.loads(line) for line in r]
@@ -49,7 +48,7 @@ def main(
     x = matrix[:, 0]
     y = matrix[:, 1]
 
-    fig = plt.figure(figsize=(8, 8), dpi=100)
+    plt.figure(figsize=(8, 8), dpi=100)
     scatterplot(x, y, c=colors)
     plt.title("Agency2Vec на постах канала")
     for point_x, point_y, name in zip(x, y, names):

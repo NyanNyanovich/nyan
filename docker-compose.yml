@@ -1,0 +1,11 @@
+version: '3.1'
+services:
+  mongodb:
+    image: mongo:4.4.0
+    container_name: mongo
+    environment:
+        MONGO_INITDB_DATABASE: main
+    volumes:
+      - ./mongo:/data/db
+    ports:
+      - 27017:27017

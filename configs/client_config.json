@@ -1,0 +1,5 @@
+{
+    "channel_id": YOUR_CHANNEL_ID
+    "discussion_id": YOUR_DISCUSSION_GROUP_ID,
+    "bot_token": "YOUR_BOT_TOKEN"
+}
