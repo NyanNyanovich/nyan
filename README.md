@@ -1,3 +1,11 @@
+# НЯН
+
+НЯН — автоматический агрегатор разных новостных каналов в Телеграме. НЯН собирает сообщения с других новостных каналов в Телеграме, склеивает похожие сообщения в сюжеты и разбивает источники на 3 типа. Помогает быстро понимать, кто написал новость, и стоит ли ей доверять
+
+Сам канал: [NyanNews](https://t.me/nyannews)
+
+Подробное описание: [Whitepaper](https://telegra.ph/NYAN-Whitepaper-04-03)
+
 ## Install
 
 Install git and pip
@@ -20,26 +28,11 @@ Download models
 bash download_models.sh
 ```
 
-Install Docker and Docker compose
-```
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg lsb-release
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+Install Docker and Docker Compose.
+* Docker instructions: https://docs.docker.com/engine/install
+* Docker Compose instructions: https://docs.docker.com/compose/install
 
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io
-
-sudo groupadd docker
-sudo usermod -aG docker $USER
-newgrp docker
-
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-```
-
-Provide Telegram API credentials in configs/client_config.json.
+Provide Telegram API credentials to [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json).
 
 ## Run
 
