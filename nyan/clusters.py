@@ -120,6 +120,10 @@ class Cluster:
         if filtered_docs:
             docs = filtered_docs
 
+        filtered_docs = [d for d in docs if not d.has_obscene]
+        if filtered_docs:
+            docs = filtered_docs
+
         filtered_docs = [d for d in docs if len(d.text) < 400]
         if filtered_docs:
             docs = filtered_docs

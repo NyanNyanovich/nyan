@@ -71,6 +71,7 @@ class TextProcessor:
         )
         self.skip_substrings = config["skip_substrings"]
         self.rm_substrings = config["rm_substrings"]
+        self.obscene_substrings = config["obscene_substrings"]
 
     def __call__(self, text):
         if self.is_bad_text(text):
@@ -85,6 +86,12 @@ class TextProcessor:
         text = self.remove_bad_text(text)
 
         return text.strip()
+
+    def has_obscene(self, text):
+        for ss in self.obscene_substrings:
+            if ss in text:
+                return True
+        return False
 
     def is_bad_text(self, text):
         has_bad_ss = any(ss in text for ss in self.skip_substrings)

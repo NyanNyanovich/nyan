@@ -25,6 +25,9 @@
         ],
         "skip_substrings": [
             "Главное ", "важное за неделю"
+        ],
+        "obscene_substrings": [
+            "хуй", "пизд"
         ]
     },
     "lang_detector": "models/lang_detect_v10.ftz",

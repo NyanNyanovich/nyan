@@ -14,6 +14,7 @@ class Document:
     text: str
     views: int
     pub_time: int
+    has_obscene: bool = False
     channel_title: str = ""
     fetch_time: int = None
     language: str = None

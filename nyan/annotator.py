@@ -30,6 +30,7 @@ class Annotator:
         pipeline = (
             self.process_channels_info,
             self.clean_text,
+            self.has_obscene,
             self.predict_language,
             self.predict_category
         )
@@ -64,6 +65,10 @@ class Annotator:
         if not text or len(text) < 10:
             return None
         doc.text = text
+        return doc
+
+    def has_obscene(self, doc):
+        doc.has_obscene = self.text_processor.has_obscene(doc.text)
         return doc
 
     def calc_embeddings(self, docs):
