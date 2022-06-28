@@ -43,8 +43,6 @@ def main(
         elif posted_clusters_path and os.path.exists(posted_clusters_path):
             print("Reading clusters from file")
             posted_clusters = Clusters.load(posted_clusters_path)
-        else:
-            assert False
         print("{} clusters loaded".format(len(posted_clusters)))
 
         try:
@@ -145,9 +143,10 @@ def main(
         if posted_clusters_path:
             posted_clusters.save(posted_clusters_path)
             print("{} clusters saved to file".format(len(posted_clusters)))
-        posted_clusters.save_to_mongo(mongo_config_path)
-        print("{} clusters saved to Mongo".format(len(posted_clusters)))
-        print()
+        if mongo_config_path:
+            posted_clusters.save_to_mongo(mongo_config_path)
+            print("{} clusters saved to Mongo".format(len(posted_clusters)))
+            print()
 
 
 if __name__ == "__main__":
@@ -155,7 +154,7 @@ if __name__ == "__main__":
     parser.add_argument("--input-path", type=str, default=None)
     parser.add_argument("--documents-offset", type=int, default=9 * 3600)
     parser.add_argument("--channels-info-path", type=str, default="channels.json")
-    parser.add_argument("--mongo-config-path", type=str, default="configs/mongo_config.json")
+    parser.add_argument("--mongo-config-path", type=str, default=None)
     parser.add_argument("--posted-clusters-path", type=str, default=None)
     parser.add_argument("--client-config-path", type=str, default="configs/client_config.json")
     parser.add_argument("--annotator-config-path", type=str, default="configs/annotator_config.json")
