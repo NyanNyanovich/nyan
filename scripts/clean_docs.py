@@ -36,6 +36,6 @@ if __name__ == "__main__":
     parser.add_argument("--annotator-config", type=str, default="configs/annotator_config.json")
     parser.add_argument("--channels-path", type=str, default="channels.json")
     parser.add_argument("--rm-fields", type=str, default="embedding,category")
-    parser.add_argument("--min-pub-time", type=int, default=1649138400)
+    parser.add_argument("--min-pub-time", type=int, default=1654300800)
     args = parser.parse_args()
     main(**vars(args))

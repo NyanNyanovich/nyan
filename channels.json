@@ -49,5 +49,7 @@
     {"name": "concertzaal", "group": "purple", "alias": "Concertzaal"},
     {"name": "taboo_news", "group": "purple", "alias": "TABOO"},
     {"name": "rtvimain", "group": "purple", "alias": "RTVI"},
-    {"name": "rtvinews", "group": "purple", "alias": "RTVI Новости"}
+    {"name": "rtvinews", "group": "purple", "alias": "RTVI Новости"},
+    {"name": "forbesrussia", "group": "purple", "alias": "Forbes"},
+    {"name": "thebell_io", "group": "blue", "alias": "The Bell"}
 ]
