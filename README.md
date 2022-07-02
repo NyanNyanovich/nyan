@@ -1,5 +1,7 @@
 # НЯН
 
+[![Tests Status](https://github.com/NyanNyanovich/nyan/actions/workflows/python.yml/badge.svg)](https://github.com/NyanNyanovich/nyan/actions/workflows/python.yml)
+
 НЯН — автоматический агрегатор разных новостных каналов в Телеграме. НЯН собирает сообщения с других новостных каналов в Телеграме, склеивает похожие сообщения в сюжеты и разбивает источники на 3 типа. Помогает быстро понимать, кто написал новость, и стоит ли ей доверять
 
 Сам канал: [NyanNews](https://t.me/nyannews)
