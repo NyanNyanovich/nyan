@@ -51,5 +51,9 @@
     {"name": "rtvimain", "group": "purple", "alias": "RTVI"},
     {"name": "rtvinews", "group": "purple", "alias": "RTVI Новости"},
     {"name": "forbesrussia", "group": "purple", "alias": "Forbes"},
-    {"name": "thebell_io", "group": "blue", "alias": "The Bell"}
+    {"name": "thebell_io", "group": "blue", "alias": "The Bell"},
+    {"name": "moscowtimes_ru", "group": "blue", "alias": "The Moscow Times"},
+    {"name": "moscowach", "group": "purple", "alias": "Москвач"},
+    {"name": "agentstvonews", "group": "blue", "alias": "Агентство. Новости"},
+    {"name": "kommersant", "group": "purple", "alias": "Коммерсантъ"}
 ]
