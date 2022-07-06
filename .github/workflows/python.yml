@@ -1,4 +1,4 @@
-name: Python tests
+name: Tests
 on:
   push:
     branches: [ main ]
@@ -19,6 +19,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         pip install -r requirements.txt
+    - name: Download models
+      run: |
+        bash download_models.sh
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
