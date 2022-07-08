@@ -13,9 +13,9 @@ class TelegramClient:
             self.config = json.load(r)
 
         timeout = Timeout(
-            connect=self.config.get("connect_timeout", 5.0),
-            read=self.config.get("read_timeout", 5.0),
-            write=self.config.get("write_timeout", 5.0),
+            connect=self.config.get("connect_timeout", 10.0),
+            read=self.config.get("read_timeout", 10.0),
+            write=self.config.get("write_timeout", 10.0),
             pool=self.config.get("pool_timeout", 1.0),
         )
         limits = Limits(
