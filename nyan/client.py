@@ -3,6 +3,7 @@ import json
 from time import sleep
 
 import requests
+from httpx import Timeout, Limits, HTTPTransport, Client
 
 
 class TelegramClient:
@@ -10,6 +11,26 @@ class TelegramClient:
         assert os.path.exists(config_path)
         with open(config_path) as r:
             self.config = json.load(r)
+
+        timeout = Timeout(
+            connect=self.config.get("connect_timeout", 5.0),
+            read=self.config.get("read_timeout", 5.0),
+            write=self.config.get("write_timeout", 5.0),
+            pool=self.config.get("pool_timeout", 1.0),
+        )
+        limits = Limits(
+            max_connections=self.config.get("connection_pool_size", 1),
+            max_keepalive_connections=self.config.get("connection_pool_size", 1),
+        )
+        transport = HTTPTransport(
+            retries=self.config.get("retries", 5)
+        )
+        self.client = Client(
+            timeout=timeout,
+            limits=limits,
+            transport=transport
+        )
+
         self.channel_id = self.config["channel_id"]
         self.discussion_id = self.config["discussion_id"]
         self.bot_token = self.config["bot_token"]
@@ -120,7 +141,7 @@ class TelegramClient:
         }
         if self.last_update_id != 0:
             params["offset"] = self.last_update_id
-        response = requests.get(url_template.format(self.bot_token), data=params, timeout=20)
+        response = self.client.get(url_template.format(self.bot_token), params=params, timeout=20)
         if response.status_code != 200:
             return None
         updates = response.json()["result"]
@@ -150,8 +171,4 @@ class TelegramClient:
         return self.discussions.get(message_id, None)
 
     def post(self, url, params):
-        try:
-            return requests.post(url, data=params)
-        except Exception:
-            sleep(10)
-            return self.post(url, params)
+        return self.client.post(url, data=params)

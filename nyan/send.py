@@ -126,9 +126,12 @@ def main(
             message_id = int(result["message_id"] if "message_id" in result else result[0]["message_id"])
             cluster.message_id = message_id
             posted_clusters[message_id] = cluster
-            print("Message id: {}".format(message_id))
-
             cluster.create_time = get_current_ts()
+            print("Message id: {}, saving".format(message_id))
+            if posted_clusters_path:
+                posted_clusters.save(posted_clusters_path)
+            if mongo_config_path:
+                posted_clusters.save_to_mongo(mongo_config_path)
 
             client.update_discussion_mapping()
             discussion_message_id = client.get_discussion(message_id)

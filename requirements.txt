@@ -1,12 +1,26 @@
+# Crawler
+scrapy >= 2.5.0
+
+# Annotator
+html2text >= 2020.1.16
+fasttext >= 0.9.2
+transformers >= 4.16.2
+torch >= 1.10.0
+pyonmttok >= 1.29.0
+
+# Clustering
 scipy >= 1.7.1
 scikit-learn >= 0.24.2
-torch >= 1.10.0
-transformers >= 4.16.2
-pyonmttok >= 1.29.0
-scrapy >= 2.5.0
-fasttext >= 0.9.2
+
+# Client
+httpx >= 0.21.3
+
+# Renderer
 jinja2 >= 3.0.1
-html2text >= 2020.1.16
+
+# Shared
 pymongo >= 4.0.2
+
+# Analytics
 wordcloud >= 1.8.1
 spacy >= 3.1.2
