@@ -7,10 +7,10 @@ from nyan.document import Document
 
 def test_annotator_on_snapshot(
     annotator: Annotator,
-    annotator_input: List[Document],
-    annotator_output: List[Document]
+    input_docs: List[Document],
+    output_docs: List[Document]
 ):
-    docs = annotator(annotator_input)
+    docs = annotator(input_docs)
 
-    for predicted_doc, canonical_doc in zip(docs, annotator_output):
+    for predicted_doc, canonical_doc in zip(docs, output_docs):
         assert predicted_doc.serialize() == canonical_doc.serialize()

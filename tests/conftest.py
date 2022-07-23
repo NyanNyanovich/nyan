@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from nyan.annotator import Annotator
 from nyan.document import read_documents_file, Document
+from nyan.clusterer import Clusterer
 
 
 def get_channels_info_path() -> str:
@@ -23,22 +24,27 @@ def annotator_config_path() -> str:
     return get_annotator_config_path()
 
 
-def get_annotator_input_path() -> str:
-    return "tests/data/annotator_input.jsonl"
+def get_input_path() -> str:
+    return "tests/data/input_docs.jsonl"
 
 
 @pytest.fixture
-def annotator_input_path() -> str:
-    return get_annotator_input_path()
+def input_path() -> str:
+    return get_input_path()
 
 
-def get_annotator_output_path() -> str:
-    return "tests/data/annotator_output.jsonl"
+def get_output_path() -> str:
+    return "tests/data/output_docs.jsonl"
 
 
 @pytest.fixture
-def annotator_output_path() -> str:
-    return get_annotator_output_path()
+def output_path() -> str:
+    return get_output_path()
+
+
+@pytest.fixture
+def clusterer_config_path() -> str:
+    return "configs/clusterer_config.json"
 
 
 @pytest.fixture
@@ -47,10 +53,18 @@ def annotator(annotator_config_path, channels_info_path) -> Annotator:
 
 
 @pytest.fixture
-def annotator_input(annotator_input_path) -> List[Document]:
-    return read_documents_file(annotator_input_path)
+def clusterer(clusterer_config_path):
+    clusterer = Clusterer(clusterer_config_path)
+    clusterer.config["filtering"]["min_channels"] = 1
+    clusterer.config["filtering"]["max_age_minutes"] = 86400 * 365
+    return clusterer
 
 
 @pytest.fixture
-def annotator_output(annotator_output_path) -> List[Document]:
-    return read_documents_file(annotator_output_path)
+def input_docs(input_path) -> List[Document]:
+    return read_documents_file(input_path)
+
+
+@pytest.fixture
+def output_docs(output_path) -> List[Document]:
+    return read_documents_file(output_path)
