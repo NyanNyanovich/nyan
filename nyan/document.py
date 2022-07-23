@@ -20,6 +20,7 @@ class Document:
     language: str = None
     category: str = None
     group: str = None
+    tokens: str = None
     embedding: List[float] = None
     images: List[str] = None
     links: List[str] = tuple()

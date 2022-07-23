@@ -1,11 +1,14 @@
 import json
 from typing import List
 
+from tqdm import tqdm
+
 from nyan.channels import Channels
 from nyan.document import Document
 from nyan.fasttext import FasttextClassifier
 from nyan.labse import Embedder
 from nyan.text import TextProcessor
+from nyan.tokenizer import Tokenizer
 
 
 class Annotator:
@@ -15,6 +18,7 @@ class Annotator:
 
         self.embedder = Embedder(config["model_name"])
         self.text_processor = TextProcessor(config["text_processor"])
+        self.tokenizer = Tokenizer(**config.get("tokenizer", {}))
 
         self.lang_detector = None
         if "lang_detector" in config:
@@ -30,12 +34,13 @@ class Annotator:
         pipeline = (
             self.process_channels_info,
             self.clean_text,
+            self.tokenize,
             self.has_obscene,
             self.predict_language,
             self.predict_category
         )
         filtered_docs = list()
-        for doc in docs:
+        for doc in tqdm(docs, desc="Annotator pipeline"):
             for step in pipeline:
                 doc = step(doc)
                 if doc is None:
@@ -44,7 +49,8 @@ class Annotator:
                 filtered_docs.append(doc)
         docs = filtered_docs
 
-        docs = self.calc_embeddings(docs)
+        if self.embedder is not None:
+            docs = self.calc_embeddings(docs)
         return docs
 
     def process_channels_info(self, doc):
@@ -65,6 +71,12 @@ class Annotator:
         if not text or len(text) < 10:
             return None
         doc.text = text
+        return doc
+
+    def tokenize(self, doc):
+        tokens = self.tokenizer(doc.text)
+        tokens = ["{}_{}".format(t.lemma.lower().replace("_", ""), t.pos) for t in tokens]
+        doc.tokens = " ".join(tokens)
         return doc
 
     def has_obscene(self, doc):

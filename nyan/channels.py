@@ -8,6 +8,7 @@ class Channel:
     name: int
     alias: str = ""
     group: str = "purple"
+    master: str = None
 
     @classmethod
     def fromdict(cls, d):

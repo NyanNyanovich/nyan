@@ -15,11 +15,12 @@ def main(
 ):
     rm_fields = rm_fields.split(",")
     annotator = Annotator(annotator_config, channels_path)
+    annotator.embedder = None
 
     with open(input_path) as r, open(output_path, "w") as w:
         docs = [Document.fromdict(json.loads(line)) for line in r]
         clean_docs = annotator(docs)
-        clean_docs = [doc for doc in clean_docs if doc.pub_time >= min_pub_time]
+        clean_docs = [doc for doc in clean_docs if not min_pub_time or doc.pub_time >= min_pub_time]
         clean_docs.sort(key=lambda x: x.pub_time)
 
         for doc in clean_docs:
@@ -36,6 +37,6 @@ if __name__ == "__main__":
     parser.add_argument("--annotator-config", type=str, default="configs/annotator_config.json")
     parser.add_argument("--channels-path", type=str, default="channels.json")
     parser.add_argument("--rm-fields", type=str, default="embedding,category")
-    parser.add_argument("--min-pub-time", type=int, default=1654300800)
+    parser.add_argument("--min-pub-time", type=int, default=None)
     args = parser.parse_args()
     main(**vars(args))
