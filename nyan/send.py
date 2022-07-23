@@ -8,6 +8,7 @@ from nyan.annotator import Annotator
 from nyan.client import TelegramClient
 from nyan.clusters import Clusters
 from nyan.clusterer import Clusterer
+from nyan.channels import Channels
 from nyan.document import read_documents_file, read_documents_mongo
 from nyan.renderer import Renderer
 from nyan.util import get_current_ts, ts_to_dt
@@ -27,6 +28,7 @@ def main(
     assert input_path and not mongo_config_path or mongo_config_path and not input_path
     client = TelegramClient(client_config_path)
     annotator = Annotator(annotator_config_path, channels_info_path)
+    channels = Channels.load(channels_info_path)
     clusterer = Clusterer(clusterer_config_path)
     renderer = Renderer(renderer_config_path)
 
@@ -66,6 +68,14 @@ def main(
             print("Waiting for documents...")
             sleep(10)
             continue
+
+        doc_channels_cnt = Counter()
+        for doc in docs:
+            doc_channels_cnt[doc.channel_id] += 1
+        for channel_id, channel in channels:
+            cnt = doc_channels_cnt.get(channel_id, 0)
+            if cnt <= 1 and not channel.disabled:
+                print("Warning: {} docs from channel {}".format(cnt, channel_id))
 
         docs = annotator(docs)
         print("{} docs after annotator".format(len(docs)))

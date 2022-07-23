@@ -9,6 +9,7 @@ class Channel:
     alias: str = ""
     group: str = "purple"
     master: str = None
+    disabled: bool = False
 
     @classmethod
     def fromdict(cls, d):
