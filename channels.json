@@ -19,7 +19,7 @@
     {"name": "ru2ch_news", "group": "blue", "alias": "Ньюсач/Двач"},
     {"name": "mediazzzona", "group": "blue", "alias": "Медиазона"},
     {"name": "novaya_europe", "group": "blue", "alias": "Новая газета"},
-    {"name": "novaya_pishet", "group": "blue", "alias": "Новая газета", "master": "novaya_europe"},
+    {"name": "novaya_pishet", "group": "blue", "alias": "Новая газета", "master": "novaya_europe", "disabled": true},
     {"name": "bbcrussian", "group": "blue", "alias": "BBC News | Русская служба"},
     {"name": "new_militarycolumnist", "group": "purple", "alias": "Военный обозреватель"},
     {"name": "stormdaily", "group": "red", "alias": "Daily Storm"},

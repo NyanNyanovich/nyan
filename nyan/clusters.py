@@ -176,10 +176,10 @@ class Cluster:
         red_part = red_count / all_count
         purple_part = purple_count / all_count
 
-        if blue_part + purple_part >= 0.85:
-            return "blue"
-        if red_part + purple_part >= 0.85:
+        if blue_part == 0.0 and red_part > 0.5:
             return "red"
+        if red_part == 0.0 and blue_part > 0.5:
+            return "blue"
         return "purple"
 
     # Serialization

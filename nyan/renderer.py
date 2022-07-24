@@ -108,8 +108,10 @@ class Renderer:
                         collocations[(ch1, ch2)] += 1
 
         assert best_cluster
-        assert best_red_cluster
-        assert best_blue_cluster
+        if not best_red_cluster.message_id:
+            best_red_cluster = None
+        if not best_blue_cluster.message_id:
+            best_blue_cluster = None
 
         average_lag_minutes = int(mean(lags) // 60)
         cluster_frequency = duration // 60 // cluster_count
