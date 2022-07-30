@@ -56,5 +56,6 @@
     {"name": "moscowtimes_ru", "group": "blue", "alias": "The Moscow Times"},
     {"name": "moscowach", "group": "purple", "alias": "Москвач", "disabled": true},
     {"name": "agentstvonews", "group": "blue", "alias": "Агентство. Новости"},
-    {"name": "kommersant", "group": "purple", "alias": "Коммерсантъ"}
+    {"name": "kommersant", "group": "purple", "alias": "Коммерсантъ"},
+    {"name": "news_sirena", "group": "blue", "alias": "Сирена"}
 ]
