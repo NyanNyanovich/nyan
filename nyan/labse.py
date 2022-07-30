@@ -1,6 +1,6 @@
 import torch
 from transformers import AutoModel, AutoTokenizer
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -31,7 +31,9 @@ class Embedder:
 
     def __call__(self, texts):
         embeddings = torch.zeros((len(texts), self.model.config.hidden_size))
-        for batch_num, batch in enumerate(tqdm(gen_batch(texts, self.batch_size))):
+        total = len(texts) // self.batch_size + 1
+        desc = "LaBSE embeddings"
+        for batch_num, batch in enumerate(tqdm(gen_batch(texts, self.batch_size), total=total, desc=desc)):
             inputs = self.tokenizer(
                 batch,
                 return_tensors="pt",
