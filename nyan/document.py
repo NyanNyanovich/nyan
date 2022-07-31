@@ -1,13 +1,14 @@
 import json
 import os
-from typing import List
-from dataclasses import dataclass, asdict, fields
+from typing import List, Tuple
+from dataclasses import dataclass
 
 from nyan.mongo import get_documents_collection
+from nyan.util import Serializable
 
 
 @dataclass
-class Document:
+class Document(Serializable):
     url: str
     channel_id: str
     post_id: int
@@ -28,27 +29,7 @@ class Document:
     reply_to: str = None
     forward_from: str = None
 
-    @classmethod
-    def fromdict(cls, d):
-        if d is None:
-            return None
-        keys = {f.name for f in fields(cls)}
-        d = {k: v for k, v in d.items() if k in keys}
-        return cls(**d)
-
-    @classmethod
-    def deserialize(cls, line):
-        return cls.fromdict(json.loads(line))
-
-    def asdict(self, save_embedding=False):
-        if not save_embedding:
-            self.embedding = None
-        else:
-            self.embedding = self.embedding.tolist()
-        return asdict(self)
-
-    def serialize(self):
-        return json.dumps(self.asdict(), ensure_ascii=False)
+    not_serializing: Tuple[str] = ("embedding", )
 
 
 def read_documents_file(file_path, current_ts=None, offset=None):

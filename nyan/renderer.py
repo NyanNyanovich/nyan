@@ -42,8 +42,6 @@ class Renderer:
 
         groups = list(sorted(groups.items(), key=lambda x: x[0]))
 
-        views = cluster.views_str
-
         first_doc = copy.deepcopy(cluster.first_doc)
         first_doc.pub_time = datetime.fromtimestamp(first_doc.pub_time + 3 * 3600)
 
@@ -57,6 +55,7 @@ class Renderer:
                     "host": external_link_host
                 }
 
+        views = self.views_to_str(cluster.views)
         return self.cluster_template.render(
             annotation_doc=cluster.annotation_doc,
             first_doc=first_doc,
@@ -134,3 +133,11 @@ class Renderer:
             best_blue_cluster=best_blue_cluster,
             best_red_cluster=best_red_cluster
         )
+
+    @staticmethod
+    def views_to_str(views):
+        if views >= 1000000:
+            return "{:.1f}M".format(views / 1000000).replace(".", ",")
+        elif views >= 1000:
+            return "{:.1f}K".format(views / 1000).replace(".", ",")
+        return views

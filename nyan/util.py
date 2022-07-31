@@ -28,6 +28,8 @@ def ts_to_dt(timestamp, offset=3):
 
 @dataclass
 class Serializable:
+    not_serializing = tuple()
+
     @classmethod
     def fromdict(cls, d):
         if d is None:
@@ -36,8 +38,12 @@ class Serializable:
         d = {k: v for k, v in d.items() if k in keys}
         return cls(**d)
 
-    def asdict(self, save_embedding=False):
-        return asdict(self)
+    def asdict(self):
+        d = asdict(self)
+        for field in self.not_serializing:
+            d.pop(field, None)
+        d.pop("not_serializing", None)
+        return d
 
     @classmethod
     def deserialize(cls, line):

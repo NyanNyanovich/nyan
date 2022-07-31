@@ -1,26 +1,17 @@
 import os
 import json
-from dataclasses import dataclass, asdict, fields
+from dataclasses import dataclass
+
+from nyan.util import Serializable
 
 
 @dataclass
-class Channel:
+class Channel(Serializable):
     name: int
     alias: str = ""
     group: str = "purple"
     master: str = None
     disabled: bool = False
-
-    @classmethod
-    def fromdict(cls, d):
-        if d is None:
-            return None
-        keys = {f.name for f in fields(cls)}
-        d = {k: v for k, v in d.items() if k in keys}
-        return cls(**d)
-
-    def asdict(self):
-        return asdict(self)
 
     @property
     def emoji(self):

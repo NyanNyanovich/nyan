@@ -69,7 +69,6 @@ class TelegramClient:
         if response.status_code != 200:
             print("Update error:", response.text)
 
-
     def send_text(self, text):
         url_template = "https://api.telegram.org/bot{}/sendMessage"
         params = {

@@ -54,26 +54,17 @@ class Cluster:
     def set_message(self, *args, **kwargs):
         self.message = Message(*args, **kwargs)
 
-    # Computable properties
     @property
     def pub_time(self):
         return self.first_doc.pub_time
 
-    @property
+    @cached_property
     def fetch_time(self):
         return max([doc.fetch_time for doc in self.docs])
 
     @cached_property
     def views(self):
         return sum([doc.views for doc in self.docs])
-
-    @cached_property
-    def views_str(self):
-        if self.views >= 1000000:
-            return "{:.1f}M".format(self.views / 1000000).replace(".", ",")
-        elif self.views >= 1000:
-            return "{:.1f}K".format(self.views / 1000).replace(".", ",")
-        return self.views
 
     @property
     def age(self):
@@ -85,11 +76,8 @@ class Cluster:
 
     @cached_property
     def pub_time_percentile(self):
-        timestamps = [d.pub_time for d in self.docs]
-        timestamps.sort()
-        n = len(timestamps)
-        index = n // 5
-        return timestamps[index]
+        timestamps = list(sorted([d.pub_time for d in self.docs]))
+        return timestamps[len(timestamps) // 5]
 
     @cached_property
     def images(self):
@@ -134,7 +122,7 @@ class Cluster:
     @cached_property
     def hash(self):
         data = " ".join(sorted({d.channel_id for d in self.docs}))
-        data += " " + self.views_str
+        data += " " + str(self.views // 100000)
         return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
     @property
@@ -161,12 +149,8 @@ class Cluster:
         groups_count = Counter(list(channels.values()))
 
         all_count = len(channels)
-        blue_count = groups_count["blue"]
-        red_count = groups_count["red"]
-        purple_count = groups_count["purple"]
-        blue_part = blue_count / all_count
-        red_part = red_count / all_count
-        purple_part = purple_count / all_count
+        blue_part = groups_count["blue"] / all_count
+        red_part = groups_count["red"] / all_count
 
         if blue_part == 0.0 and red_part > 0.5:
             return "red"
@@ -174,7 +158,6 @@ class Cluster:
             return "blue"
         return "purple"
 
-    # Serialization
     def asdict(self):
         return {
             "clid": self.clid,
@@ -185,9 +168,6 @@ class Cluster:
             "hash": self.hash,
             "is_important": self.is_important
         }
-
-    def serialize(self):
-        return json.dumps(self.asdict(), ensure_ascii=False)
 
     @classmethod
     def fromdict(cls, d):
@@ -208,10 +188,12 @@ class Cluster:
 
         return cluster
 
+    def serialize(self):
+        return json.dumps(self.asdict(), ensure_ascii=False)
+
     @classmethod
     def deserialize(cls, line):
-        d = json.loads(line)
-        return cls.fromdict(d)
+        return cls.fromdict(json.loads(line))
 
 
 class Clusters:
