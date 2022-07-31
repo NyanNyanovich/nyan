@@ -20,7 +20,7 @@ def choose_title(docs: List[Document]):
     if filtered_docs:
         docs = filtered_docs
 
-    filtered_docs = [d for d in docs if len(d.text) < 400]
+    filtered_docs = [d for d in docs if len(d.text) < 500]
     if filtered_docs:
         docs = filtered_docs
 
