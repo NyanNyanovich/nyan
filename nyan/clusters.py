@@ -6,26 +6,10 @@ from collections import Counter, defaultdict
 from functools import cached_property
 from dataclasses import dataclass
 
+from nyan.client import MessageId
 from nyan.document import Document
 from nyan.mongo import get_clusters_collection
 from nyan.title import choose_title
-from nyan.util import Serializable
-
-
-@dataclass
-class Message(Serializable):
-    message_id: int
-    create_time: int
-    issue: str = "main"
-
-    def as_tuple(self):
-        return (self.issue, self.message_id)
-
-    def __hash__(self):
-        return hash(self.as_tuple())
-
-    def __eq__(self, another):
-        return self.as_tuple() == another.self.as_tuple()
 
 
 class Cluster:
@@ -35,6 +19,7 @@ class Cluster:
         self.clid = None
         self.is_important = False
 
+        self.create_time = None
         self.message = None
 
         self.saved_annotation_doc = None
@@ -50,9 +35,6 @@ class Cluster:
 
     def changed(self):
         return self.hash != self.saved_hash
-
-    def set_message(self, *args, **kwargs):
-        self.message = Message(*args, **kwargs)
 
     @property
     def pub_time(self):
@@ -188,14 +170,17 @@ class Cluster:
         for doc in d["docs"]:
             cluster.add(Document.fromdict(doc))
 
-        cluster.message = Message.fromdict(d.get("message"))
-        if not cluster.message and "message_id" in d and "create_time" in d:
-            cluster.message = Message(message_id=d["message_id"], create_time=d["create_time"])
+        cluster.message = MessageId.fromdict(d.get("message"))
+        if not cluster.message and "message_id" in d:
+            cluster.message = Message(message_id=d["message_id"])
 
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
         cluster.saved_hash = d.get("hash")
         cluster.is_important = d.get("is_important", False)
+        cluster.create_time = d.get("create_time", None)
+        if not cluster.create_time and "message" in d and "create_time" in d["message"]:
+            cluster.create_time = d["message"]["create_time"]
 
         return cluster
 

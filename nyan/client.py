@@ -1,9 +1,12 @@
 import os
 import json
+from typing import Tuple
 from time import sleep
 from dataclasses import dataclass
 
 from httpx import Timeout, Limits, HTTPTransport, Client
+
+from nyan.util import Serializable
 
 
 @dataclass
@@ -13,6 +16,22 @@ class IssueConfig:
     discussion_id: int
     bot_token: str
     last_update_id: int = 0
+
+
+@dataclass
+class MessageId(Serializable):
+    message_id: int
+    issue: str = "main"
+    from_discussion: bool = False
+
+    def as_tuple(self):
+        return (self.issue, self.message_id)
+
+    def __hash__(self):
+        return hash(self.as_tuple())
+
+    def __eq__(self, another):
+        return self.as_tuple() == another.self.as_tuple()
 
 
 class TelegramClient:
@@ -45,7 +64,13 @@ class TelegramClient:
         for issue_name in self.issues:
             self.update_discussion_mapping(issue_name)
 
-    def send_message(self, text, issue_name, photos=tuple(), videos=tuple()):
+    def send_message(
+        self,
+        text: str,
+        issue_name: str,
+        photos: Tuple[str] = tuple(),
+        videos: Tuple[str] = tuple()
+    ) -> MessageId:
         issue = self.issues[issue_name]
         response = None
         if len(photos) == 1:
@@ -64,10 +89,21 @@ class TelegramClient:
 
         result = response.json()["result"]
         message_id = int(result["message_id"] if "message_id" in result else result[0]["message_id"])
-        return message_id
+        return MessageId(
+            message_id=message_id,
+            issue=issue_name,
+            from_discussion=False
+        )
 
-    def update_message(self, message_id, text, is_caption, issue_name):
-        issue = self.issues[issue_name]
+    def update_message(
+        self,
+        message: MessageId,
+        text: str,
+        is_caption: bool
+    ):
+        assert not message.from_discussion
+        issue = self.issues[message.issue]
+        message_id = message.message_id
         if not is_caption:
             response = self._edit_text(message_id, text, issue=issue)
         else:
@@ -76,7 +112,7 @@ class TelegramClient:
         if response.status_code != 200:
             print("Update error:", response.text)
 
-    def update_discussion_mapping(self, issue_name):
+    def update_discussion_mapping(self, issue_name: str):
         issue = self.issues[issue_name]
         updates = self._get_updates(issue)
         if not updates:
@@ -95,12 +131,18 @@ class TelegramClient:
             discussion_message_id = message["message_id"]
             self.discussions[issue.name][orig_message_id] = discussion_message_id
 
-    def get_discussion(self, message_id, issue_name):
-        return self.discussions[issue_name].get(message_id, None)
+    def get_discussion(self, message: str):
+        discussion_message_id = self.discussions[message.issue].get(message.message_id, None)
+        return MessageId(
+            message_id=discussion_message_id,
+            issue=message.issue,
+            from_discussion=True
+        )
 
-    def send_discussion_message(self, text, reply_to_message_id, issue_name):
-        issue = self.issues[issue_name]
-        if not issue.discussion_id or not reply_to_message_id:
+    def send_discussion_message(self, text, discussion_message):
+        assert discussion_message.from_discussion
+        issue = self.issues[discussion_message.issue]
+        if not issue.discussion_id or not discussion_message.message_id:
             return None
         url_template = "https://api.telegram.org/bot{}/sendMessage"
         params = {
@@ -108,7 +150,7 @@ class TelegramClient:
             "text": text,
             "parse_mode": "html",
             "disable_web_page_preview": False,
-            "reply_to_message_id": reply_to_message_id
+            "reply_to_message_id": discussion_message.message_id
         }
         return self._post(url_template.format(issue.bot_token), params)
 
