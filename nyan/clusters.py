@@ -2,21 +2,40 @@ import json
 import os
 import shutil
 import hashlib
-from collections import Counter
+from collections import Counter, defaultdict
 from functools import cached_property
+from dataclasses import dataclass
 
 from nyan.document import Document
 from nyan.mongo import get_clusters_collection
 from nyan.title import choose_title
+from nyan.util import Serializable
+
+
+@dataclass
+class Message(Serializable):
+    message_id: int
+    issue: str
+    create_time: int
+
+    def as_tuple(self):
+        return (self.issue, self.message_id)
+
+    def __hash__(self):
+        return hash(self.as_tuple())
+
+    def __eq__(self, another):
+        return self.as_tuple() == another.self.as_tuple()
 
 
 class Cluster:
     def __init__(self):
         self.docs = list()
         self.url2doc = dict()
-        self.message_id = None
-        self.create_time = None
+        self.clid = None
         self.is_important = False
+
+        self.message = None
 
         self.saved_annotation_doc = None
         self.saved_first_doc = None
@@ -31,6 +50,9 @@ class Cluster:
 
     def changed(self):
         return self.hash != self.saved_hash
+
+    def set_message(self, *args, **kwargs):
+        self.message = Message(*args, **kwargs)
 
     # Computable properties
     @property
@@ -155,9 +177,9 @@ class Cluster:
     # Serialization
     def asdict(self):
         return {
+            "clid": self.clid,
             "docs": [d.asdict() for d in self.docs],
-            "message_id": self.message_id,
-            "create_time": self.create_time,
+            "message": self.message.asdict(),
             "annotation_doc": self.annotation_doc.asdict(),
             "first_doc": self.first_doc.asdict(),
             "hash": self.hash,
@@ -165,19 +187,25 @@ class Cluster:
         }
 
     def serialize(self):
-        return json.dumps(self.asdict())
+        return json.dumps(self.asdict(), ensure_ascii=False)
 
     @classmethod
     def fromdict(cls, d):
         cluster = cls()
+        cluster.clid = d.get("clid")
+
         for doc in d["docs"]:
             cluster.add(Document.fromdict(doc))
-        cluster.message_id = d["message_id"]
-        cluster.create_time = d.get("create_time")
+
+        cluster.message = Message.fromdict(d.get("message"))
+        if not cluster.message and "message_id" in d and "create_time" in d:
+            cluster.message = Message(message_id=d["message_id"], issue="main", create_time=d["create_time"])
+
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
         cluster.saved_hash = d.get("hash")
         cluster.is_important = d.get("is_important", False)
+
         return cluster
 
     @classmethod
@@ -188,31 +216,41 @@ class Cluster:
 
 class Clusters:
     def __init__(self):
-        self.clusters = dict()
+        self.clid2cluster = dict()
+        self.message2cluster = dict()
+        self.max_clid = 0
 
-    def __getitem__(self, message_id):
-        return self.clusters[message_id]
+    def find_similar(self, cluster):
+        messages = [self.urls2messages.get(url) for url in cluster.urls if url in self.urls2messages]
+        if not messages:
+            return None
+        message = Counter(messages).most_common()[0][0]
+        return self.message2cluster.get(message)
 
-    def __setitem__(self, message_id, cluster):
-        self.clusters[message_id] = cluster
+    def add(self, cluster):
+        if cluster.clid is None:
+            self.max_clid += 1
+            cluster.clid = self.max_clid
+
+        self.message2cluster[cluster.message] = cluster
+        self.clid2cluster[cluster.clid] = cluster
+        self.max_clid = max(self.max_clid, cluster.clid)
 
     def __len__(self):
-        return len(self.clusters)
-
-    def __iter__(self):
-        return iter(self.clusters)
-
-    def items(self):
-        return self.clusters.items()
+        return len(self.clid2cluster)
 
     @cached_property
     def urls2messages(self):
-        return {url: message_id for message_id, cl in self.clusters.items() for url in cl.urls}
+        result = dict()
+        for _, cluster in self.clid2cluster.items():
+            for url in cluster.urls:
+                result[url] = cluster.message
+        return result
 
     def update_documents(self, documents):
         url2doc = {doc.url: doc for doc in documents}
         updates_count = 0
-        for _, cluster in self.clusters.items():
+        for _, cluster in self.clid2cluster.items():
             for doc_index, doc in enumerate(cluster.docs):
                 url = doc.url
                 if url not in url2doc:
@@ -231,7 +269,7 @@ class Clusters:
     def save(self, path):
         temp_path = path + ".new"
         with open(path + ".new", "w") as w:
-            for _, cluster in sorted(self.clusters.items()):
+            for _, cluster in sorted(self.clid2cluster.items()):
                 w.write(cluster.serialize() + "\n")
         shutil.move(temp_path, path)
 
@@ -241,14 +279,13 @@ class Clusters:
         clusters = cls()
         with open(path) as r:
             for line in r:
-                cluster = Cluster.deserialize(line)
-                clusters.clusters[cluster.message_id] = cluster
+                clusters.add(Cluster.deserialize(line))
         return clusters
 
     def save_to_mongo(self, mongo_config_path):
         collection = get_clusters_collection(mongo_config_path)
-        for _, cluster in sorted(self.clusters.items()):
-            collection.replace_one({"message_id": cluster.message_id}, cluster.asdict(), upsert=True)
+        for clid, cluster in sorted(self.clid2cluster.items()):
+            collection.replace_one({"clid": clid}, cluster.asdict(), upsert=True)
 
     @classmethod
     def load_from_mongo(cls, mongo_config_path):
@@ -256,6 +293,5 @@ class Clusters:
         clusters_dicts = list(collection.find({}))
         clusters = cls()
         for cluster_dict in clusters_dicts:
-            cluster = Cluster.fromdict(cluster_dict)
-            clusters.clusters[cluster.message_id] = cluster
+            clusters.add(Cluster.fromdict(cluster_dict))
         return clusters

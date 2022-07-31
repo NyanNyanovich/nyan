@@ -39,18 +39,36 @@ class TelegramClient:
         self.update_discussion_mapping()
 
     def send_message(self, text, photos=tuple(), videos=tuple()):
+        response = None
         if len(photos) == 1:
-            return self.send_photo(text, photos[0])
+            response = self.send_photo(text, photos[0])
         elif len(photos) > 1:
-            return self.send_photos(text, photos)
+            response = self.send_photos(text, photos)
         elif len(videos) >= 1:
-            return self.send_video(text, videos[0])
-        return self.send_text(text)
+            response = self.send_video(text, videos[0])
+        else:
+            response = self.send_text(text)
+
+        print("Send status code:", response.status_code)
+        if response.status_code != 200:
+            print("Send error:", response.text)
+            return None
+
+        result = response.json()["result"]
+        message_id = int(result["message_id"] if "message_id" in result else result[0]["message_id"])
+        return message_id
 
     def update_message(self, message_id, text, is_caption):
+        response = None
         if not is_caption:
-            return self.edit_text(message_id, text)
-        return self.edit_caption(message_id, text)
+            response = self.edit_text(message_id, text)
+        else:
+            response = self.edit_caption(message_id, text)
+
+        print("Update status code:", response.status_code)
+        if response.status_code != 200:
+            print("Update error:", response.text)
+
 
     def send_text(self, text):
         url_template = "https://api.telegram.org/bot{}/sendMessage"

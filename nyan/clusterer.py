@@ -95,6 +95,6 @@ class Clusterer:
             elif cluster.age < hta and cluster.views_per_hour >= higher_border_views_per_hour:
                 cluster.is_important = True
                 filtered_clusters.append(cluster)
-            elif cluster.create_time is None:
+            elif cluster.message is None:
                 print("Skipped by views: {} {}".format(cluster.views_per_hour, cluster.cropped_title))
         return filtered_clusters

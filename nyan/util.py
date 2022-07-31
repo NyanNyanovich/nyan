@@ -1,6 +1,7 @@
 import os
 import json
 from datetime import datetime, timezone
+from dataclasses import dataclass, asdict, fields
 
 
 def read_jsonl(file_path):
@@ -23,3 +24,24 @@ def get_current_ts():
 def ts_to_dt(timestamp, offset=3):
     dt = datetime.fromtimestamp(timestamp + offset * 3600)
     return dt.strftime("%d-%m-%y %H:%M")
+
+
+@dataclass
+class Serializable:
+    @classmethod
+    def fromdict(cls, d):
+        if d is None:
+            return None
+        keys = {f.name for f in fields(cls)}
+        d = {k: v for k, v in d.items() if k in keys}
+        return cls(**d)
+
+    def asdict(self, save_embedding=False):
+        return asdict(self)
+
+    @classmethod
+    def deserialize(cls, line):
+        return cls.fromdict(json.loads(line))
+
+    def serialize(self):
+        return json.dumps(self.asdict(), ensure_ascii=False)
