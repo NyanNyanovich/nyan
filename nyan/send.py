@@ -9,8 +9,9 @@ from nyan.client import TelegramClient
 from nyan.clusters import Clusters
 from nyan.clusterer import Clusterer
 from nyan.channels import Channels
-from nyan.document import read_documents_file, read_documents_mongo
+from nyan.ranker import Ranker
 from nyan.renderer import Renderer
+from nyan.document import read_documents_file, read_documents_mongo
 from nyan.util import get_current_ts, ts_to_dt
 
 
@@ -21,6 +22,7 @@ def main(
     client_config_path,
     annotator_config_path,
     clusterer_config_path,
+    ranker_config_path,
     channels_info_path,
     renderer_config_path,
     mongo_config_path
@@ -31,6 +33,7 @@ def main(
     channels = Channels.load(channels_info_path)
     clusterer = Clusterer(clusterer_config_path)
     renderer = Renderer(renderer_config_path)
+    ranker = Ranker(ranker_config_path)
 
     while True:
         if input_path and not os.path.exists(input_path):
@@ -84,9 +87,11 @@ def main(
         print("{} updated documents".format(updates_count))
 
         new_clusters = clusterer(docs)
+        print("{} clusters overall".format(len(new_clusters)))
+
+        new_clusters = ranker(new_clusters)
         print("{} clusters after filtering".format(len(new_clusters)))
 
-        new_clusters = new_clusters[-10:]
         for i, cluster in enumerate(new_clusters):
             posted_cluster = posted_clusters.find_similar(cluster)
             if posted_cluster:
@@ -127,9 +132,8 @@ def main(
             if message_id is None:
                 continue
 
-            issue = "main"
             current_ts = get_current_ts()
-            cluster.set_message(message_id=message_id, issue=issue, create_time=current_ts)
+            cluster.set_message(message_id=message_id, issue=cluster.issue, create_time=current_ts)
             posted_clusters.add(cluster)
 
             print("Message id: {}, saving".format(message_id))
@@ -168,5 +172,6 @@ if __name__ == "__main__":
     parser.add_argument("--annotator-config-path", type=str, default="configs/annotator_config.json")
     parser.add_argument("--clusterer-config-path", type=str, default="configs/clusterer_config.json")
     parser.add_argument("--renderer-config-path", type=str, default="configs/renderer_config.json")
+    parser.add_argument("--ranker-config-path", type=str, default="configs/ranker_config.json")
     args = parser.parse_args()
     main(**vars(args))

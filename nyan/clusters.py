@@ -15,8 +15,8 @@ from nyan.util import Serializable
 @dataclass
 class Message(Serializable):
     message_id: int
-    issue: str
     create_time: int
+    issue: str = "main"
 
     def as_tuple(self):
         return (self.issue, self.message_id)
@@ -158,6 +158,17 @@ class Cluster:
             return "blue"
         return "purple"
 
+    @property
+    def issue(self):
+        if self.message:
+            return self.message.issue
+        channels = {doc.channel_id: doc.group for doc in self.docs}
+        groups_count = Counter(list(channels.values()))
+        group = groups_count.most_common(1)[0][0]
+        if group in ("red", "blue", "purple"):
+            return "main"
+        return group
+
     def asdict(self):
         return {
             "clid": self.clid,
@@ -179,7 +190,7 @@ class Cluster:
 
         cluster.message = Message.fromdict(d.get("message"))
         if not cluster.message and "message_id" in d and "create_time" in d:
-            cluster.message = Message(message_id=d["message_id"], issue="main", create_time=d["create_time"])
+            cluster.message = Message(message_id=d["message_id"], create_time=d["create_time"])
 
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
