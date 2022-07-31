@@ -55,8 +55,6 @@ def annotator(annotator_config_path, channels_info_path) -> Annotator:
 @pytest.fixture
 def clusterer(clusterer_config_path):
     clusterer = Clusterer(clusterer_config_path)
-    clusterer.config["filtering"]["min_channels"] = 1
-    clusterer.config["filtering"]["max_age_minutes"] = 86400 * 365
     return clusterer
 
 
