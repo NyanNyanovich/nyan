@@ -57,5 +57,19 @@
     {"name": "moscowach", "group": "purple", "alias": "Москвач", "disabled": true},
     {"name": "agentstvonews", "group": "blue", "alias": "Агентство. Новости"},
     {"name": "kommersant", "group": "purple", "alias": "Коммерсантъ"},
-    {"name": "news_sirena", "group": "blue", "alias": "Сирена"}
+    {"name": "news_sirena", "group": "blue", "alias": "Сирена"},
+    {"name": "wylsared", "group": "tech", "alias": "Wylsacom Red"},
+    {"name": "exploitex", "group": "tech", "alias": "Эксплойт"},
+    {"name": "rozetked", "group": "tech", "alias": "Rozetked"},
+    {"name": "andronews_official", "group": "tech", "alias": "Andro News"},
+    {"name": "d_code", "group": "tech", "alias": "Код Дурова"},
+    {"name": "neuraldvig", "group": "tech", "alias": "Нейродвиж"},
+    {"name": "addmeto", "group": "tech", "alias": "addmeto"},
+    {"name": "trendwatching24", "group": "tech", "alias": "TrendWatching"},
+    {"name": "denissexy", "group": "tech", "alias": "Denis Sexy IT"},
+    {"name": "naebnet", "group": "tech", "alias": "NN"},
+    {"name": "black_triangle_tg", "group": "tech", "alias": "Чёрный Треугольник"},
+    {"name": "iteach_ru", "group": "tech", "alias": "ITeach"},
+    {"name": "habr_com_news", "group": "tech", "alias": "Хабр Новости"},
+    {"name": "bell_tech", "group": "tech", "alias": "The Bell Tech"}
 ]
