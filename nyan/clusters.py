@@ -172,7 +172,7 @@ class Cluster:
 
         cluster.message = MessageId.fromdict(d.get("message"))
         if not cluster.message and "message_id" in d:
-            cluster.message = Message(message_id=d["message_id"])
+            cluster.message = MessageId(message_id=d["message_id"])
 
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
