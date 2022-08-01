@@ -15,13 +15,24 @@ class Channel(Serializable):
 
     @property
     def emoji(self):
-        if self.group == "red":
-            return "\U0001F1F7\U0001F1FA"  # Russian flag
-        elif self.group == "blue":
-            return "\U0001F30E"  # globe
-        elif self.group == "purple":
-            return "\U00002696\U0000FE0F"  # balance scale
-        return ""
+        emojis = {
+            "red": "\U0001F1F7\U0001F1FA",  # Russian flag
+            "blue": "\U0001F30E",  # Globe
+            "purple": "\U00002696\U0000FE0F",  # Balance scale
+            "tech": "\U0001f4bb",  # Laptop
+        }
+        return emojis.get(self.group, "")
+
+    @property
+    def issue(self):
+        issues = {
+            "red": "main",
+            "blue": "main",
+            "purple": "main",
+            "tech": "tech"
+        }
+        assert self.group in issues, 'Unknown group "{self.group}", update issues dictionary!'
+        return issues[self.group]
 
 
 class Channels:

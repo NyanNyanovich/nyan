@@ -63,9 +63,10 @@ class Cluster:
 
     @cached_property
     def images(self):
-        image_doc_count = sum([1 if doc.images else 0 for doc in self.docs])
+        image_doc_count = sum([1 if doc.images else 0 for doc in self.unique_docs])
+        doc_count = len(self.unique_docs)
         images = self.annotation_doc.images
-        if images and image_doc_count >= 3:
+        if images and (image_doc_count / doc_count >= 0.4 or image_doc_count >= 3):
             return images
         return tuple()
 
@@ -144,12 +145,8 @@ class Cluster:
     def issue(self):
         if self.message:
             return self.message.issue
-        channels = {doc.channel_id: doc.group for doc in self.docs}
-        groups_count = Counter(list(channels.values()))
-        group = groups_count.most_common(1)[0][0]
-        if group in ("red", "blue", "purple"):
-            return "main"
-        return group
+        issues = Counter([doc.issue for doc in self.docs])
+        return issues.most_common(1)[0][0]
 
     def asdict(self):
         return {
@@ -243,7 +240,6 @@ class Clusters:
                 updates_count += 1
         return updates_count
 
-    # Serialization
     def save(self, path):
         temp_path = path + ".new"
         with open(path + ".new", "w") as w:

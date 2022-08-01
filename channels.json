@@ -71,5 +71,11 @@
     {"name": "black_triangle_tg", "group": "tech", "alias": "Чёрный Треугольник"},
     {"name": "iteach_ru", "group": "tech", "alias": "ITeach"},
     {"name": "habr_com_news", "group": "tech", "alias": "Хабр Новости"},
-    {"name": "bell_tech", "group": "tech", "alias": "The Bell Tech"}
+    {"name": "bell_tech", "group": "tech", "alias": "The Bell Tech"},
+    {"name": "tbite", "group": "tech", "alias": "Терабит"},
+    {"name": "techcrunchru", "group": "tech", "alias": "Tech Crunch"},
+    {"name": "atishnik", "group": "tech", "alias": "Айтишник"},
+    {"name": "stells_technology", "group": "tech", "alias": "Stells Technology"},
+    {"name": "itrend24", "group": "tech", "alias": "iTrend"},
+    {"name": "popmeh", "group": "tech", "alias": "Популярная механика"}
 ]

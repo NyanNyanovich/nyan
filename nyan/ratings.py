@@ -16,7 +16,7 @@ def main(
     clusters = Clusters.load(posted_clusters_path)
     channels = Channels.load(channels_info_path)
     client = TelegramClient(client_config_path)
-    renderer = Renderer(renderer_config_path)
+    renderer = Renderer(renderer_config_path, channels)
     duration = duration_days * 24 * 3600
 
     ratings_text = renderer.render_ratings(clusters, channels, duration)

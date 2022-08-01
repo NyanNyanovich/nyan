@@ -32,7 +32,7 @@ def main(
     annotator = Annotator(annotator_config_path, channels_info_path)
     channels = Channels.load(channels_info_path)
     clusterer = Clusterer(clusterer_config_path)
-    renderer = Renderer(renderer_config_path)
+    renderer = Renderer(renderer_config_path, channels)
     ranker = Ranker(ranker_config_path)
 
     while True:
