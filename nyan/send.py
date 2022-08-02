@@ -32,7 +32,7 @@ def main(
     annotator = Annotator(annotator_config_path, channels_info_path)
     channels = Channels.load(channels_info_path)
     clusterer = Clusterer(clusterer_config_path)
-    renderer = Renderer(renderer_config_path)
+    renderer = Renderer(renderer_config_path, channels)
     ranker = Ranker(ranker_config_path)
 
     while True:
@@ -96,15 +96,14 @@ def main(
             posted_cluster = posted_clusters.find_similar(cluster)
             if posted_cluster:
                 message = posted_cluster.message
-                message_id = message.message_id
-                discussion_message_id = client.get_discussion(message_id)
+                discussion_message = client.get_discussion(message)
 
                 new_docs_pub_time = 0
                 for doc in cluster.docs:
                     if not posted_cluster.has(doc):
                         posted_cluster.add(doc)
                         discussion_text = renderer.render_discussion_message(doc)
-                        client.send_discussion_message(discussion_text, discussion_message_id)
+                        client.send_discussion_message(discussion_text, discussion_message)
                         new_docs_pub_time = max(doc.pub_time, new_docs_pub_time)
                         sleep(0.3)
 
@@ -113,42 +112,43 @@ def main(
                 if time_diff < 3600 * 3 and posted_cluster.changed():
                     cluster_text = renderer.render_cluster(posted_cluster)
                     print()
-                    print("Update cluster {}: {}".format(message_id, posted_cluster.cropped_title))
-                    print("Discussion message id: {}".format(discussion_message_id))
+                    print("Update cluster {}: {}".format(message.message_id, posted_cluster.cropped_title))
+                    print("Discussion message id: {}".format(discussion_message.message_id))
 
                     is_caption = bool(posted_cluster.images) or bool(posted_cluster.videos)
-                    client.update_message(message_id, cluster_text, is_caption)
+                    client.update_message(message, cluster_text, is_caption)
                 else:
                     print()
-                    print("Same cluster {}: {}".format(message_id, posted_cluster.cropped_title))
+                    print("Same cluster {}: {}".format(message.message_id, posted_cluster.cropped_title))
                 continue
 
             cluster_text = renderer.render_cluster(cluster)
             print()
             print("New cluster:", cluster.cropped_title)
 
-            client.update_discussion_mapping()
-            message_id = client.send_message(cluster_text, photos=cluster.images, videos=cluster.videos)
-            if message_id is None:
+            issue_name = cluster.issue
+            client.update_discussion_mapping(issue_name)
+            message = client.send_message(cluster_text, issue_name, photos=cluster.images, videos=cluster.videos)
+            if message is None:
                 continue
 
-            current_ts = get_current_ts()
-            cluster.set_message(message_id=message_id, issue=cluster.issue, create_time=current_ts)
+            cluster.create_time = get_current_ts()
+            cluster.message = message
             posted_clusters.add(cluster)
 
-            print("Message id: {}, saving".format(message_id))
+            print("Message id: {}, saving".format(message.message_id))
             if posted_clusters_path:
                 posted_clusters.save(posted_clusters_path)
             if mongo_config_path:
                 posted_clusters.save_to_mongo(mongo_config_path)
 
-            client.update_discussion_mapping()
-            discussion_message_id = client.get_discussion(message_id)
-            print("Discussion message id: {}".format(discussion_message_id))
+            client.update_discussion_mapping(issue_name)
+            discussion_message = client.get_discussion(message)
+            print("Discussion message id: {}".format(discussion_message.message_id))
 
             for doc in cluster.docs:
                 discussion_text = renderer.render_discussion_message(doc)
-                client.send_discussion_message(discussion_text, discussion_message_id)
+                client.send_discussion_message(discussion_text, discussion_message)
                 sleep(0.3)
 
         print()

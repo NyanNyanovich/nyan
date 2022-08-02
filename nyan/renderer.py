@@ -13,10 +13,13 @@ from nyan.util import get_current_ts
 
 
 class Renderer:
-    def __init__(self, config_path):
+    def __init__(self, config_path, channels):
         assert os.path.exists(config_path)
         with open(config_path) as r:
             config = json.load(r)
+
+        self.channels = channels
+
         file_loader = FileSystemLoader(".")
         env = Environment(loader=file_loader)
         self.cluster_template = env.get_template(config["cluster_template"])
@@ -26,8 +29,10 @@ class Renderer:
 
     def render_cluster(self, cluster: Cluster):
         groups = defaultdict(list)
+        emojis = dict()
         for doc in cluster.docs:
             groups[doc.group].append(doc)
+            emojis[doc.group] = self.channels[doc.channel_id].emoji
 
         used_channels = set()
         for group_name, group in groups.items():
@@ -60,6 +65,7 @@ class Renderer:
             annotation_doc=cluster.annotation_doc,
             first_doc=first_doc,
             groups=groups,
+            emojis=emojis,
             views=views,
             is_important=cluster.is_important,
             external_link=external_link

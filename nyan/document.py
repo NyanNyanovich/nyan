@@ -21,6 +21,7 @@ class Document(Serializable):
     language: str = None
     category: str = None
     group: str = None
+    issue: str = None
     tokens: str = None
     embedding: List[float] = None
     images: List[str] = None

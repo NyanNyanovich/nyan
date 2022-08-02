@@ -60,6 +60,7 @@ class Annotator:
 
         channel_info = self.channels[channel_id]
         doc.group = channel_info.group
+        doc.issue = channel_info.issue
 
         channel_alias = channel_info.alias
         if channel_alias:
