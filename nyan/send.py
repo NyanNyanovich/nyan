@@ -90,7 +90,7 @@ def main(
         print("{} clusters overall".format(len(new_clusters)))
 
         new_clusters = ranker(new_clusters)
-        print("{} clusters after filtering".format(len(new_clusters)))
+        print("{} clusters in all issues after filtering".format(len(new_clusters)))
 
         for i, cluster in enumerate(new_clusters):
             posted_cluster = posted_clusters.find_similar(cluster)
@@ -112,19 +112,19 @@ def main(
                 if time_diff < 3600 * 3 and posted_cluster.changed():
                     cluster_text = renderer.render_cluster(posted_cluster)
                     print()
-                    print("Update cluster {}: {}".format(message.message_id, posted_cluster.cropped_title))
+                    print("Update cluster {} at {}: {}".format(message.message_id, message.issue, posted_cluster.cropped_title))
                     print("Discussion message id: {}".format(discussion_message.message_id))
 
                     is_caption = bool(posted_cluster.images) or bool(posted_cluster.videos)
                     client.update_message(message, cluster_text, is_caption)
                 else:
                     print()
-                    print("Same cluster {}: {}".format(message.message_id, posted_cluster.cropped_title))
+                    print("Same cluster {} at {}: {}".format(message.message_id, message.issue, posted_cluster.cropped_title))
                 continue
 
             cluster_text = renderer.render_cluster(cluster)
             print()
-            print("New cluster:", cluster.cropped_title)
+            print("New cluster in {}: {}".format(cluster.issue, cluster.cropped_title))
 
             issue_name = cluster.issue
             client.update_discussion_mapping(issue_name)

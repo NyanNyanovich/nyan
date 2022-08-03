@@ -39,6 +39,8 @@ class Ranker:
 
             if len(clusters) <= 3:
                 final_clusters.extend(clusters)
+                for cluster in clusters:
+                    print("Added as no other clusters: {} {}".format(cluster.views_per_hour, cluster.cropped_title))
                 continue
 
             clusters = self.filter_by_views(
@@ -50,6 +52,7 @@ class Ranker:
             clusters.sort(key=lambda c: c.pub_time_percentile)
             clusters = clusters[-10:]
             final_clusters.extend(clusters)
+        print()
         return final_clusters
 
     def filter_by_views(
@@ -76,9 +79,11 @@ class Ranker:
         for cluster in clusters:
             if cluster.age > hta and cluster.views_per_hour >= border_views_per_hour:
                 filtered_clusters.append(cluster)
+                print("Added by views: {} {}".format(cluster.views_per_hour, cluster.cropped_title))
             elif cluster.age < hta and cluster.views_per_hour >= higher_border_views_per_hour:
                 cluster.is_important = True
                 filtered_clusters.append(cluster)
+                print("Added by views (important): {} {}".format(cluster.views_per_hour, cluster.cropped_title))
             elif cluster.message is None:
                 print("Skipped by views: {} {}".format(cluster.views_per_hour, cluster.cropped_title))
         return filtered_clusters
