@@ -370,7 +370,7 @@
       "name": "tjournal",
       "groups": {
         "main": "blue",
-        "tech": "other"
+        "tech": "tech"
       },
       "alias": "TJ",
       "issue": "main"
@@ -388,7 +388,7 @@
       "name": "vcnews",
       "groups": {
         "main": "purple",
-        "tech": "other"
+        "tech": "tech"
       },
       "alias": "VC",
       "issue": "main"
