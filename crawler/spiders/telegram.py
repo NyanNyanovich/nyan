@@ -49,7 +49,7 @@ class TelegramSpider(scrapy.Spider):
     def __init__(self, *args, **kwargs):
         assert "channels_file" in kwargs
         with open(kwargs.pop("channels_file")) as r:
-            self.channels = json.load(r)
+            self.channels = json.load(r)["channels"]
         self.html2text = html2text_setup()
         self.until_ts = int((datetime.now() - timedelta(hours=6)).timestamp())
 
