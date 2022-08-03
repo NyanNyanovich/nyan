@@ -128,9 +128,10 @@ class Cluster:
 
     @property
     def group(self):
-        groups_count = Counter([doc.groups["main"] for doc in self.docs])
+        groups = [doc.groups["main"] for doc in self.docs]
+        groups_count = Counter(groups)
 
-        all_count = len(channels)
+        all_count = len(groups)
         blue_part = groups_count["blue"] / all_count
         red_part = groups_count["red"] / all_count
 
