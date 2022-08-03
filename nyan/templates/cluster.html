@@ -6,11 +6,7 @@
 
 👁️{{views}}
 {% for group, sources in groups %}
-    {%- if group == "red" -%}🇷🇺
-    {%- elif group == "blue" -%}🌎
-    {%- elif group == "purple" -%}⚖️
-    {%- endif -%}
-    {%- for source in sources %}<a href="{{source.url}}">{{source.channel_title}}</a>{% if not loop.last %} • {% endif %}{% endfor %}
+{{-emojis[group]-}}{%- for source in sources %}<a href="{{source.url}}">{{source.channel_title}}</a>{% if not loop.last %} • {% endif %}{% endfor %}
 {% endfor %}
 ⏱<a href="{{first_doc.url}}">{{first_doc.channel_title}}</a>, {{first_doc.pub_time.strftime("%H:%M")}} MSK
 

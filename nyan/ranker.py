@@ -34,6 +34,9 @@ class Ranker:
                     filtered_clusters.append(cluster)
             clusters = filtered_clusters
 
+            print()
+            print(f"Issue: {issue_name}, clusters after first filter: {len(clusters)}")
+
             if len(clusters) <= 3:
                 final_clusters.extend(clusters)
                 continue

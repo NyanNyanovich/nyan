@@ -6,26 +6,10 @@ from collections import Counter, defaultdict
 from functools import cached_property
 from dataclasses import dataclass
 
+from nyan.client import MessageId
 from nyan.document import Document
 from nyan.mongo import get_clusters_collection
 from nyan.title import choose_title
-from nyan.util import Serializable
-
-
-@dataclass
-class Message(Serializable):
-    message_id: int
-    create_time: int
-    issue: str = "main"
-
-    def as_tuple(self):
-        return (self.issue, self.message_id)
-
-    def __hash__(self):
-        return hash(self.as_tuple())
-
-    def __eq__(self, another):
-        return self.as_tuple() == another.self.as_tuple()
 
 
 class Cluster:
@@ -35,6 +19,7 @@ class Cluster:
         self.clid = None
         self.is_important = False
 
+        self.create_time = None
         self.message = None
 
         self.saved_annotation_doc = None
@@ -50,9 +35,6 @@ class Cluster:
 
     def changed(self):
         return self.hash != self.saved_hash
-
-    def set_message(self, *args, **kwargs):
-        self.message = Message(*args, **kwargs)
 
     @property
     def pub_time(self):
@@ -81,9 +63,10 @@ class Cluster:
 
     @cached_property
     def images(self):
-        image_doc_count = sum([1 if doc.images else 0 for doc in self.docs])
+        image_doc_count = sum([1 if doc.images else 0 for doc in self.unique_docs])
+        doc_count = len(self.unique_docs)
         images = self.annotation_doc.images
-        if images and image_doc_count >= 3:
+        if images and (image_doc_count / doc_count >= 0.4 or image_doc_count >= 3):
             return images
         return tuple()
 
@@ -145,10 +128,10 @@ class Cluster:
 
     @property
     def group(self):
-        channels = {doc.channel_id: doc.group for doc in self.docs}
-        groups_count = Counter(list(channels.values()))
+        groups = [doc.groups["main"] for doc in self.docs]
+        groups_count = Counter(groups)
 
-        all_count = len(channels)
+        all_count = len(groups)
         blue_part = groups_count["blue"] / all_count
         red_part = groups_count["red"] / all_count
 
@@ -162,12 +145,8 @@ class Cluster:
     def issue(self):
         if self.message:
             return self.message.issue
-        channels = {doc.channel_id: doc.group for doc in self.docs}
-        groups_count = Counter(list(channels.values()))
-        group = groups_count.most_common(1)[0][0]
-        if group in ("red", "blue", "purple"):
-            return "main"
-        return group
+        issues = Counter([doc.issue for doc in self.docs])
+        return issues.most_common(1)[0][0]
 
     def asdict(self):
         return {
@@ -188,14 +167,17 @@ class Cluster:
         for doc in d["docs"]:
             cluster.add(Document.fromdict(doc))
 
-        cluster.message = Message.fromdict(d.get("message"))
-        if not cluster.message and "message_id" in d and "create_time" in d:
-            cluster.message = Message(message_id=d["message_id"], create_time=d["create_time"])
+        cluster.message = MessageId.fromdict(d.get("message"))
+        if not cluster.message and "message_id" in d:
+            cluster.message = MessageId(message_id=d["message_id"])
 
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
         cluster.saved_hash = d.get("hash")
         cluster.is_important = d.get("is_important", False)
+        cluster.create_time = d.get("create_time", None)
+        if not cluster.create_time and "message" in d and "create_time" in d["message"]:
+            cluster.create_time = d["message"]["create_time"]
 
         return cluster
 
@@ -258,7 +240,6 @@ class Clusters:
                 updates_count += 1
         return updates_count
 
-    # Serialization
     def save(self, path):
         temp_path = path + ".new"
         with open(path + ".new", "w") as w:
