@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 from dataclasses import dataclass
 
 from nyan.mongo import get_documents_collection
@@ -20,7 +20,7 @@ class Document(Serializable):
     fetch_time: int = None
     language: str = None
     category: str = None
-    group: str = None
+    groups: Dict[str, str] = None
     issue: str = None
     tokens: str = None
     embedding: List[float] = None

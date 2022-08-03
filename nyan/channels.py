@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Dict
 from dataclasses import dataclass
 
 from nyan.util import Serializable
@@ -9,30 +10,11 @@ from nyan.util import Serializable
 class Channel(Serializable):
     name: int
     alias: str = ""
-    group: str = "purple"
+    groups: Dict[str, str] = None
     master: str = None
     disabled: bool = False
-
-    @property
-    def emoji(self):
-        emojis = {
-            "red": "\U0001F1F7\U0001F1FA",  # Russian flag
-            "blue": "\U0001F30E",  # Globe
-            "purple": "\U00002696\U0000FE0F",  # Balance scale
-            "tech": "\U0001f4bb",  # Laptop
-        }
-        return emojis.get(self.group, "")
-
-    @property
-    def issue(self):
-        issues = {
-            "red": "main",
-            "blue": "main",
-            "purple": "main",
-            "tech": "tech"
-        }
-        assert self.group in issues, 'Unknown group "{self.group}", update issues dictionary!'
-        return issues[self.group]
+    emojis: Dict[str, str] = None
+    issue: str = None
 
 
 class Channels:
@@ -56,6 +38,10 @@ class Channels:
         assert os.path.exists(path)
         channels = Channels()
         with open(path) as r:
-            for channel in json.load(r):
-                channels.add(Channel.fromdict(channel))
+            config = json.load(r)
+            emojis = config["emojis"]
+            for channel in config["channels"]:
+                channel = Channel.fromdict(channel)
+                channel.emojis = {issue: emojis[group] for issue, group in channel.groups.items()}
+                channels.add(channel)
         return channels

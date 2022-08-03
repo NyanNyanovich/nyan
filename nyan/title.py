@@ -28,7 +28,7 @@ def choose_title(docs: List[Document]):
     if filtered_docs:
         docs = filtered_docs
 
-    filtered_docs = [d for d in docs if d.group == "purple"]
+    filtered_docs = [d for d in docs if d.groups["main"] == "purple"]
     if len(filtered_docs) >= 2:
         docs = filtered_docs
     return min(docs, key=lambda x: avg_distances[x.url])

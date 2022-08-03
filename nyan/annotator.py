@@ -59,7 +59,7 @@ class Annotator:
             return None
 
         channel_info = self.channels[channel_id]
-        doc.group = channel_info.group
+        doc.groups = channel_info.groups
         doc.issue = channel_info.issue
 
         channel_alias = channel_info.alias
