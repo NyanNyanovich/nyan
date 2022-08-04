@@ -18,6 +18,7 @@ EMOJI_PATTERN = re.compile(
     flags=re.UNICODE
 )
 URL_PATTERN = re.compile(r"(http\S+|www\.\S+)", flags=re.UNICODE)
+URL_WITHOUT_HTTP_PATTERN = re.compile(r"[\S]+\.(ru|me|com|org)[/][\S]+", flags=re.UNICODE)
 USERS_PATTERN = re.compile(r"@(\w+)", flags=re.UNICODE)
 HASHTAG_PATTERN = re.compile(r"#(\w+)", flags=re.UNICODE)
 
@@ -31,8 +32,9 @@ def remove_hashtags(text):
 
 
 def remove_urls(text):
-    return URL_PATTERN.sub(r'', text)
-
+    text1 = URL_PATTERN.sub(r'', text)
+    text2 = URL_WITHOUT_HTTP_PATTERN.sub(r'', text1)
+    return text2
 
 def remove_users(text):
     return USERS_PATTERN.sub(r'', text)
