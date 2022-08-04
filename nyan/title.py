@@ -6,7 +6,7 @@ from scipy.spatial.distance import cosine
 from nyan.document import Document
 
 
-def choose_title(docs: List[Document]):
+def choose_title(docs: List[Document], issue: str):
     avg_distances = dict()
     for doc1 in docs:
         distances = [cosine(doc1.embedding, doc2.embedding) for doc2 in docs]
@@ -31,4 +31,10 @@ def choose_title(docs: List[Document]):
     filtered_docs = [d for d in docs if d.groups["main"] == "purple"]
     if len(filtered_docs) >= 2:
         docs = filtered_docs
+
+    if issue == "tech":
+        filtered_docs = [d for d in docs if d.groups[issue] == issue]
+        if filtered_docs:
+            docs = filtered_docs
+
     return min(docs, key=lambda x: avg_distances[x.url])

@@ -99,7 +99,7 @@ class Cluster:
     def annotation_doc(self):
         if self.saved_annotation_doc:
             return self.saved_annotation_doc
-        self.saved_annotation_doc = choose_title(self.docs)
+        self.saved_annotation_doc = choose_title(self.docs, self.issue)
         return self.saved_annotation_doc
 
     @cached_property
