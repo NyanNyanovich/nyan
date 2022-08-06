@@ -719,6 +719,24 @@
       },
       "alias": "Популярная механика",
       "issue": "tech"
+    },
+    {
+      "name": "notboring_tech",
+      "groups": {
+        "main": "purple",
+        "tech": "tech"
+      },
+      "alias": "Not Boring Tech",
+      "issue": "tech"
+    },
+    {
+      "name": "nplusone",
+      "groups": {
+        "main": "purple",
+        "tech": "tech"
+      },
+      "alias": "N + 1",
+      "issue": "tech"
     }
   ],
   "emojis": {

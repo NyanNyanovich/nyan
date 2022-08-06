@@ -1,5 +1,7 @@
 import json
+import re
 from typing import List
+from urllib.parse import unquote, urlparse
 
 from tqdm import tqdm
 
@@ -35,6 +37,7 @@ class Annotator:
             self.process_channels_info,
             self.clean_text,
             self.tokenize,
+            self.normalize_links,
             self.has_obscene,
             self.predict_language,
             self.predict_category
@@ -78,6 +81,23 @@ class Annotator:
         tokens = self.tokenizer(doc.text)
         tokens = ["{}_{}".format(t.lemma.lower().replace("_", ""), t.pos) for t in tokens]
         doc.tokens = " ".join(tokens)
+        return doc
+
+    def normalize_links(self, doc):
+        def has_cyrillic(text):
+            return bool(re.search("[а-яА-Я]", text))
+
+        fixed_links = []
+        for link in doc.links:
+            decoded_link = unquote(link)
+            parsed_link = urlparse(decoded_link)
+            host = parsed_link.netloc
+            if not host:
+                continue
+            if has_cyrillic(host) and host.split(".")[-1] != "рф":
+                continue
+            fixed_links.append(decoded_link)
+        doc.links = fixed_links
         return doc
 
     def has_obscene(self, doc):

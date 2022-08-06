@@ -26,7 +26,7 @@ def main(
         for doc in clean_docs:
             doc = doc.asdict()
             for field in rm_fields:
-                doc.pop(field)
+                doc.pop(field, None)
             w.write(json.dumps(doc, ensure_ascii=False).strip() + "\n")
 
 
