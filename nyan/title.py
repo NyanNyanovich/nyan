@@ -16,6 +16,11 @@ def choose_title(docs: List[Document], issue: str):
     if filtered_docs:
         docs = filtered_docs
 
+    if issue == "tech":
+        filtered_docs = [d for d in docs if d.groups[issue] == issue]
+        if filtered_docs:
+            docs = filtered_docs
+
     filtered_docs = [d for d in docs if not d.has_obscene]
     if filtered_docs:
         docs = filtered_docs
@@ -31,10 +36,5 @@ def choose_title(docs: List[Document], issue: str):
     filtered_docs = [d for d in docs if d.groups["main"] == "purple"]
     if len(filtered_docs) >= 2:
         docs = filtered_docs
-
-    if issue == "tech":
-        filtered_docs = [d for d in docs if d.groups[issue] == issue]
-        if filtered_docs:
-            docs = filtered_docs
 
     return min(docs, key=lambda x: avg_distances[x.url])
