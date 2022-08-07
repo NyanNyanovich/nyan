@@ -156,7 +156,8 @@ class Cluster:
             "annotation_doc": self.annotation_doc.asdict(),
             "first_doc": self.first_doc.asdict(),
             "hash": self.hash,
-            "is_important": self.is_important
+            "is_important": self.is_important,
+            "create_time": self.create_time
         }
 
     @classmethod
