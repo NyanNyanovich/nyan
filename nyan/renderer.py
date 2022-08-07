@@ -80,17 +80,20 @@ class Renderer:
         self,
         clusters,
         channels,
-        duration
+        duration,
+        issue_name
     ):
         if not self.ratings_template:
             return None
         cluster_count = 0
         lags = []
         channels_cnt, collocations, first_docs = Counter(), Counter(), Counter()
-        best_blue_cluster, best_red_cluster, best_cluster = Cluster(), Cluster(), Cluster()
+        best_blue_cluster, best_red_cluster, best_cluster = None, None, None
 
-        for message_id, cluster in clusters.items():
+        for _, cluster in clusters.clid2cluster.items():
             if cluster.pub_time_percentile < get_current_ts() - duration:
+                continue
+            if cluster.issue != issue_name:
                 continue
 
             cluster_count += 1
@@ -98,12 +101,12 @@ class Renderer:
                 lags.append(abs(cluster.create_time - cluster.pub_time_percentile))
 
             cluster_group = cluster.group
-            if cluster_group == "blue" and cluster.views > best_blue_cluster.views:
+            if cluster_group == "blue" and (not best_blue_cluster or cluster.views > best_blue_cluster.views):
                 best_blue_cluster = cluster
-            elif cluster_group == "red" and cluster.views > best_red_cluster.views:
+            elif cluster_group == "red" and (not best_red_cluster or cluster.views > best_red_cluster.views):
                 best_red_cluster = cluster
 
-            if cluster.views > best_cluster.views:
+            if not best_cluster or cluster.views > best_cluster.views:
                 best_cluster = cluster
 
             cluster_channels_ids = cluster.channels
@@ -115,10 +118,6 @@ class Renderer:
                         collocations[(ch1, ch2)] += 1
 
         assert best_cluster
-        if not best_red_cluster.message_id:
-            best_red_cluster = None
-        if not best_blue_cluster.message_id:
-            best_blue_cluster = None
 
         average_lag_minutes = int(mean(lags) // 60)
         cluster_frequency = duration // 60 // cluster_count
@@ -139,7 +138,8 @@ class Renderer:
             first_docs=first_docs,
             best_cluster=best_cluster,
             best_blue_cluster=best_blue_cluster,
-            best_red_cluster=best_red_cluster
+            best_red_cluster=best_red_cluster,
+            issue_name=issue_name
         )
 
     @staticmethod

@@ -6,11 +6,11 @@
 
 <b>Топ-10 каналов по покрытию:</b>
 {% for channel, cnt in channels_cnt -%}
-{{channel.emoji}}{{channel.alias}}: {{cnt}} сюжетов
+{{channel.emojis[issue_name]}}{{channel.alias}}: {{cnt}} сюжетов
 {% endfor %}
 <b>Топ-10 самых оперативных:</b>
 {% for channel, cnt in first_docs -%}
-{{channel.emoji}}{{channel.alias}}: в {{cnt}} сюжетах
+{{channel.emojis[issue_name]}}{{channel.alias}}: в {{cnt}} сюжетах
 {% endfor %}
 <b>Самая просматриваемая новость:</b>
 {{best_cluster.annotation_doc.text}} <a href="https://t.me/nyannews/{{best_cluster.message_id}}">ссылка</a>
