@@ -77,7 +77,7 @@ def main(
             doc_channels_cnt[doc.channel_id] += 1
         for channel_id, channel in channels:
             cnt = doc_channels_cnt.get(channel_id, 0)
-            if cnt <= 1 and not channel.disabled:
+            if cnt <= 1 and not channel.disabled and channel.issue == "main":
                 print("Warning: {} docs from channel {}".format(cnt, channel_id))
 
         docs = annotator(docs)
@@ -164,7 +164,7 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-path", type=str, default=None)
-    parser.add_argument("--documents-offset", type=int, default=9 * 3600)
+    parser.add_argument("--documents-offset", type=int, default=12 * 3600)
     parser.add_argument("--channels-info-path", type=str, default="channels.json")
     parser.add_argument("--mongo-config-path", type=str, default=None)
     parser.add_argument("--posted-clusters-path", type=str, default=None)

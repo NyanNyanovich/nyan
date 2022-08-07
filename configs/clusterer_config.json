@@ -8,6 +8,7 @@
     "distances": {
         "same_channels_penalty": 5.0,
         "time_penalty_modifier": 4.0,
-        "time_shift_hours": 6
+        "time_shift_hours": 6,
+        "no_time_penalty_issues": ["tech"]
     }
 }
