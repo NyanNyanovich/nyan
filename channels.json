@@ -737,6 +737,51 @@
       },
       "alias": "N + 1",
       "issue": "tech"
+    },
+    {
+      "name": "mountshow",
+      "groups": {
+        "main": "purple",
+        "tech": "other"
+      },
+      "alias": "MountShow",
+      "issue": "main"
+    },
+    {
+      "name": "republicmag",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "Republic",
+      "issue": "main"
+    },
+    {
+      "name": "theinsider",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "The Insider",
+      "issue": "main"
+    },
+    {
+      "name": "dwglavnoe",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "DW",
+      "issue": "main"
+    },
+    {
+      "name": "uranews",
+      "groups": {
+        "main": "red",
+        "tech": "other"
+      },
+      "alias": "URA.RU",
+      "issue": "main"
     }
   ],
   "emojis": {
