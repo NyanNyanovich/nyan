@@ -13,4 +13,4 @@ def test_clusterer_on_snapshot(
 ):
     docs = annotator(input_docs)
     clusters = clusterer(docs)
-    assert len(clusters) == 3
+    assert len(clusters) == 5
