@@ -56,7 +56,9 @@ class TelegramSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
 
     def start_requests(self):
-        urls = [self.channel_url_template.format(ch["name"]) for ch in self.channels]
+        channels = self.channels
+        channels = [ch for ch in channels if not ch.get("disabled", False)]
+        urls = [self.channel_url_template.format(ch["name"]) for ch in channels]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse_channel)
 
