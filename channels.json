@@ -105,6 +105,7 @@
         "main": "blue",
         "tech": "other"
       },
+      "disabled": true,
       "alias": "Реальная Война",
       "issue": "main"
     },
@@ -336,6 +337,7 @@
         "main": "blue",
         "tech": "other"
       },
+      "disabled": true,
       "alias": "ТРУХА",
       "issue": "main"
     },
@@ -510,7 +512,6 @@
         "tech": "other"
       },
       "alias": "Москвач",
-      "disabled": true,
       "issue": "main"
     },
     {
@@ -780,7 +781,43 @@
         "main": "red",
         "tech": "other"
       },
-      "alias": "URA.RU",
+      "alias": "URA",
+      "issue": "main"
+    },
+    {
+      "name": "svtvnews",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "SVTV News",
+      "issue": "main"
+    },
+    {
+      "name": "rgrunews",
+      "groups": {
+        "main": "red",
+        "tech": "other"
+      },
+      "alias": "Российская Газета",
+      "issue": "main"
+    },
+    {
+      "name": "consultant_plus",
+      "groups": {
+        "main": "purple",
+        "tech": "other"
+      },
+      "alias": "КонсультантПлюс",
+      "issue": "main"
+    },
+    {
+      "name": "fanimani_official",
+      "groups": {
+        "main": "purple",
+        "tech": "other"
+      },
+      "alias": "Фанимани Офишиал",
       "issue": "main"
     }
   ],
