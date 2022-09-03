@@ -105,7 +105,6 @@
         "main": "blue",
         "tech": "other"
       },
-      "disabled": true,
       "alias": "Реальная Война",
       "issue": "main"
     },
@@ -337,7 +336,6 @@
         "main": "blue",
         "tech": "other"
       },
-      "disabled": true,
       "alias": "ТРУХА",
       "issue": "main"
     },
@@ -456,7 +454,6 @@
         "tech": "other"
       },
       "alias": "TABOO",
-      "disabled": true,
       "issue": "main"
     },
     {
