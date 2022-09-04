@@ -22,6 +22,13 @@ def get_documents_collection(mongo_config_path):
     return database[documents_collection_name]
 
 
+def get_annotated_documents_collection(mongo_config_path):
+    mongo_config = read_config(mongo_config_path)
+    database = get_database(mongo_config)
+    annotated_documents_collection_name = mongo_config["annotated_documents_collection_name"]
+    return database[annotated_documents_collection_name]
+
+
 def get_clusters_collection(mongo_config_path):
     mongo_config = read_config(mongo_config_path)
     database = get_database(mongo_config)

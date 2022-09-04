@@ -79,7 +79,7 @@ class Cluster:
 
     @cached_property
     def cropped_title(self):
-        return " ".join(self.annotation_doc.text.split()[:10]) + "..."
+        return " ".join(self.annotation_doc.patched_text.split()[:10]) + "..."
 
     @property
     def urls(self):
@@ -149,12 +149,21 @@ class Cluster:
         return issues.most_common(1)[0][0]
 
     def asdict(self):
+        docs = [d.asdict() for d in self.docs]
+        for doc in docs:
+            doc.pop("embedding", None)
+        annotation_doc = self.annotation_doc.asdict()
+        annotation_doc.pop("embedding", None)
+        annotation_doc.pop("text", None)
+        first_doc = self.first_doc.asdict()
+        first_doc.pop("embedding", None)
+        first_doc.pop("text", None)
         return {
             "clid": self.clid,
-            "docs": [d.asdict() for d in self.docs],
+            "docs": docs,
             "message": self.message.asdict(),
-            "annotation_doc": self.annotation_doc.asdict(),
-            "first_doc": self.first_doc.asdict(),
+            "annotation_doc": annotation_doc,
+            "first_doc": first_doc,
             "hash": self.hash,
             "is_important": self.is_important,
             "create_time": self.create_time
@@ -232,7 +241,7 @@ class Clusters:
                 if url not in url2doc:
                     continue
                 new_doc = url2doc[url]
-                if doc.text == new_doc.text and doc.views == new_doc.views:
+                if doc.patched_text == new_doc.patched_text and doc.views == new_doc.views:
                     continue
                 cluster.docs[doc_index] = new_doc
                 cluster.url2doc[url] = new_doc
