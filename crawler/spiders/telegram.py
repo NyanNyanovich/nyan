@@ -5,6 +5,10 @@ import scrapy
 import html2text
 
 
+def get_current_ts():
+    return int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+
+
 def process_views(views):
     if "K" in views:
         views = int(float(views.replace("K", "")) * 1000)
@@ -50,6 +54,11 @@ class TelegramSpider(scrapy.Spider):
         assert "channels_file" in kwargs
         with open(kwargs.pop("channels_file")) as r:
             self.channels = json.load(r)["channels"]
+            self.channels = {ch["name"]: ch for ch in self.channels}
+        assert "fetch_times" in kwargs
+        self.fetch_times_path = kwargs.pop("fetch_times")
+        with open(self.fetch_times_path) as r:
+            self.fetch_times = json.load(r)
         self.html2text = html2text_setup()
         self.until_ts = int((datetime.now() - timedelta(hours=6)).timestamp())
 
@@ -57,13 +66,28 @@ class TelegramSpider(scrapy.Spider):
 
     def start_requests(self):
         channels = self.channels
-        channels = [ch for ch in channels if not ch.get("disabled", False)]
-        urls = [self.channel_url_template.format(ch["name"]) for ch in channels]
+        channels = [ch for ch in channels.values() if not ch.get("disabled", False)]
+        urls = {self.channel_url_template.format(ch["name"]) for ch in channels}
+        current_ts = get_current_ts()
         for url in urls:
+            channel_name = url.split("/")[-1]
+            last_fetch_time = self.fetch_times.get(channel_name, 0)
+            recrawl_time = self.channels[channel_name].get("recrawl_time", 0)
+            assert current_ts > last_fetch_time
+            if current_ts - last_fetch_time < recrawl_time:
+                print("Skip {}, current ts: {}, last fetch ts: {}, recrawl interval: {}".format(
+                    url, current_ts, last_fetch_time, recrawl_time
+                ))
+                continue
             yield scrapy.Request(url=url, callback=self.parse_channel)
+
+    def closed(self, reason):
+        with open(self.fetch_times_path, "w") as w:
+            json.dump(self.fetch_times, w)
 
     def parse_channel(self, response):
         url = response.url
+        channel_name = url.split("/")[-1].split("?")[0]
         history_path = "//body/main/div/section[contains(@class, 'tgme_channel_history')]/div"
         posts = response.xpath(history_path + "/div")
 
@@ -91,6 +115,8 @@ class TelegramSpider(scrapy.Spider):
                 print(f"Unexpected error at {post_url}:", str(e))
                 continue
 
+        current_ts = get_current_ts()
+        self.fetch_times[channel_name] = current_ts
         if not min_post_ts or min_post_ts < self.until_ts:
             return
         url = url.split("?")[0]

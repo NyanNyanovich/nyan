@@ -169,7 +169,8 @@
         "tech": "other"
       },
       "alias": "Медиазона",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "novaya_europe",
@@ -178,7 +179,8 @@
         "tech": "other"
       },
       "alias": "Новая газета",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "novaya_pishet",
@@ -274,7 +276,8 @@
         "tech": "other"
       },
       "alias": "SOTA",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "redakciya_channel",
@@ -292,7 +295,8 @@
         "tech": "other"
       },
       "alias": "Сталингулаг",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "rusanctions",
@@ -346,7 +350,8 @@
         "tech": "other"
       },
       "alias": "DOXA",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "thevillagemsk",
@@ -355,7 +360,8 @@
         "tech": "other"
       },
       "alias": "The Village",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "afishadaily",
@@ -364,7 +370,8 @@
         "tech": "other"
       },
       "alias": "Афиша Daily",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "tjournal",
@@ -373,7 +380,8 @@
         "tech": "tech"
       },
       "alias": "TJ",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "radiosvoboda",
@@ -391,7 +399,8 @@
         "tech": "tech"
       },
       "alias": "VC",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "currenttime",
@@ -427,7 +436,8 @@
         "tech": "other"
       },
       "alias": "Вечерний Телеграмъ",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "pdmnews",
@@ -436,7 +446,8 @@
         "tech": "other"
       },
       "alias": "Подъём",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "concertzaal",
@@ -445,7 +456,8 @@
         "tech": "other"
       },
       "alias": "Concertzaal",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "taboo_news",
@@ -454,7 +466,8 @@
         "tech": "other"
       },
       "alias": "TABOO",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "rtvimain",
@@ -482,7 +495,8 @@
         "tech": "other"
       },
       "alias": "Forbes",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "thebell_io",
@@ -491,7 +505,8 @@
         "tech": "other"
       },
       "alias": "The Bell",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "moscowtimes_ru",
@@ -518,7 +533,8 @@
         "tech": "other"
       },
       "alias": "Агентство. Новости",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "kommersant",
@@ -545,7 +561,8 @@
         "tech": "tech"
       },
       "alias": "Wylsacom Red",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "exploitex",
@@ -554,7 +571,8 @@
         "tech": "tech"
       },
       "alias": "Эксплойт",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "rozetked",
@@ -563,7 +581,8 @@
         "tech": "tech"
       },
       "alias": "Rozetked",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "andronews_official",
@@ -572,7 +591,8 @@
         "tech": "tech"
       },
       "alias": "Andro News",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "d_code",
@@ -581,7 +601,8 @@
         "tech": "tech"
       },
       "alias": "Код Дурова",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "neuraldvig",
@@ -590,7 +611,8 @@
         "tech": "tech"
       },
       "alias": "Нейродвиж",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "addmeto",
@@ -599,7 +621,8 @@
         "tech": "tech"
       },
       "alias": "addmeto",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "trendwatching24",
@@ -608,7 +631,8 @@
         "tech": "tech"
       },
       "alias": "TrendWatching",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "denissexy",
@@ -617,7 +641,8 @@
         "tech": "tech"
       },
       "alias": "Denis Sexy IT",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "naebnet",
@@ -626,7 +651,8 @@
         "tech": "tech"
       },
       "alias": "NN",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "black_triangle_tg",
@@ -635,7 +661,8 @@
         "tech": "tech"
       },
       "alias": "Чёрный Треугольник",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "iteach_ru",
@@ -644,7 +671,8 @@
         "tech": "tech"
       },
       "alias": "ITeach",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "habr_com_news",
@@ -662,7 +690,8 @@
         "tech": "tech"
       },
       "alias": "The Bell Tech",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "tbite",
@@ -680,7 +709,8 @@
         "tech": "tech"
       },
       "alias": "Tech Crunch",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "atishnik",
@@ -698,7 +728,8 @@
         "tech": "tech"
       },
       "alias": "Stells Technology",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "itrend24",
@@ -707,7 +738,8 @@
         "tech": "tech"
       },
       "alias": "iTrend",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "popmeh",
@@ -716,7 +748,8 @@
         "tech": "tech"
       },
       "alias": "Популярная механика",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "notboring_tech",
@@ -725,7 +758,8 @@
         "tech": "tech"
       },
       "alias": "Not Boring Tech",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "nplusone",
@@ -734,7 +768,8 @@
         "tech": "tech"
       },
       "alias": "N + 1",
-      "issue": "tech"
+      "issue": "tech",
+      "recrawl_time": 300
     },
     {
       "name": "mountshow",
@@ -752,7 +787,8 @@
         "tech": "other"
       },
       "alias": "Republic",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     },
     {
       "name": "theinsider",
@@ -806,7 +842,8 @@
         "tech": "other"
       },
       "alias": "КонсультантПлюс",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 600
     },
     {
       "name": "fanimani_official",
@@ -815,7 +852,8 @@
         "tech": "other"
       },
       "alias": "Фанимани Офишиал",
-      "issue": "main"
+      "issue": "main",
+      "recrawl_time": 300
     }
   ],
   "emojis": {
