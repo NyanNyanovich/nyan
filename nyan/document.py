@@ -7,6 +7,8 @@ from nyan.mongo import get_documents_collection, get_annotated_documents_collect
 from nyan.util import Serializable
 
 
+CURRENT_VERSION = 1
+
 @dataclass
 class Document(Serializable):
     url: str
@@ -30,11 +32,14 @@ class Document(Serializable):
     videos: List[str] = tuple()
     reply_to: str = None
     forward_from: str = None
+    version: int = CURRENT_VERSION
 
     not_serializing: Tuple[str] = tuple()
 
     def is_reannotation_needed(self, new_doc):
         assert new_doc.url == self.url
+        if self.version != CURRENT_VERSION:
+            return True
         if new_doc.text != self.text:
             return True
         return False
