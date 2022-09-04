@@ -11,6 +11,8 @@ def test_annotator_on_snapshot(
     output_docs: List[Document]
 ):
     docs = annotator(input_docs)
+    for doc in docs:
+        doc.embedding = None
 
     for predicted_doc, canonical_doc in zip(docs, output_docs):
         assert predicted_doc.serialize() == canonical_doc.serialize()

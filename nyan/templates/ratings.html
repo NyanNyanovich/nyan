@@ -13,12 +13,12 @@
 {{channel.emojis[issue_name]}}{{channel.alias}}: в {{cnt}} сюжетах
 {% endfor %}
 <b>Самая просматриваемая новость:</b>
-{{best_cluster.annotation_doc.text}} <a href="https://t.me/nyannews/{{best_cluster.message.message_id}}">ссылка</a>
+{{best_cluster.annotation_doc.patched_text}} <a href="https://t.me/nyannews/{{best_cluster.message.message_id}}">ссылка</a>
 {% if best_blue_cluster %}
 <b>Самая просматриваемая "синяя" новость:</b>
-{{best_blue_cluster.annotation_doc.text}} <a href="https://t.me/nyannews/{{best_blue_cluster.message.message_id}}">ссылка</a>
+{{best_blue_cluster.annotation_doc.patched_text}} <a href="https://t.me/nyannews/{{best_blue_cluster.message.message_id}}">ссылка</a>
 {% endif %} {% if best_red_cluster %}
 <b>Самая просматриваемая "красная" новость:</b>
-{{best_red_cluster.annotation_doc.text}} <a href="https://t.me/nyannews/{{best_red_cluster.message.message_id}}">ссылка</a>
+{{best_red_cluster.annotation_doc.patched_text}} <a href="https://t.me/nyannews/{{best_red_cluster.message.message_id}}">ссылка</a>
 {% endif %}
 Предложения/пожелания: nyan_news@protonmail.com

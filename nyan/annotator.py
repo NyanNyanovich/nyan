@@ -74,11 +74,11 @@ class Annotator:
         text = self.text_processor(doc.text)
         if not text or len(text) < 10:
             return None
-        doc.text = text
+        doc.patched_text = text
         return doc
 
     def tokenize(self, doc):
-        tokens = self.tokenizer(doc.text)
+        tokens = self.tokenizer(doc.patched_text)
         tokens = ["{}_{}".format(t.lemma.lower().replace("_", ""), t.pos) for t in tokens]
         doc.tokens = " ".join(tokens)
         return doc
@@ -101,27 +101,27 @@ class Annotator:
         return doc
 
     def has_obscene(self, doc):
-        doc.has_obscene = self.text_processor.has_obscene(doc.text)
+        doc.has_obscene = self.text_processor.has_obscene(doc.patched_text)
         return doc
 
     def calc_embeddings(self, docs):
         texts = [d.text for d in docs]
         embeddings = self.embedder(texts)
         for d, embedding in zip(docs, embeddings):
-            d.embedding = embedding.numpy()
+            d.embedding = embedding.numpy().tolist()
         return docs
 
     def predict_language(self, doc):
         if not self.lang_detector:
             return doc
-        language, prob = self.lang_detector(doc.text)
+        language, prob = self.lang_detector(doc.patched_text)
         doc.language = language
         return doc
 
     def predict_category(self, doc):
         if not self.cat_detector:
             return doc
-        category, prob = self.cat_detector(doc.text)
+        category, prob = self.cat_detector(doc.patched_text)
         doc.category = category
         if category == "not_news":
             return None

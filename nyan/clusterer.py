@@ -1,6 +1,7 @@
 import json
 import os
 
+import numpy as np
 from scipy.special import expit
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import pairwise_distances
@@ -15,6 +16,8 @@ class Clusterer:
             self.config = json.load(r)
 
     def __call__(self, docs):
+        assert docs, "No docs for clusterer"
+
         distances_config = self.config["distances"]
         same_channels_penalty = distances_config.get("same_channels_penalty", 1.0)
         fix_same_channels = same_channels_penalty > 1.0
@@ -24,7 +27,10 @@ class Clusterer:
         ntp_issues = distances_config.get("no_time_penalty_issues", tuple())
 
         max_distance = 1.0
-        embeddings = [d.embedding for d in docs]
+        dim = len(docs[0].embedding)
+        embeddings = np.zeros((len(docs), dim), dtype=np.float32)
+        for i, doc in enumerate(docs):
+            embeddings[i, :] = doc.embedding
         distances = pairwise_distances(
             embeddings,
             metric="cosine",

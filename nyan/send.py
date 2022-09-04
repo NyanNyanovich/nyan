@@ -12,6 +12,7 @@ from nyan.channels import Channels
 from nyan.ranker import Ranker
 from nyan.renderer import Renderer
 from nyan.document import read_documents_file, read_documents_mongo
+from nyan.document import read_annotated_documents_mongo, write_annotated_documents_mongo
 from nyan.util import get_current_ts, ts_to_dt
 
 
@@ -80,13 +81,25 @@ def main(
             if cnt <= 1 and not channel.disabled and channel.issue == "main":
                 print("Warning: {} docs from channel {}".format(cnt, channel_id))
 
-        docs = annotator(docs)
+        old_annotated_docs, remaining_docs = read_annotated_documents_mongo(mongo_config_path, docs)
+        print("{} docs already annotated, {} docs to annotate".format(
+            len(old_annotated_docs), len(remaining_docs))
+        )
+
+        annotated_docs = annotator(remaining_docs)
         print("{} docs after annotator".format(len(docs)))
 
-        updates_count = posted_clusters.update_documents(docs)
+        write_annotated_documents_mongo(mongo_config_path, annotated_docs)
+
+        annotated_docs += old_annotated_docs
+        print("{} docs before clustering".format(len(annotated_docs)))
+        for doc in annotated_docs:
+            assert doc.patched_text is not None
+
+        updates_count = posted_clusters.update_documents(annotated_docs)
         print("{} updated documents".format(updates_count))
 
-        new_clusters = clusterer(docs)
+        new_clusters = clusterer(annotated_docs)
         print("{} clusters overall".format(len(new_clusters)))
 
         new_clusters = ranker(new_clusters)
