@@ -31,7 +31,7 @@ def main(
     assert input_path and not mongo_config_path or mongo_config_path and not input_path
     client = TelegramClient(client_config_path)
     annotator = Annotator(annotator_config_path, channels_info_path)
-    channels = Channels.load(channels_info_path)
+    channels = Channels(channels_info_path)
     clusterer = Clusterer(clusterer_config_path)
     renderer = Renderer(renderer_config_path, channels)
     ranker = Ranker(ranker_config_path)
@@ -169,8 +169,8 @@ def main(
             posted_clusters.save(posted_clusters_path)
             print("{} clusters saved to file".format(len(posted_clusters)))
         if mongo_config_path:
-            posted_clusters.save_to_mongo(mongo_config_path)
-            print("{} clusters saved to Mongo".format(len(posted_clusters)))
+            saved_count = posted_clusters.save_to_mongo(mongo_config_path)
+            print("{} clusters saved to Mongo".format(saved_count))
             print()
 
 

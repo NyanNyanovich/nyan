@@ -9,6 +9,7 @@ from nyan.util import Serializable
 
 CURRENT_VERSION = 1
 
+
 @dataclass
 class Document(Serializable):
     url: str
@@ -93,4 +94,3 @@ def write_annotated_documents_mongo(mongo_config_path, docs):
         assert doc.embedding is not None
         assert doc.patched_text is not None
         collection.replace_one({"url": doc.url}, doc.asdict(), upsert=True)
-

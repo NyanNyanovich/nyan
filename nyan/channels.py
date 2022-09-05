@@ -18,8 +18,16 @@ class Channel(Serializable):
 
 
 class Channels:
-    def __init__(self):
+    def __init__(self, path):
         self.channels = dict()
+
+        with open(path) as r:
+            config = json.load(r)
+        emojis = config["emojis"]
+        for channel in config["channels"]:
+            channel = Channel.fromdict(channel)
+            channel.emojis = {issue: emojis[group] for issue, group in channel.groups.items()}
+            self.add(channel)
 
     def add(self, channel):
         self.channels[channel.name] = channel
@@ -32,16 +40,3 @@ class Channels:
 
     def __iter__(self):
         return iter(self.channels.items())
-
-    @classmethod
-    def load(self, path):
-        assert os.path.exists(path)
-        channels = Channels()
-        with open(path) as r:
-            config = json.load(r)
-            emojis = config["emojis"]
-            for channel in config["channels"]:
-                channel = Channel.fromdict(channel)
-                channel.emojis = {issue: emojis[group] for issue, group in channel.groups.items()}
-                channels.add(channel)
-        return channels

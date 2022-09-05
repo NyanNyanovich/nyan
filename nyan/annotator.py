@@ -30,7 +30,7 @@ class Annotator:
         if "cat_detector" in config:
             self.cat_detector = FasttextClassifier(config["cat_detector"], use_tokenizer=True, lower=True)
 
-        self.channels = Channels.load(channels_info_path)
+        self.channels = Channels(channels_info_path)
 
     def __call__(self, docs: List[Document]) -> List[Document]:
         pipeline = (

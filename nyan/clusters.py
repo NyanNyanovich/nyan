@@ -266,10 +266,16 @@ class Clusters:
                 clusters.add(Cluster.deserialize(line))
         return clusters
 
-    def save_to_mongo(self, mongo_config_path):
+    def save_to_mongo(self, mongo_config_path, only_new=True):
         collection = get_clusters_collection(mongo_config_path)
+        max_cluster_fetch_time = max([cl.fetch_time for cl in self.clid2cluster.values()])
+        saved_count = 0
         for clid, cluster in sorted(self.clid2cluster.items()):
+            if only_new and max_cluster_fetch_time - cluster.fetch_time > 24 * 3600:
+                continue
+            saved_count += 1
             collection.replace_one({"clid": clid}, cluster.asdict(), upsert=True)
+        return saved_count
 
     @classmethod
     def load_from_mongo(cls, mongo_config_path):

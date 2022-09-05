@@ -7,7 +7,7 @@ from nyan.client import TelegramClient
 
 def list_channels(client_config_path, channels_path):
     client = TelegramClient(client_config_path)
-    channels = Channels.load(channels_path)
+    channels = Channels(channels_path)
 
     groups = defaultdict(list)
     for _, ch in channels:
