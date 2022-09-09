@@ -848,12 +848,69 @@
     {
       "name": "fanimani_official",
       "groups": {
-        "main": "purple",
-        "tech": "other"
+
       },
       "alias": "Фанимани Офишиал",
       "issue": "main",
       "recrawl_time": 300
+    },
+    {
+      "name": "wonderzinemag",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "Wonderzine",
+      "issue": "main",
+      "recrawl_time": 300
+    },
+    {
+      "name": "kojournal",
+      "groups": {
+        "main": "purple",
+        "tech": "other"
+      },
+      "alias": "Журнал «Компания»",
+      "issue": "main",
+      "recrawl_time": 300
+    },
+    {
+      "name": "frank_media",
+      "groups": {
+        "main": "purple",
+        "tech": "other"
+      },
+      "alias": "Frank Media",
+      "issue": "main",
+      "recrawl_time": 300
+    },
+    {
+      "name": "newsholod",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "Холод.Новости",
+      "issue": "main",
+      "recrawl_time": 300
+    },
+    {
+      "name": "fontankaspb",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "Фонтанка",
+      "issue": "main"
+    },
+    {
+      "name": "ssigny",
+      "groups": {
+        "main": "red",
+        "tech": "other"
+      },
+      "alias": "СИГНАЛ",
+      "issue": "main"
     }
   ],
   "emojis": {
