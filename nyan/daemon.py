@@ -85,6 +85,7 @@ class Daemon:
         new_clusters = self.ranker(new_clusters)
         print("{} clusters in all issues after filtering".format(len(new_clusters)))
 
+        print()
         for cluster in new_clusters:
             self.send_cluster(cluster, posted_clusters, posted_clusters_path, mongo_config_path)
 
@@ -167,19 +168,19 @@ class Daemon:
             time_diff = abs(current_ts - posted_cluster.pub_time_percentile)
             if time_diff < 3600 * 3 and posted_cluster.changed():
                 cluster_text = self.renderer.render_cluster(posted_cluster)
-                print()
-                print("Update cluster {} at {}: {}".format(message.message_id, message.issue, posted_cluster.cropped_title))
+                print("Update cluster {} at {}: {}".format(
+                    message.message_id, message.issue, posted_cluster.cropped_title
+                ))
                 print("Discussion message id: {}".format(discussion_message.message_id))
+                print()
 
                 is_caption = bool(posted_cluster.images) or bool(posted_cluster.videos)
                 self.client.update_message(message, cluster_text, is_caption)
             else:
-                print()
                 print("Same cluster {} at {}: {}".format(message.message_id, message.issue, posted_cluster.cropped_title))
             return
 
         cluster_text = self.renderer.render_cluster(cluster)
-        print()
         print("New cluster in {}: {}".format(cluster.issue, cluster.cropped_title))
 
         issue_name = cluster.issue
@@ -206,4 +207,5 @@ class Daemon:
             discussion_text = self.renderer.render_discussion_message(doc)
             self.client.send_discussion_message(discussion_text, discussion_message)
             sleep(0.3)
+        print()
         return cluster
