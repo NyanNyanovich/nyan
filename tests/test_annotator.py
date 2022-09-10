@@ -20,6 +20,6 @@ def test_annotator_on_snapshot(
         for key, pred_value in pred_dict.items():
             canon_value = canon_dict[key]
             if key == "embedding":
-                np.testing.assert_allclose(pred_value, canon_value, rtol=0.005)
+                np.testing.assert_allclose(pred_value, canon_value, rtol=0.05)
                 continue
             assert pred_value == canon_value, f"Diff in '{key}', {pred_value} vs {canon_value}"
