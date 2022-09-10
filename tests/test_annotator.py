@@ -23,4 +23,3 @@ def test_annotator_on_snapshot(
                 np.testing.assert_allclose(pred_value, canon_value, rtol=0.005)
                 continue
             assert pred_value == canon_value, f"Diff in '{key}', {pred_value} vs {canon_value}"
-        assert predicted_doc.serialize() == canonical_doc.serialize()
