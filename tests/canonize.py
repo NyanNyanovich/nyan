@@ -11,5 +11,4 @@ docs = read_documents_file(get_input_path())
 docs = annotator(docs)
 with open(get_output_path(), "w") as w:
     for doc in docs:
-        doc.embedding = None
         w.write(doc.serialize() + "\n")

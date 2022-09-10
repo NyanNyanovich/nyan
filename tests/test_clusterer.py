@@ -7,10 +7,8 @@ from nyan.document import Document
 
 
 def test_clusterer_on_snapshot(
-    annotator: Annotator,
     clusterer: Clusterer,
-    input_docs: List[Document]
+    output_docs: List[Document]
 ):
-    docs = annotator(input_docs)
-    clusters = clusterer(docs)
-    assert len(clusters) == 5
+    clusters = clusterer(output_docs)
+    assert len(clusters) > 1

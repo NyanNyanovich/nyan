@@ -1,5 +1,6 @@
 import pytest
 from typing import List
+from dataclasses import fields
 
 from nyan.annotator import Annotator
 from nyan.document import Document
@@ -11,8 +12,10 @@ def test_annotator_on_snapshot(
     output_docs: List[Document]
 ):
     docs = annotator(input_docs)
-    for doc in docs:
-        doc.embedding = None
-
     for predicted_doc, canonical_doc in zip(docs, output_docs):
+        pred_dict = predicted_doc.asdict()
+        canon_dict = canonical_doc.asdict()
+        for key, pred_value in pred_dict.items():
+            canon_value = canon_dict[key]
+            assert pred_value == canon_value, f"Diff in '{key}', {pred_value} vs {canon_value}"
         assert predicted_doc.serialize() == canonical_doc.serialize()

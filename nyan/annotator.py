@@ -14,7 +14,7 @@ from nyan.tokenizer import Tokenizer
 
 
 class Annotator:
-    def __init__(self, config_path, channels_info_path):
+    def __init__(self, config_path, channels: Channels):
         with open(config_path) as r:
             config = json.load(r)
 
@@ -30,7 +30,7 @@ class Annotator:
         if "cat_detector" in config:
             self.cat_detector = FasttextClassifier(config["cat_detector"], use_tokenizer=True, lower=True)
 
-        self.channels = Channels(channels_info_path)
+        self.channels = channels
 
     def __call__(self, docs: List[Document]) -> List[Document]:
         pipeline = (

@@ -4,6 +4,9 @@ from typing import List, Dict
 from nyan.annotator import Annotator
 from nyan.document import read_documents_file, Document
 from nyan.clusterer import Clusterer
+from nyan.ranker import Ranker
+from nyan.renderer import Renderer
+from nyan.channels import Channels
 
 
 def get_channels_info_path() -> str:
@@ -48,14 +51,38 @@ def clusterer_config_path() -> str:
 
 
 @pytest.fixture
-def annotator(annotator_config_path, channels_info_path) -> Annotator:
-    return Annotator(annotator_config_path, channels_info_path)
+def renderer_config_path() -> str:
+    return "configs/renderer_config.json"
 
 
 @pytest.fixture
-def clusterer(clusterer_config_path):
-    clusterer = Clusterer(clusterer_config_path)
-    return clusterer
+def ranker_config_path() -> str:
+    return "configs/ranker_config.json"
+
+
+@pytest.fixture
+def channels(channels_info_path) -> Channels:
+    return Channels(channels_info_path)
+
+
+@pytest.fixture
+def annotator(annotator_config_path, channels) -> Annotator:
+    return Annotator(annotator_config_path, channels)
+
+
+@pytest.fixture
+def clusterer(clusterer_config_path) -> Clusterer:
+    return Clusterer(clusterer_config_path)
+
+
+@pytest.fixture
+def ranker(ranker_config_path) -> Ranker:
+    return Ranker(ranker_config_path)
+
+
+@pytest.fixture
+def renderer(renderer_config_path, channels) -> Renderer:
+    return Renderer(renderer_config_path, channels)
 
 
 @pytest.fixture

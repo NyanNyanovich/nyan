@@ -26,6 +26,8 @@ class Channels:
         emojis = config["emojis"]
         for channel in config["channels"]:
             channel = Channel.fromdict(channel)
+            assert channel.groups
+            assert channel.issue
             channel.emojis = {issue: emojis[group] for issue, group in channel.groups.items()}
             self.add(channel)
 

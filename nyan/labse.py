@@ -2,6 +2,9 @@ import torch
 from transformers import AutoModel, AutoTokenizer
 from tqdm.auto import tqdm
 
+from nyan.util import set_random_seed
+
+
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
@@ -22,6 +25,7 @@ class Embedder:
         max_length=128,
         device=DEVICE
     ):
+        set_random_seed(56154)
         self.model_name = model_name
         self.model = AutoModel.from_pretrained(model_name).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)

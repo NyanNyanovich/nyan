@@ -27,8 +27,8 @@ class Daemon:
         renderer_config_path
     ):
         self.client = TelegramClient(client_config_path)
-        self.annotator = Annotator(annotator_config_path, channels_info_path)
         self.channels = Channels(channels_info_path)
+        self.annotator = Annotator(annotator_config_path, self.channels)
         self.clusterer = Clusterer(clusterer_config_path)
         self.renderer = Renderer(renderer_config_path, self.channels)
         self.ranker = Ranker(ranker_config_path)
