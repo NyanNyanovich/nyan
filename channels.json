@@ -848,7 +848,8 @@
     {
       "name": "fanimani_official",
       "groups": {
-
+        "main": "purple",
+        "tech": "other"
       },
       "alias": "Фанимани Офишиал",
       "issue": "main",
