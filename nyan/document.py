@@ -49,6 +49,13 @@ class Document(Serializable):
         self.fetch_time = new_doc.fetch_time
         self.views = new_doc.views
 
+    def asdict(self, is_short: bool=False):
+        record = super().asdict()
+        if is_short:
+            record.pop("text")
+            record.pop("embedding")
+        return record
+
 
 def read_documents_file(file_path, current_ts=None, offset=None):
     assert os.path.exists(file_path)

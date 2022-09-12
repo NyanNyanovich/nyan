@@ -149,19 +149,13 @@ class Cluster:
         return issues.most_common(1)[0][0]
 
     def asdict(self):
-        docs = [d.asdict() for d in self.docs]
-        for doc in docs:
-            doc.pop("embedding", None)
-        annotation_doc = self.annotation_doc.asdict()
-        annotation_doc.pop("embedding", None)
-        annotation_doc.pop("text", None)
-        first_doc = self.first_doc.asdict()
-        first_doc.pop("embedding", None)
-        first_doc.pop("text", None)
+        docs = [d.asdict(is_short=True) for d in self.docs]
+        annotation_doc = self.annotation_doc.asdict(is_short=True)
+        first_doc = self.first_doc.asdict(is_short=True)
         return {
             "clid": self.clid,
             "docs": docs,
-            "message": self.message.asdict(),
+            "message": self.message.asdict() if self.message else None,
             "annotation_doc": annotation_doc,
             "first_doc": first_doc,
             "hash": self.hash,
@@ -186,7 +180,7 @@ class Cluster:
         cluster.saved_hash = d.get("hash")
         cluster.is_important = d.get("is_important", False)
         cluster.create_time = d.get("create_time", None)
-        if not cluster.create_time and "message" in d and "create_time" in d["message"]:
+        if not cluster.create_time and d.get("message") and "create_time" in d["message"]:
             cluster.create_time = d["message"]["create_time"]
 
         return cluster

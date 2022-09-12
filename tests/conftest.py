@@ -1,5 +1,8 @@
-import pytest
 from typing import List, Dict
+from dataclasses import fields
+
+import pytest
+import numpy as np
 
 from nyan.annotator import Annotator
 from nyan.document import read_documents_file, Document
@@ -7,6 +10,7 @@ from nyan.clusterer import Clusterer
 from nyan.ranker import Ranker
 from nyan.renderer import Renderer
 from nyan.channels import Channels
+from nyan.clusters import Clusters
 
 
 def get_channels_info_path() -> str:
@@ -36,28 +40,49 @@ def input_path() -> str:
     return get_input_path()
 
 
-def get_output_path() -> str:
+def get_annotator_output_path() -> str:
     return "tests/data/output_docs.jsonl"
 
 
 @pytest.fixture
-def output_path() -> str:
-    return get_output_path()
+def annotator_output_path() -> str:
+    return get_annotator_output_path()
+
+
+def get_ranker_output_path() -> str:
+    return "tests/data/output_clusters.jsonl"
 
 
 @pytest.fixture
-def clusterer_config_path() -> str:
+def ranker_output_path() -> str:
+    return get_ranker_output_path()
+
+
+def get_clusterer_config_path() -> str:
     return "configs/clusterer_config.json"
 
 
 @pytest.fixture
-def renderer_config_path() -> str:
-    return "configs/renderer_config.json"
+def clusterer_config_path() -> str:
+    return get_clusterer_config_path()
+
+
+def get_ranker_config_path() -> str:
+    return "configs/test_ranker_config.json"
 
 
 @pytest.fixture
 def ranker_config_path() -> str:
-    return "configs/ranker_config.json"
+    return get_ranker_config_path()
+
+
+def get_renderer_config_path() -> str:
+    return "configs/renderer_config.json"
+
+
+@pytest.fixture
+def renderer_config_path() -> str:
+    return get_renderer_config_path()
 
 
 @pytest.fixture
@@ -91,5 +116,28 @@ def input_docs(input_path) -> List[Document]:
 
 
 @pytest.fixture
-def output_docs(output_path) -> List[Document]:
-    return read_documents_file(output_path)
+def output_docs(annotator_output_path) -> List[Document]:
+    return read_documents_file(annotator_output_path)
+
+
+@pytest.fixture
+def output_clusters(ranker_output_path) -> Clusters:
+    return Clusters.load(ranker_output_path)
+
+
+@pytest.fixture
+def compare_docs():
+    def _compare_docs(
+        predicted_doc: Document,
+        canonical_doc: Document,
+        is_short: bool = False
+    ):
+        pred_dict = predicted_doc.asdict(is_short=is_short)
+        canon_dict = canonical_doc.asdict(is_short=is_short)
+        for key, pred_value in pred_dict.items():
+            canon_value = canon_dict[key]
+            if key == "embedding":
+                np.testing.assert_allclose(pred_value, canon_value, rtol=0.05)
+                continue
+            assert pred_value == canon_value, f"Diff in '{key}', {pred_value} vs {canon_value}"
+    return _compare_docs
