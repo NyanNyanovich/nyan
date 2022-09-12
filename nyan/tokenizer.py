@@ -15,5 +15,4 @@ class Tokenizer:
         doc.tag_morph(self.morph_tagger)
         for token in doc.tokens:
             token.lemmatize(self.morph_vocab)
-        tokens = doc.tokens
-        return tokens
+        return doc.tokens

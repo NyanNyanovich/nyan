@@ -182,5 +182,4 @@ class TelegramSpider(scrapy.Spider):
         for i, sentence in enumerate(sentences):
             if sentence[-1].isalpha():
                 sentences[i] = sentence + "."
-        text = "\n".join(sentences)
-        return text
+        return "\n".join(sentences)

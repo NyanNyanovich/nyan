@@ -58,7 +58,7 @@ class Cluster:
 
     @cached_property
     def pub_time_percentile(self):
-        timestamps = list(sorted([d.pub_time for d in self.docs]))
+        timestamps = sorted([d.pub_time for d in self.docs])
         return timestamps[len(timestamps) // 5]
 
     @cached_property
@@ -103,7 +103,7 @@ class Cluster:
         return self.saved_annotation_doc
 
     @cached_property
-    def hash(self):
+    def hash(self):  # noqa: A003
         data = " ".join(sorted({d.channel_id for d in self.docs}))
         data += " " + str(self.views // 100000)
         return hashlib.sha256(data.encode("utf-8")).hexdigest()

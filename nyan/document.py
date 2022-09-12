@@ -41,15 +41,13 @@ class Document(Serializable):
         assert new_doc.url == self.url
         if self.version != CURRENT_VERSION:
             return True
-        if new_doc.text != self.text:
-            return True
-        return False
+        return new_doc.text != self.text
 
     def update_meta(self, new_doc):
         self.fetch_time = new_doc.fetch_time
         self.views = new_doc.views
 
-    def asdict(self, is_short: bool=False):
+    def asdict(self, is_short: bool = False):
         record = super().asdict()
         if is_short:
             record.pop("text")
@@ -69,8 +67,7 @@ def read_documents_file(file_path, current_ts=None, offset=None):
 def read_documents_mongo(mongo_config_path, current_ts, offset):
     collection = get_documents_collection(mongo_config_path)
     docs = list(collection.find({"pub_time": {"$gte": current_ts - offset}}))
-    docs = [Document.fromdict(doc) for doc in docs]
-    return docs
+    return [Document.fromdict(doc) for doc in docs]
 
 
 def read_annotated_documents_mongo(mongo_config_path, docs):

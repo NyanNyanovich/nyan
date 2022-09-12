@@ -30,4 +30,3 @@ clusters = ranker(clusters)
 with open(get_ranker_output_path(), "w") as w:
     for cluster in clusters:
         w.write(cluster.serialize() + "\n")
-

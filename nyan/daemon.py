@@ -117,7 +117,7 @@ class Daemon:
             print("Reading docs from Mongo")
             docs = read_documents_mongo(mongo_config_path, get_current_ts(), documents_offset)
         else:
-            assert False
+            raise AssertionError()
         print("{} docs loaded".format(len(docs)))
         max_pub_time = ts_to_dt(max([d.pub_time for d in docs]))
         print("Last document: {}".format(max_pub_time))

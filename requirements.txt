@@ -22,6 +22,14 @@ jinja2 >= 3.0.1
 # Shared
 pymongo >= 4.0.2
 
+# Linter
+flake8 >= 5.0.4
+flake8-bugbear == 22.7.1
+flake8-builtins == 1.5.3
+flake8-simplify == 0.19.3
+flake8-pie == 0.16.0
+pep8-naming == 0.13.1
+
 # Analytics
 wordcloud >= 1.8.1
 spacy >= 3.1.2

@@ -33,8 +33,7 @@ def remove_hashtags(text):
 
 def remove_urls(text):
     text1 = URL_PATTERN.sub(r'', text)
-    text2 = URL_WITHOUT_HTTP_PATTERN.sub(r'', text1)
-    return text2
+    return URL_WITHOUT_HTTP_PATTERN.sub(r'', text1)
 
 
 def remove_users(text):
@@ -46,8 +45,7 @@ def fix_paragraphs(text):
     for i, paragraph in enumerate(paragraphs):
         paragraphs[i] = " ".join(paragraph.split()).strip()
     paragraphs = [p for p in paragraphs if len(p) >= 3]
-    text = "\n".join(paragraphs)
-    return text
+    return "\n".join(paragraphs)
 
 
 def remove_bad_punct(text):
@@ -58,8 +56,7 @@ def remove_bad_punct(text):
         paragraph = paragraph.replace(" :", ":")
         paragraph = paragraph.replace("\xa0", " ")
         paragraphs[i] = paragraph
-    text = "\n".join(paragraphs)
-    return text
+    return "\n".join(paragraphs)
 
 
 class TextProcessor:
@@ -91,14 +88,10 @@ class TextProcessor:
         return text.strip()
 
     def has_obscene(self, text):
-        for ss in self.obscene_substrings:
-            if ss in text:
-                return True
-        return False
+        return any(ss in text for ss in self.obscene_substrings)
 
     def is_bad_text(self, text):
-        has_bad_ss = any(ss in text for ss in self.skip_substrings)
-        return has_bad_ss
+        return any(ss in text for ss in self.skip_substrings)
 
     def remove_bad_text(self, text):
         for ss in self.rm_substrings:

@@ -47,7 +47,7 @@ class Renderer:
                 filtered_group.append(doc)
             groups[group_name] = filtered_group
 
-        groups = list(sorted(groups.items(), key=lambda x: x[0]))
+        groups = sorted(groups.items(), key=lambda x: x[0])
 
         first_doc = copy.deepcopy(cluster.first_doc)
         first_doc.pub_time = datetime.fromtimestamp(first_doc.pub_time + 3 * 3600)

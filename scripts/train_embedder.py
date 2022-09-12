@@ -95,8 +95,7 @@ class Embedder(nn.Module):
         )
         embeddings = output.pooler_output
         norm = embeddings.norm(p=2, dim=1, keepdim=True)
-        embeddings = embeddings.div(norm)
-        return embeddings
+        return embeddings.div(norm)
 
 
 class ContrastiveLoss(nn.Module):

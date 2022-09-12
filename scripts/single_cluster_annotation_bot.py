@@ -24,7 +24,6 @@ class Client:
             self.clusters = [json.loads(line) for line in r]
         print("Bot is ready!")
 
-
     def write_result(self, result):
         self.output_file.write(json.dumps({
             "text": self.last_cluster["annotation_doc"]["text"],
@@ -61,6 +60,7 @@ class Client:
             parse_mode="Markdown",
             chat_id=chat_id
         )
+
 
 def main(
     token,

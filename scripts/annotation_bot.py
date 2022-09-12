@@ -89,7 +89,8 @@ class Client:
         first_doc_index = random.randint(0, len(self.docs))
         first_doc = self.docs[first_doc_index]
         neighbors, distances = self.ann_index.get_nns_by_item(first_doc_index, 300, include_distances=True)
-        # distance = 2 * (1-cos)
+
+        # Hint: distance = 2 * (1-cos)
         indices = [i for i, distance in zip(neighbors, distances) if 0.85 <= distance <= 1.02]
         if not indices:
             return self.sample_pair()
