@@ -381,7 +381,8 @@
       },
       "alias": "TJ",
       "issue": "main",
-      "recrawl_time": 300
+      "recrawl_time": 300,
+      "disabled": true
     },
     {
       "name": "radiosvoboda",
