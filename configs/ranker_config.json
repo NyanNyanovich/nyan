@@ -12,8 +12,8 @@
             "issue_name": "tech",
             "min_channels": 2,
             "max_age_minutes": 720,
-            "views_percentile": 0,
-            "higher_views_percentile": 0,
+            "views_percentile": 30,
+            "higher_views_percentile": 30,
             "higher_trigger_age_minutes": 0
         }
     ]

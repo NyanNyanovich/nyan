@@ -1,4 +1,5 @@
 import json
+import shutil
 from datetime import datetime, timezone, timedelta
 
 import scrapy
@@ -82,8 +83,10 @@ class TelegramSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse_channel)
 
     def closed(self, reason):
-        with open(self.fetch_times_path, "w") as w:
+        temp_path = self.fetch_times_path + ".new"
+        with open(temp_path, "w") as w:
             json.dump(self.fetch_times, w)
+        shutil.move(temp_path, self.fetch_times_path)
 
     def parse_channel(self, response):
         url = response.url

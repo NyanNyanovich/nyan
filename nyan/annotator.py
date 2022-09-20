@@ -14,7 +14,8 @@ from nyan.tokenizer import Tokenizer
 
 
 class Annotator:
-    def __init__(self, config_path, channels: Channels):
+    def __init__(self, config_path: str, channels: Channels):
+        assert isinstance(channels, Channels), "Wrong channels argument in Annotator"
         with open(config_path) as r:
             config = json.load(r)
 
