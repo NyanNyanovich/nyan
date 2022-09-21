@@ -137,7 +137,7 @@ def compare_docs():
         for key, pred_value in pred_dict.items():
             canon_value = canon_dict[key]
             if key == "embedding":
-                np.testing.assert_allclose(pred_value, canon_value, rtol=0.05)
+                np.testing.assert_allclose(pred_value, canon_value, rtol=0.1)
                 continue
             assert pred_value == canon_value, f"Diff in '{key}', {pred_value} vs {canon_value}"
     return _compare_docs
