@@ -31,5 +31,10 @@ flake8-simplify == 0.19.3
 flake8-pie == 0.16.0
 pep8-naming == 0.13.1
 
+# Tests
+pytest >= 6.2.5
+pytest-check >= 1.0.9
+
 # Analytics
 wordcloud >= 1.8.1
+
