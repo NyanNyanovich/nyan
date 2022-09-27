@@ -74,7 +74,7 @@ class TelegramSpider(scrapy.Spider):
             channel_name = url.split("/")[-1]
             last_fetch_time = self.fetch_times.get(channel_name, 0)
             recrawl_time = self.channels[channel_name].get("recrawl_time", 0)
-            assert current_ts > last_fetch_time
+            assert current_ts >= last_fetch_time
             if current_ts - last_fetch_time < recrawl_time:
                 print("Skip {}, current ts: {}, last fetch ts: {}, recrawl interval: {}".format(
                     url, current_ts, last_fetch_time, recrawl_time
