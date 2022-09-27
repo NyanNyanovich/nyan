@@ -3,6 +3,8 @@ import os
 from typing import List, Tuple, Dict
 from dataclasses import dataclass
 
+from tqdm import tqdm
+
 from nyan.mongo import get_documents_collection, get_annotated_documents_collection
 from nyan.util import Serializable
 
@@ -74,7 +76,7 @@ def read_annotated_documents_mongo(mongo_config_path, docs):
     collection = get_annotated_documents_collection(mongo_config_path)
     annotated_docs = []
     remaining_docs = []
-    for doc in docs:
+    for doc in tqdm(docs, desc="Reading annotated docs from Mongo"):
         annotated_doc = collection.find_one({"url": doc.url})
         if not annotated_doc:
             remaining_docs.append(doc)
@@ -94,6 +96,11 @@ def read_annotated_documents_mongo(mongo_config_path, docs):
 
 def write_annotated_documents_mongo(mongo_config_path, docs):
     collection = get_annotated_documents_collection(mongo_config_path)
+
+    indices = collection.index_information()
+    if "url_1" not in indices:
+        collection.create_index([("url", 1)], name="url_1")
+
     for doc in docs:
         assert doc.embedding is not None
         assert doc.patched_text is not None
