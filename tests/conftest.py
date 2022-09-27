@@ -3,6 +3,7 @@ from dataclasses import fields
 
 import pytest
 import numpy as np
+import pytest_check as check
 
 from nyan.annotator import Annotator
 from nyan.document import read_documents_file, Document
@@ -132,12 +133,21 @@ def compare_docs():
         canonical_doc: Document,
         is_short: bool = False
     ):
+        purl = predicted_doc.url
+        curl = canonical_doc.url
+        assert purl == curl, f"Different docs: {purl} vs {curl}"
         pred_dict = predicted_doc.asdict(is_short=is_short)
         canon_dict = canonical_doc.asdict(is_short=is_short)
+        diff = {}
         for key, pred_value in pred_dict.items():
             canon_value = canon_dict[key]
             if key == "embedding":
                 np.testing.assert_allclose(pred_value, canon_value, rtol=0.1)
                 continue
-            assert pred_value == canon_value, f"Diff in '{key}', {pred_value} vs {canon_value}"
+            if pred_value != canon_value:
+                diff[key] = (pred_value, canon_value)
+        check.is_false(diff, f"Diff in keys {','.join(diff.keys())} in doc '{curl}'")
+        for key, (pv, cv) in diff.items():
+            check.is_true(False, f"Diff in '{key}': '{pv}' vs canonical '{cv}'")
+        return diff
     return _compare_docs
