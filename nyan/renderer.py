@@ -9,7 +9,7 @@ from statistics import mean
 from jinja2 import Environment, FileSystemLoader
 
 from nyan.clusters import Cluster
-from nyan.util import get_current_ts
+from nyan.util import get_current_ts, ts_to_dt
 
 
 class Renderer:
@@ -24,6 +24,8 @@ class Renderer:
         env = Environment(loader=file_loader)
         self.cluster_template = env.get_template(config["cluster_template"])
         self.ratings_template = None
+        self.tz_offset = config["tz_offset"]
+        self.tz_name = config["tz_name"]
         if "ratings_template" in config:
             self.ratings_template = env.get_template(config["ratings_template"])
 
@@ -50,7 +52,7 @@ class Renderer:
         groups = sorted(groups.items(), key=lambda x: x[0])
 
         first_doc = copy.deepcopy(cluster.first_doc)
-        first_doc.pub_time = datetime.fromtimestamp(first_doc.pub_time + 3 * 3600)
+        first_doc.pub_time = ts_to_dt(first_doc.pub_time, self.tz_offset)
 
         external_link = None
         if cluster.external_links:
@@ -70,7 +72,8 @@ class Renderer:
             emojis=emojis,
             views=views,
             is_important=cluster.is_important,
-            external_link=external_link
+            external_link=external_link,
+            tz_name=self.tz_name
         )
 
     def render_discussion_message(self, doc):
