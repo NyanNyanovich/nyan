@@ -119,7 +119,7 @@ class Daemon:
         else:
             raise AssertionError()
         print("{} docs loaded".format(len(docs)))
-        max_pub_time = ts_to_dt(max([d.pub_time for d in docs]))
+        max_pub_time = ts_to_dt(max([d.pub_time for d in docs])).strftime("%d-%m-%y %H:%M")
         print("Last document: {}".format(max_pub_time))
         return docs
 

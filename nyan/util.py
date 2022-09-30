@@ -1,7 +1,7 @@
 import os
 import json
 import random
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass, asdict, fields
 
 import numpy as np
@@ -26,8 +26,7 @@ def get_current_ts():
 
 
 def ts_to_dt(timestamp, offset=3):
-    dt = datetime.fromtimestamp(timestamp + offset * 3600)
-    return dt.strftime("%d-%m-%y %H:%M")
+    return datetime.fromtimestamp(timestamp, timezone(timedelta(hours=offset)))
 
 
 @dataclass

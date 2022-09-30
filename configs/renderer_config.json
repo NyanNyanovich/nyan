@@ -1,4 +1,6 @@
 {
     "cluster_template": "nyan/templates/cluster.html",
-    "ratings_template": "nyan/templates/ratings.html"
+    "ratings_template": "nyan/templates/ratings.html",
+    "tz_offset": 3,
+    "tz_name": "MSK"
 }
