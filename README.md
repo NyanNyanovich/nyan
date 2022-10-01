@@ -2,11 +2,13 @@
 
 [![Tests Status](https://github.com/NyanNyanovich/nyan/actions/workflows/python.yml/badge.svg)](https://github.com/NyanNyanovich/nyan/actions/workflows/python.yml)
 
-НЯН — автоматический агрегатор разных новостных каналов в Телеграме. НЯН собирает сообщения с других новостных каналов в Телеграме, склеивает похожие сообщения в сюжеты и разбивает источники на 3 типа. Помогает быстро понимать, кто написал новость, и стоит ли ей доверять
+<img width="1189" alt="изображение" src="https://user-images.githubusercontent.com/104140467/193427932-f5b3ecdd-835f-493f-9901-553c03bdff9b.png">
 
-Сам канал: [NyanNews](https://t.me/nyannews)
+НЯН (Nyan) is a news aggregator that scrapes news from different Telegram channels, clusters similar posts, and forms a united feed. All sources are split into several groups, so anyone can understand whether they can trust them.
 
-Подробное описание: [Whitepaper](https://telegra.ph/NYAN-Whitepaper-04-03)
+Channel itslef: [NyanNews](https://t.me/nyannews)
+
+Extensive description (in Russian): [Whitepaper](https://telegra.ph/NYAN-Whitepaper-04-03)
 
 ## Install
 
