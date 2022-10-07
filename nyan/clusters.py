@@ -66,7 +66,11 @@ class Cluster:
         image_doc_count = sum([1 if doc.images else 0 for doc in self.unique_docs])
         doc_count = len(self.unique_docs)
         images = self.annotation_doc.images
-        if images and (image_doc_count / doc_count >= 0.4 or image_doc_count >= 3):
+        if not images:
+            return tuple()
+        if doc_count == 0:
+            return images
+        if image_doc_count / doc_count >= 0.4 or image_doc_count >= 3:
             return images
         return tuple()
 
