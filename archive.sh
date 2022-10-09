@@ -9,7 +9,7 @@ python3 -m scripts.filter_documents data/all_docs.jsonl data/documents.jsonl
 
 cp data/old_clusters.jsonl data/all_clusters.jsonl
 cat data/posted_clusters.jsonl >> data/all_clusters.jsonl
-python3 -m scripts.filter_posted_clusers data/all_clusters.jsonl data/clusters.jsonl
+python3 -m scripts.filter_posted_clusers data/all_clusters.jsonl data/clusters.jsonl data/documents.jsonl
 
 cp channels.json data/channels.json
 rm data/nyan_archive.tar.gz

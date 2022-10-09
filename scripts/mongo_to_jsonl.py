@@ -3,6 +3,8 @@ import json
 
 from pymongo import MongoClient
 
+from nyan.util import get_current_ts
+
 
 def main(
     output_path,
@@ -16,14 +18,25 @@ def main(
     documents_collection_name = config["documents_collection_name"]
     collection = client[database_name][documents_collection_name]
 
-    print(collection.count_documents({}))
+    first_doc = collection.find_one(sort=[("pub_time", 1)])
+    ts_start = first_doc["pub_time"]
+    print(f"Start timestamp: {ts_start}")
+    ts_end = get_current_ts()
+    print(f"End timestamp: {ts_end}")
+    ts_step = 3600 * 48
 
+    ts_current = ts_start
     with open(output_path, "w") as w:
-        documents = list(collection.find({}))
-        documents.sort(key=lambda x: x["pub_time"])
-        for document in documents:
-            document.pop("_id")
-            w.write(json.dumps(document, ensure_ascii=False) + "\n")
+        while ts_current < ts_end:
+            print(ts_end - ts_current)
+            ts_next = ts_current + ts_step
+            documents = list(collection.find({"pub_time": {"$gte": ts_current, "$lt": ts_next}}))
+            documents.sort(key=lambda x: x["pub_time"])
+            for document in documents:
+                document.pop("_id")
+                document.pop("embedding", None)
+                w.write(json.dumps(document, ensure_ascii=False) + "\n")
+            ts_current = ts_next
 
 
 if __name__ == "__main__":
