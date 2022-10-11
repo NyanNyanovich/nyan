@@ -40,10 +40,11 @@ class TelegramClient:
         with open(config_path) as r:
             self.config = json.load(r)
 
+        self.host = self.config.get("host", "https://api.telegram.org")
         timeout = Timeout(
-            connect=self.config.get("connect_timeout", 10.0),
-            read=self.config.get("read_timeout", 10.0),
-            write=self.config.get("write_timeout", 10.0),
+            connect=self.config.get("connect_timeout", 30.0),
+            read=self.config.get("read_timeout", 30.0),
+            write=self.config.get("write_timeout", 30.0),
             pool=self.config.get("pool_timeout", 1.0),
         )
         limits = Limits(
@@ -150,7 +151,7 @@ class TelegramClient:
         issue = self.issues[discussion_message.issue]
         if not issue.discussion_id or not discussion_message.message_id:
             return None
-        url_template = "https://api.telegram.org/bot{}/sendMessage"
+        url_template = self.host + "/bot{}/sendMessage"
         params = {
             "chat_id": issue.discussion_id,
             "text": text,
@@ -161,7 +162,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _send_text(self, text, issue):
-        url_template = "https://api.telegram.org/bot{}/sendMessage"
+        url_template = self.host + "/bot{}/sendMessage"
         params = {
             "chat_id": issue.channel_id,
             "text": text,
@@ -172,7 +173,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _send_photo(self, text, photo, issue):
-        url_template = "https://api.telegram.org/bot{}/sendPhoto"
+        url_template = self.host + "/bot{}/sendPhoto"
         params = {
             "chat_id": issue.channel_id,
             "caption": text,
@@ -183,7 +184,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _send_video(self, text, video, issue):
-        url_template = "https://api.telegram.org/bot{}/sendVideo"
+        url_template = self.host + "/bot{}/sendVideo"
         params = {
             "chat_id": issue.channel_id,
             "caption": text,
@@ -194,7 +195,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _send_photos(self, text, photos, issue):
-        url_template = "https://api.telegram.org/bot{}/sendMediaGroup"
+        url_template = self.host + "/bot{}/sendMediaGroup"
         media = [{
             "type": "photo",
             "media": photo,
@@ -209,7 +210,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _edit_text(self, message_id, text, issue):
-        url_template = "https://api.telegram.org/bot{}/editMessageText"
+        url_template = self.host + "/bot{}/editMessageText"
         params = {
             "chat_id": issue.channel_id,
             "text": text,
@@ -220,7 +221,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _edit_caption(self, message_id, text, issue):
-        url_template = "https://api.telegram.org/bot{}/editMessageCaption"
+        url_template = self.host + "/bot{}/editMessageCaption"
         params = {
             "chat_id": issue.channel_id,
             "message_id": message_id,
@@ -230,7 +231,7 @@ class TelegramClient:
         return self._post(url_template.format(issue.bot_token), params)
 
     def _get_updates(self, issue):
-        url_template = "https://api.telegram.org/bot{}/getUpdates"
+        url_template = self.host + "/bot{}/getUpdates"
         params = {
             "timeout": 10
         }
