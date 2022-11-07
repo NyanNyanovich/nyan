@@ -34,6 +34,8 @@ class Client:
             self.ann_index.add_item(i, doc["embedding"])
         self.ann_index.build(100)
 
+        print("Index loaded!")
+
     def write_result(self, result):
         self.output_file.write(json.dumps({
             "url1": self.last_doc1["url"],
@@ -66,7 +68,7 @@ class Client:
         chat_id = update.effective_chat.id
         self.last_doc1, self.last_doc2, distance = self.sample_pair()
         distance = int(distance * 100.0)
-        text1, text2 = self.last_doc1["text"], self.last_doc2["text"]
+        text1, text2 = self.last_doc1["patched_text"], self.last_doc2["patched_text"]
 
         keyboard = [
             [
@@ -88,13 +90,13 @@ class Client:
     def sample_pair(self):
         first_doc_index = random.randint(0, len(self.docs))
         first_doc = self.docs[first_doc_index]
-        neighbors, distances = self.ann_index.get_nns_by_item(first_doc_index, 300, include_distances=True)
+        neighbors, distances = self.ann_index.get_nns_by_item(first_doc_index, 20, include_distances=True)
 
-        # Hint: distance = 2 * (1-cos)
-        indices = [i for i, distance in zip(neighbors, distances) if 0.85 <= distance <= 1.02]
+        indices = [i for distance, i in sorted(zip(distances, neighbors))][4:]
         if not indices:
             return self.sample_pair()
-        indices = [i for i in indices if abs(self.docs[i]["pub_time"] - first_doc["pub_time"]) < 3600 * 9]
+
+        indices = [i for i in indices if abs(self.docs[i]["pub_time"] - first_doc["pub_time"]) < 3600 * 6]
         if not indices:
             return self.sample_pair()
         second_doc_index = random.choice(indices)
@@ -116,7 +118,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--token", type=str, required=True)
     parser.add_argument("--output-path", type=str, default="data/clustering_markup.jsonl")
-    parser.add_argument("--documents-path", type=str, default="data/docs.jsonl")
+    parser.add_argument("--documents-path", type=str, default="data/docs_embeddings.jsonl")
     parser.add_argument("--username", type=str, required=True)
     args = parser.parse_args()
     main(**vars(args))

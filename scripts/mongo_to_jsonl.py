@@ -8,14 +8,18 @@ from nyan.util import get_current_ts
 
 def main(
     output_path,
-    mongo_config
+    mongo_config,
+    annotated
 ):
     with open(mongo_config) as r:
         config = json.load(r)
 
     client = MongoClient(**config["client"])
     database_name = config["database_name"]
-    documents_collection_name = config["documents_collection_name"]
+    if annotated:
+        documents_collection_name = config["annotated_documents_collection_name"]
+    else:
+        documents_collection_name = config["documents_collection_name"]
     collection = client[database_name][documents_collection_name]
 
     first_doc = collection.find_one(sort=[("pub_time", 1)])
@@ -34,7 +38,6 @@ def main(
             documents.sort(key=lambda x: x["pub_time"])
             for document in documents:
                 document.pop("_id")
-                document.pop("embedding", None)
                 w.write(json.dumps(document, ensure_ascii=False) + "\n")
             ts_current = ts_next
 
@@ -42,6 +45,7 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-path", type=str, default="data/docs.jsonl")
+    parser.add_argument("--annotated", action="store_true")
     parser.add_argument("--mongo-config", type=str, default="configs/mongo_config.json")
     args = parser.parse_args()
     main(**vars(args))

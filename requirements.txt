@@ -38,3 +38,12 @@ pytest-check >= 1.0.9
 # Analytics
 wordcloud >= 1.8.1
 
+# Bots
+python-telegram-bot >= 13.14
+annoy >= 1.17.1
+
+# Toloka
+toloka-kit >= 1.0.1
+crowd-kit >= 1.1.0
+nltk >= 3.7
+pandas >= 1.5.1
