@@ -60,8 +60,13 @@ class TelegramSpider(scrapy.Spider):
         self.fetch_times_path = kwargs.pop("fetch_times")
         with open(self.fetch_times_path) as r:
             self.fetch_times = json.load(r)
+
+        assert "hours" in kwargs
+        hours = int(kwargs.pop("hours"))
+        self.until_ts = int((datetime.now() - timedelta(hours=hours)).timestamp())
+        print("Considering last {} hours".format(hours))
+
         self.html2text = html2text_setup()
-        self.until_ts = int((datetime.now() - timedelta(hours=6)).timestamp())
 
         super().__init__(*args, **kwargs)
 
