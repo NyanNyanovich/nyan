@@ -43,7 +43,6 @@ def main(
             process_batch(batch, w)
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-path", type=str, required=True)

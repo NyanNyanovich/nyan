@@ -75,7 +75,7 @@ def main(
     task_suites = []
     start_index = 0
     while start_index < len(tasks):
-        task_suite = tasks[start_index: start_index+page_size]
+        task_suite = tasks[start_index: start_index + page_size]
         ts = toloka.task_suite.TaskSuite(
             pool_id=pool.id,
             tasks=task_suite,

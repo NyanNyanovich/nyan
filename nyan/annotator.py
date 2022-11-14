@@ -57,8 +57,7 @@ class Annotator:
         return docs
 
     def postprocess(self, docs: List[Document]) -> List[Document]:
-        filtered_docs = [doc for doc in docs if not doc.is_discarded()]
-        return filtered_docs
+        return [doc for doc in docs if not doc.is_discarded()]
 
     def process_channels_info(self, doc):
         channel_id = doc.channel_id.strip().lower()
