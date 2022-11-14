@@ -133,21 +133,22 @@ class Daemon:
                 print("Warning: {} docs from channel {}".format(cnt, channel_id))
 
     def annotate_documents(self, docs, mongo_config_path):
-        old_annotated_docs, remaining_docs = read_annotated_documents_mongo(mongo_config_path, docs)
+        all_annotated_docs, remaining_docs = read_annotated_documents_mongo(mongo_config_path, docs)
         print("{} docs already annotated, {} docs to annotate".format(
-            len(old_annotated_docs), len(remaining_docs))
+            len(all_annotated_docs), len(remaining_docs))
         )
 
-        annotated_docs = self.annotator(remaining_docs)
-        print("{} docs after annotator".format(len(docs)))
+        if remaining_docs:
+            annotated_docs = self.annotator(remaining_docs)
+            print("{} docs annotated".format(len(annotated_docs)))
 
-        write_annotated_documents_mongo(mongo_config_path, annotated_docs)
+            write_annotated_documents_mongo(mongo_config_path, annotated_docs)
+            all_annotated_docs += annotated_docs
 
-        annotated_docs += old_annotated_docs
-        for doc in annotated_docs:
-            assert doc.patched_text is not None
-        print("{} docs before clustering".format(len(annotated_docs)))
-        return annotated_docs
+        final_docs = self.annotator.postprocess(all_annotated_docs)
+        print("{} docs before clustering".format(len(final_docs)))
+
+        return final_docs
 
     def send_cluster(self, cluster, posted_clusters, posted_clusters_path, mongo_config_path):
         posted_cluster = posted_clusters.find_similar(cluster)

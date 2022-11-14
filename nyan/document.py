@@ -45,6 +45,17 @@ class Document(Serializable):
             return True
         return new_doc.text != self.text
 
+    def is_discarded(self):
+        if self.issue is None:
+            return True
+        if self.groups is None:
+            return True
+        if not self.patched_text or len(self.patched_text) < 10:
+            return True
+        if self.category == "not_news":
+            return True
+        return False
+
     def update_meta(self, new_doc):
         self.fetch_time = new_doc.fetch_time
         self.views = new_doc.views

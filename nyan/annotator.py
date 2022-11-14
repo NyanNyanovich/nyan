@@ -2,6 +2,7 @@ import json
 import re
 from typing import List
 from urllib.parse import unquote, urlparse
+import numpy as np
 
 from tqdm import tqdm
 
@@ -43,24 +44,26 @@ class Annotator:
             self.predict_language,
             self.predict_category
         )
-        filtered_docs = list()
+        processed_docs = list()
         for doc in tqdm(docs, desc="Annotator pipeline"):
             for step in pipeline:
                 doc = step(doc)
-                if doc is None:
-                    break
-            if doc is not None:
-                filtered_docs.append(doc)
-        docs = filtered_docs
+            processed_docs.append(doc)
+        docs = processed_docs
 
         if self.embedder is not None:
             docs = self.calc_embeddings(docs)
+
         return docs
+
+    def postprocess(self, docs: List[Document]) -> List[Document]:
+        filtered_docs = [doc for doc in docs if not doc.is_discarded()]
+        return filtered_docs
 
     def process_channels_info(self, doc):
         channel_id = doc.channel_id.strip().lower()
         if channel_id not in self.channels:
-            return None
+            return doc
 
         channel_info = self.channels[channel_id]
         doc.groups = channel_info.groups
@@ -72,13 +75,12 @@ class Annotator:
         return doc
 
     def clean_text(self, doc):
-        text = self.text_processor(doc.text)
-        if not text or len(text) < 10:
-            return None
-        doc.patched_text = text
+        doc.patched_text = self.text_processor(doc.text)
         return doc
 
     def tokenize(self, doc):
+        if not doc.patched_text:
+            return doc
         tokens = self.tokenizer(doc.patched_text)
         tokens = ["{}_{}".format(t.lemma.lower().replace("_", ""), t.pos) for t in tokens]
         doc.tokens = " ".join(tokens)
@@ -102,11 +104,13 @@ class Annotator:
         return doc
 
     def has_obscene(self, doc):
+        if not doc.patched_text:
+            return doc
         doc.has_obscene = self.text_processor.has_obscene(doc.patched_text)
         return doc
 
     def calc_embeddings(self, docs):
-        texts = [d.text for d in docs]
+        texts = [d.patched_text for d in docs]
         embeddings = self.embedder(texts)
         for d, embedding in zip(docs, embeddings):
             d.embedding = embedding.numpy().tolist()
@@ -115,6 +119,8 @@ class Annotator:
     def predict_language(self, doc):
         if not self.lang_detector:
             return doc
+        if not doc.patched_text:
+            return doc
         language, prob = self.lang_detector(doc.patched_text)
         doc.language = language
         return doc
@@ -122,8 +128,8 @@ class Annotator:
     def predict_category(self, doc):
         if not self.cat_detector:
             return doc
+        if not doc.patched_text:
+            return doc
         category, prob = self.cat_detector(doc.patched_text)
         doc.category = category
-        if category == "not_news":
-            return None
         return doc

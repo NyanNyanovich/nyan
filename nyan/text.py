@@ -74,15 +74,17 @@ class TextProcessor:
         self.obscene_substrings = config["obscene_substrings"]
 
     def __call__(self, text):
+        if not text:
+            return ""
         if self.is_bad_text(text):
-            return None
+            return ""
         text = self.remove_bad_text(text)
 
         for step in self.pipeline:
             text = step(text)
 
         if self.is_bad_text(text):
-            return None
+            return ""
         text = self.remove_bad_text(text)
 
         return text.strip()
