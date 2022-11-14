@@ -34,7 +34,7 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-path", type=str, default=None)
-    parser.add_argument("--documents-offset", type=int, default=12 * 3600)
+    parser.add_argument("--documents-offset", type=int, default=24 * 3600)
     parser.add_argument("--channels-info-path", type=str, default="channels.json")
     parser.add_argument("--mongo-config-path", type=str, default=None)
     parser.add_argument("--posted-clusters-path", type=str, default=None)
