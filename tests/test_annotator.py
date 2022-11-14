@@ -12,5 +12,6 @@ def test_annotator_on_snapshot(
     compare_docs: Callable
 ):
     docs = annotator(input_docs)
+    docs = annotator.postprocess(docs)
     for predicted_doc, canonical_doc in zip(docs, output_docs):
         compare_docs(predicted_doc, canonical_doc)

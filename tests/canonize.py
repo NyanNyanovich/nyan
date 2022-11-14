@@ -21,6 +21,7 @@ ranker = Ranker(get_ranker_config_path())
 
 docs = read_documents_file(get_input_path())
 docs = list(annotator(docs))
+docs = annotator.postprocess(docs)
 with open(get_annotator_output_path(), "w") as w:
     for doc in docs:
         w.write(doc.serialize() + "\n")
