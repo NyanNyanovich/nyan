@@ -133,6 +133,7 @@ class TelegramSpider(scrapy.Spider):
 
     def _parse_post(self, post_element, post_url):
         text_path = "div.tgme_widget_message_bubble > div.tgme_widget_message_text"
+        text_alt_path = "div.tgme_widget_message_bubble > div.media_supported_cont > div.tgme_widget_message_text"
         views_path = "span.tgme_widget_message_views::text"
         time_path = "time.time::attr(datetime)"
         images_path = "a.tgme_widget_message_photo_wrap::attr(style)"
@@ -142,6 +143,10 @@ class TelegramSpider(scrapy.Spider):
 
         item = parse_post_url(post_url)
         text_element = post_element.css(text_path)
+        text_alt_element = post_element.css(text_alt_path)
+        if not text_element and text_alt_element:
+            text_element = text_alt_element
+
         if not text_element:
             # Images only
             return None
