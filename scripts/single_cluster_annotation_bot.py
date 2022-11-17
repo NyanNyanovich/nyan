@@ -26,7 +26,7 @@ class Client:
 
     def write_result(self, result):
         self.output_file.write(json.dumps({
-            "text": self.last_cluster["annotation_doc"]["text"],
+            "text": self.last_cluster["annotation_doc"]["patched_text"],
             "url": self.last_cluster["annotation_doc"]["url"],
             "clid": self.last_cluster["clid"],
             "result": result
@@ -53,7 +53,7 @@ class Client:
     def show(self, update: Update, context: CallbackContext):
         chat_id = update.effective_chat.id
         self.last_cluster = random.choice(self.clusters)
-        text = self.last_cluster["annotation_doc"]["text"]
+        text = self.last_cluster["annotation_doc"]["patched_text"]
 
         context.bot.send_message(
             text=f"{text}",
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--token", type=str, required=True)
     parser.add_argument("--output-path", type=str, default="data/single_cluster_markup.jsonl")
-    parser.add_argument("--clusters-path", type=str, default="data/clusters.jsonl")
+    parser.add_argument("--clusters-path", type=str, default="data/posted_clusters.jsonl")
     parser.add_argument("--username", type=str, required=True)
     args = parser.parse_args()
     main(**vars(args))
