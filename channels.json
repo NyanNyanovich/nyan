@@ -913,6 +913,24 @@
       },
       "alias": "СИГНАЛ",
       "issue": "main"
+    },
+    {
+      "name": "astrapress",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "ASTRA",
+      "issue": "main"
+    },
+    {
+      "name": "bild_russian",
+      "groups": {
+        "main": "blue",
+        "tech": "other"
+      },
+      "alias": "BILD",
+      "issue": "main"
     }
   ],
   "emojis": {
