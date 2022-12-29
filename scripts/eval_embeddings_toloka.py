@@ -22,8 +22,6 @@ embedder = Embedder(model_path)
 y_pred, y_true = [], []
 for record in markup:
     result = record["result"]
-    #if record["agreement"] < 0.79:
-    #    continue
     url1 = record["first_url"]
     url2 = record["second_url"]
     embeddings = embedder([record["first_text"], record["second_text"]])

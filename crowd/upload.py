@@ -92,7 +92,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-path", type=str, required=True)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--token", type=str, default="~/.toloka/personal_token")
+    parser.add_argument("--token", type=str, default="~/.toloka/nyan_token")
     parser.add_argument("--existing-markup-path", type=str, default=None)
     parser.add_argument("--honey-path", type=str, required=True)
     parser.add_argument("--template-pool-id", type=int, required=True)
