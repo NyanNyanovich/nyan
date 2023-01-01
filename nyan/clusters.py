@@ -132,7 +132,10 @@ class Cluster:
 
     @property
     def group(self):
-        groups = [doc.groups["main"] for doc in self.docs]
+        groups = [doc.groups["main"] for doc in self.docs if doc.groups]
+        if not groups:
+            return None
+
         groups_count = Counter(groups)
 
         all_count = len(groups)
