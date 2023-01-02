@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-fields", type=str, default="first_url,second_url,first_text,second_text")
     parser.add_argument("--res-field", type=str, default="result")
-    parser.add_argument("--token-path", type=str, default="~/.toloka/personal_token")
+    parser.add_argument("--token-path", type=str, default="~/.toloka/nyan_token")
     parser.add_argument("--output-path", type=str, required=True)
     parser.add_argument("--pools-path", type=str, required=True)
     args = parser.parse_args()
