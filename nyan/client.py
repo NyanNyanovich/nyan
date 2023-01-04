@@ -72,7 +72,7 @@ class TelegramClient:
         photos: Tuple[str] = tuple(),
         videos: Tuple[str] = tuple()
     ) -> MessageId:
-        if issue_name not in self.issue:
+        if issue_name not in self.issues:
             print(f"Missing issue '{issue_name}' in client config")
             return None
         issue = self.issues[issue_name]
