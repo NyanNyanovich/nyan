@@ -153,7 +153,12 @@ class Cluster:
         if self.message:
             return self.message.issue
         issues = Counter([doc.issue for doc in self.docs])
-        return issues.most_common(1)[0][0]
+        max_cnt = issues.most_common(1)[0][1]
+        best_issues = [issue for issue, cnt in issues.items() if cnt == max_cnt]
+        if len(best_issues) == 1:
+            return best_issues[0]
+        best_issues.remove("main")
+        return best_issues[0]
 
     def asdict(self):
         docs = [d.asdict(is_short=True) for d in self.docs]

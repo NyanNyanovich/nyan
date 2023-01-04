@@ -22,7 +22,8 @@
       "name": "rbc_news",
       "groups": {
         "main": "purple",
-        "tech": "other"
+        "tech": "other",
+        "economy": "economy"
       },
       "alias": "РБК",
       "issue": "main"
@@ -397,7 +398,8 @@
       "name": "vcnews",
       "groups": {
         "main": "purple",
-        "tech": "tech"
+        "tech": "tech",
+        "economy": "economy"
       },
       "alias": "VC",
       "issue": "main",
@@ -493,7 +495,8 @@
       "name": "forbesrussia",
       "groups": {
         "main": "purple",
-        "tech": "other"
+        "tech": "other",
+        "economy": "economy"
       },
       "alias": "Forbes",
       "issue": "main",
@@ -503,7 +506,8 @@
       "name": "thebell_io",
       "groups": {
         "main": "blue",
-        "tech": "other"
+        "tech": "other",
+        "economy": "economy"
       },
       "alias": "The Bell",
       "issue": "main",
@@ -849,11 +853,10 @@
     {
       "name": "fanimani_official",
       "groups": {
-        "main": "purple",
-        "tech": "other"
+        "economy": "economy"
       },
       "alias": "Фанимани Офишиал",
-      "issue": "main",
+      "issue": "economy",
       "recrawl_time": 300
     },
     {
@@ -869,11 +872,10 @@
     {
       "name": "kojournal",
       "groups": {
-        "main": "purple",
-        "tech": "other"
+        "economy": "economy"
       },
       "alias": "Журнал «Компания»",
-      "issue": "main",
+      "issue": "economy",
       "recrawl_time": 300
     },
     {
@@ -931,6 +933,69 @@
       },
       "alias": "BILD",
       "issue": "main"
+    },
+    {
+      "name": "centralbank_russia",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Банк России",
+      "issue": "economy",
+      "recrawl_time": 600
+    },
+    {
+      "name": "selfinvestor",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Сам ты инвестор!",
+      "issue": "economy",
+      "recrawl_time": 300
+    },
+    {
+      "name": "banksta",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Банкста",
+      "issue": "economy",
+      "recrawl_time": 300
+    },
+    {
+      "name": "rusven",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Русский венчур",
+      "issue": "economy",
+      "recrawl_time": 600
+    },
+    {
+      "name": "golosameriki",
+      "groups": {
+        "main": "blue"
+      },
+      "alias": "Голос Америки",
+      "issue": "main",
+      "recrawl_time": 300
+    },
+    {
+      "name": "govorit_nemoskva",
+      "groups": {
+        "main": "blue"
+      },
+      "alias": "Говорит НеМосква",
+      "issue": "main",
+      "recrawl_time": 300
+    },
+    {
+      "name": "ru3dnews",
+      "groups": {
+        "tech": "tech"
+      },
+      "alias": "3DNews",
+      "issue": "tech",
+      "recrawl_time": 600
     }
   ],
   "emojis": {
@@ -938,6 +1003,12 @@
     "blue": "🌎",
     "purple": "⚖️",
     "tech": "💻",
+    "economy":"💰",
     "other": "📰"
+  },
+  "default_groups": {
+    "main": "purple",
+    "tech": "other",
+    "economy": "other"
   }
 }
