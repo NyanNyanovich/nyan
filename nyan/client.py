@@ -123,6 +123,9 @@ class TelegramClient:
             print("Update error:", response.text)
 
     def update_discussion_mapping(self, issue_name: str):
+        if issue_name not in self.issues:
+            print(f"Missing issue '{issue_name}' in client config")
+            return None
         issue = self.issues[issue_name]
         updates = self._get_updates(issue)
         if not updates:
