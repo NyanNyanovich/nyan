@@ -50,7 +50,7 @@ class Document(Serializable):
             return True
         if self.groups is None:
             return True
-        if not self.patched_text or len(self.patched_text) < 10:
+        if not self.patched_text or len(self.patched_text) < 12:
             return True
         return self.category == "not_news"
 

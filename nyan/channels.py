@@ -24,10 +24,14 @@ class Channels:
         with open(path) as r:
             config = json.load(r)
         emojis = config["emojis"]
+        default_groups = config["default_groups"]
         for channel in config["channels"]:
             channel = Channel.fromdict(channel)
             assert channel.groups
             assert channel.issue
+            for issue, group in default_groups.items():
+                if issue not in channel.groups:
+                    channel.groups[issue] = group
             channel.emojis = {issue: emojis[group] for issue, group in channel.groups.items()}
             self.add(channel)
 

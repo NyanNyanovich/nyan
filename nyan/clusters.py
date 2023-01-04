@@ -132,7 +132,10 @@ class Cluster:
 
     @property
     def group(self):
-        groups = [doc.groups["main"] for doc in self.docs]
+        groups = [doc.groups["main"] for doc in self.docs if doc.groups]
+        if not groups:
+            return None
+
         groups_count = Counter(groups)
 
         all_count = len(groups)
@@ -150,7 +153,12 @@ class Cluster:
         if self.message:
             return self.message.issue
         issues = Counter([doc.issue for doc in self.docs])
-        return issues.most_common(1)[0][0]
+        max_cnt = issues.most_common(1)[0][1]
+        best_issues = [issue for issue, cnt in issues.items() if cnt == max_cnt]
+        if len(best_issues) == 1:
+            return best_issues[0]
+        best_issues.remove("main")
+        return best_issues[0]
 
     def asdict(self):
         docs = [d.asdict(is_short=True) for d in self.docs]
@@ -266,6 +274,8 @@ class Clusters:
 
     def save_to_mongo(self, mongo_config_path, only_new=True):
         collection = get_clusters_collection(mongo_config_path)
+        if not self.clid2cluster:
+            return 0
         max_cluster_fetch_time = max([cl.fetch_time for cl in self.clid2cluster.values()])
         saved_count = 0
         for clid, cluster in sorted(self.clid2cluster.items()):
