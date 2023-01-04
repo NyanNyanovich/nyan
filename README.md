@@ -8,9 +8,12 @@
 
 НЯН (Nyan) is a news aggregator that scrapes news from different Telegram channels, clusters similar posts, and forms a united feed. All sources are split into several groups, so anyone can understand whether they can trust them.
 
-Channel itslef: [NyanNews](https://t.me/nyannews)
+Channel itself: [NyanNews](https://t.me/nyannews)
 
 Extensive description (in Russian): [Whitepaper](https://telegra.ph/NYAN-Whitepaper-04-03)
+
+Other channels with the same engine:
+* [Up News](https://t.me/upnewsua)
 
 ## Install
 
