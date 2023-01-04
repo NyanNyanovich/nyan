@@ -9,7 +9,7 @@ from nyan.mongo import get_documents_collection, get_annotated_documents_collect
 from nyan.util import Serializable
 
 
-CURRENT_VERSION = 1
+CURRENT_VERSION = 2
 
 
 @dataclass
