@@ -274,6 +274,8 @@ class Clusters:
 
     def save_to_mongo(self, mongo_config_path, only_new=True):
         collection = get_clusters_collection(mongo_config_path)
+        if not self.clid2cluster:
+            return 0
         max_cluster_fetch_time = max([cl.fetch_time for cl in self.clid2cluster.values()])
         saved_count = 0
         for clid, cluster in sorted(self.clid2cluster.items()):
