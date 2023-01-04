@@ -996,6 +996,15 @@
       "alias": "3DNews",
       "issue": "tech",
       "recrawl_time": 600
+    },
+    {
+      "name": "tginfo",
+      "groups": {
+        "tech": "tech"
+      },
+      "alias": "Telegram Info",
+      "issue": "tech",
+      "recrawl_time": 300
     }
   ],
   "emojis": {
