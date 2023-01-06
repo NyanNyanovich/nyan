@@ -92,6 +92,6 @@
             "хуй", "пизд", "рашк", "хохол", "хохл", "ХУЙ", "ПИЗД", "пздц", "мудозвон", " орки ", "Хуй", "Орки", "гандон", "гондон"
         ]
     },
-    "lang_detector": "models/lang_detect_v10.ftz",
+    "lang_detector": "models/lid.176.bin",
     "cat_detector": "models/ru_cat_v5.ftz"
 }
