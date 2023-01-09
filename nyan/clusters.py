@@ -157,7 +157,8 @@ class Cluster:
         best_issues = [issue for issue, cnt in issues.items() if cnt == max_cnt]
         if len(best_issues) == 1:
             return best_issues[0]
-        best_issues.remove("main")
+        if "main" in best_issues:
+            best_issues.remove("main")
         return best_issues[0]
 
     def asdict(self):
