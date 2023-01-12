@@ -1005,6 +1005,33 @@
       "alias": "Telegram Info",
       "issue": "tech",
       "recrawl_time": 300
+    },
+    {
+      "name": "papagaz",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Газ-Батюшка",
+      "issue": "economy",
+      "recrawl_time": 600
+    },
+    {
+      "name": "economika",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Экономика",
+      "issue": "economy",
+      "recrawl_time": 300
+    },
+    {
+      "name": "investorbiz",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Инвест ревью",
+      "issue": "economy",
+      "recrawl_time": 300
     }
   ],
   "emojis": {
