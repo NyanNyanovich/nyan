@@ -12,6 +12,7 @@ from nyan.ranker import Ranker
 from nyan.renderer import Renderer
 from nyan.channels import Channels
 from nyan.clusters import Clusters
+from nyan.util import read_jsonl
 
 
 def get_channels_info_path() -> str:
@@ -151,3 +152,8 @@ def compare_docs():
             check.is_true(False, f"Diff in '{key}': '{pv}' vs canonical '{cv}'")
         return diff
     return _compare_docs
+
+
+@pytest.fixture
+def clip_data() -> List[Dict[str, str]]:
+    return list(read_jsonl("tests/data/clip.jsonl"))

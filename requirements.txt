@@ -47,3 +47,6 @@ toloka-kit >= 1.0.1
 crowd-kit >= 1.1.0
 nltk >= 3.7
 pandas >= 1.5.1
+
+# Images
+pillow == 9.2.0

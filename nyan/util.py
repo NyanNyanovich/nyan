@@ -1,6 +1,7 @@
 import os
 import json
 import random
+from typing import List, Any
 from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass, asdict, fields
 
@@ -12,6 +13,8 @@ def read_jsonl(file_path):
     assert os.path.exists(file_path)
     with open(file_path) as r:
         for line in r:
+            if not line:
+                continue
             yield json.loads(line)
 
 
@@ -67,3 +70,12 @@ def set_random_seed(seed):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
     torch.use_deterministic_algorithms(True)
+
+
+def gen_batch(records: List[Any], batch_size: int):
+    batch_start = 0
+    while batch_start < len(records):
+        batch_end = batch_start + batch_size
+        batch = records[batch_start: batch_end]
+        batch_start = batch_end
+        yield batch
