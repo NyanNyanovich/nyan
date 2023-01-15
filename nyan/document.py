@@ -36,7 +36,7 @@ class Document(Serializable):
     category: str = None
     tokens: str = None
     embedding: List[float] = None
-    embedded_images: List[Dict[str, Any]] = None
+    embedded_images: List[Dict[str, Any]] = []
 
     version: int = CURRENT_VERSION
 
