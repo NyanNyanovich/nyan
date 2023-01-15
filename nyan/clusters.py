@@ -63,9 +63,9 @@ class Cluster:
 
     @cached_property
     def images(self):
-        image_doc_count = sum([1 if doc.images else 0 for doc in self.unique_docs])
+        image_doc_count = sum([1 if doc.embedded_images else 0 for doc in self.unique_docs])
         doc_count = len(self.unique_docs)
-        images = self.annotation_doc.images
+        images = [i["url"] for i in self.annotation_doc.embedded_images]
         if not images:
             return tuple()
         if doc_count == 0:

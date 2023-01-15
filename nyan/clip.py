@@ -1,5 +1,6 @@
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Any
 
+import os
 import numpy as np
 import requests
 import torch
@@ -20,7 +21,8 @@ class ClipEmbedder:
         normalize: bool = True,
         image_batch_size: int = 16,
         text_batch_size: int = 32,
-        device: str = DEVICE
+        device: str = DEVICE,
+        enable_tqdm: bool = False
     ):
         self.model_name = model_name
         self.model = CLIPModel.from_pretrained(model_name).to(device)
@@ -28,11 +30,26 @@ class ClipEmbedder:
         self.image_batch_size = image_batch_size
         self.text_batch_size = text_batch_size
         self.normalize = normalize
+        self.enable_tqdm = enable_tqdm
 
-    def embed_images(self, images_paths: List[str]) -> np.ndarray:
+    def fetch_images(self, urls: List[str]) -> List[Dict[str, Any]]:
+        images = []
+        for url in urls:
+            if not url.startswith("http://") and not url.startswith("https://"):
+                continue
+            response = requests.get(url, stream=True)
+            if response.status_code != 200:
+                continue
+            images.append({
+                "url": url,
+                "content": Image.open(response.raw)
+            })
+        return images
+
+    def embed_images(self, images: List[Image.Image]) -> np.ndarray:
         return self._calc_embeddings(
             func=self._process_images_batch,
-            inputs=images_paths,
+            inputs=images,
             batch_size=self.image_batch_size,
             desc="CLIP image embeddings"
         )
@@ -48,13 +65,14 @@ class ClipEmbedder:
     def _calc_embeddings(
         self,
         func: Callable,
-        inputs: List[str],
+        inputs: List[Any],
         batch_size: int,
         desc: str
     ) -> np.ndarray:
         embeddings = torch.zeros((len(inputs), self.model.projection_dim))
         total = len(inputs) // batch_size + 1
-        for batch_num, batch in tqdm(enumerate(gen_batch(inputs, batch_size)), total=total, desc=desc):
+        gen = enumerate(gen_batch(inputs, batch_size))
+        for batch_num, batch in tqdm(gen, total=total, desc=desc, disable=not self.enable_tqdm):
             with torch.no_grad():
                 batch_embeddings = func(batch)
             start_index = batch_num * batch_size
@@ -64,12 +82,7 @@ class ClipEmbedder:
             embeddings /= embeddings.norm(dim=-1, keepdim=True)
         return embeddings.numpy()
 
-    def _process_images_batch(self, images_paths: List[str]) -> Dict[str, torch.tensor]:
-        images = []
-        for path in images_paths:
-            if path.startswith("http://") or path.startswith("https://"):
-                path = requests.get(path, stream=True).raw
-            images.append(Image.open(path))
+    def _process_images_batch(self, images: List[Image.Image]) -> Dict[str, torch.tensor]:
         inputs = self.processor(images=images, return_tensors="pt")
         inputs = {k: v.to(self.model.device) for k, v in inputs.items()}
         return self.model.get_image_features(**inputs)

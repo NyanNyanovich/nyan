@@ -11,6 +11,7 @@ from nyan.document import Document
 from nyan.fasttext import FasttextClassifier
 from nyan.labse import Embedder
 from nyan.text import TextProcessor
+from nyan.image import ImageProcessor
 from nyan.tokenizer import Tokenizer
 
 
@@ -22,6 +23,7 @@ class Annotator:
 
         self.embedder = Embedder(config["model_name"])
         self.text_processor = TextProcessor(config["text_processor"])
+        self.image_processor = ImageProcessor(config["image_processor"])
         self.tokenizer = Tokenizer(**config.get("tokenizer", {}))
 
         self.lang_detector = None
@@ -42,7 +44,8 @@ class Annotator:
             self.normalize_links,
             self.has_obscene,
             self.predict_language,
-            self.predict_category
+            self.predict_category,
+            self.process_images
         )
         processed_docs = list()
         for doc in tqdm(docs, desc="Annotator pipeline"):
@@ -131,4 +134,8 @@ class Annotator:
             return doc
         category, prob = self.cat_detector(doc.patched_text)
         doc.category = category
+        return doc
+
+    def process_images(self, doc):
+        doc.embedded_images = self.image_processor(doc.images)
         return doc

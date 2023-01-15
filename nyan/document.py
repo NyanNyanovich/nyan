@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Any
 from dataclasses import dataclass
 
 from tqdm import tqdm
@@ -9,7 +9,7 @@ from nyan.mongo import get_documents_collection, get_annotated_documents_collect
 from nyan.util import Serializable
 
 
-CURRENT_VERSION = 2
+CURRENT_VERSION = 3
 
 
 @dataclass
@@ -20,24 +20,25 @@ class Document(Serializable):
     views: int
     pub_time: int
     text: str = None
-    patched_text: str = None
-    has_obscene: bool = False
-    channel_title: str = ""
     fetch_time: int = None
-    language: str = None
-    category: str = None
-    groups: Dict[str, str] = None
-    issue: str = None
-    tokens: str = None
-    embedding: List[float] = None
-    images: List[str] = None
+    images: List[str] = tuple()
     links: List[str] = tuple()
     videos: List[str] = tuple()
     reply_to: str = None
     forward_from: str = None
-    version: int = CURRENT_VERSION
 
-    not_serializing: Tuple[str] = tuple()
+    channel_title: str = ""
+    has_obscene: bool = False
+    patched_text: str = None
+    groups: Dict[str, str] = None
+    issue: str = None
+    language: str = None
+    category: str = None
+    tokens: str = None
+    embedding: List[float] = None
+    embedded_images: List[Dict[str, Any]] = None
+
+    version: int = CURRENT_VERSION
 
     def is_reannotation_needed(self, new_doc):
         assert new_doc.url == self.url
