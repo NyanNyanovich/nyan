@@ -23,8 +23,11 @@ class Annotator:
 
         self.embedder = Embedder(config["model_name"])
         self.text_processor = TextProcessor(config["text_processor"])
-        self.image_processor = ImageProcessor(config["image_processor"])
         self.tokenizer = Tokenizer(**config.get("tokenizer", {}))
+
+        self.image_processor = None
+        if "image_processor" in config:
+            self.image_processor = ImageProcessor(config["image_processor"])
 
         self.lang_detector = None
         if "lang_detector" in config:
@@ -137,5 +140,7 @@ class Annotator:
         return doc
 
     def process_images(self, doc):
+        if not self.image_processor:
+            return doc
         doc.embedded_images = self.image_processor(doc.images)
         return doc
