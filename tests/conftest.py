@@ -9,6 +9,7 @@ from nyan.annotator import Annotator
 from nyan.document import read_documents_file, Document
 from nyan.clusterer import Clusterer
 from nyan.ranker import Ranker
+from nyan.fasttext import FasttextClassifier
 from nyan.renderer import Renderer
 from nyan.channels import Channels
 from nyan.clusters import Clusters
@@ -49,6 +50,11 @@ def get_annotator_output_path() -> str:
 @pytest.fixture
 def annotator_output_path() -> str:
     return get_annotator_output_path()
+
+
+@pytest.fixture
+def lang_detector() -> FasttextClassifier:
+    return FasttextClassifier("models/lid.176.bin")
 
 
 def get_ranker_output_path() -> str:
