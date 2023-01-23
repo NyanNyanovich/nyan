@@ -45,14 +45,12 @@ class Daemon:
         self,
         input_path,
         mongo_config_path,
-        documents_offset,
         posted_clusters_path
     ):
         while True:
             self.__call__(
                 input_path,
                 mongo_config_path,
-                documents_offset,
                 posted_clusters_path
             )
 
@@ -60,7 +58,6 @@ class Daemon:
         self,
         input_path,
         mongo_config_path,
-        documents_offset,
         posted_clusters_path
     ):
         assert input_path and not mongo_config_path or mongo_config_path and not input_path
@@ -69,8 +66,10 @@ class Daemon:
             return
 
         print("===== New iteration =====")
-        posted_clusters = self.load_posted_clusters(mongo_config_path, posted_clusters_path)
+        clusters_offset = self.config["clusters_offset"]
+        posted_clusters = self.load_posted_clusters(mongo_config_path, posted_clusters_path, clusters_offset)
 
+        documents_offset = self.config["documents_offset"]
         try:
             docs = self.read_documents(input_path, documents_offset, mongo_config_path)
         except Exception as e:
@@ -106,11 +105,11 @@ class Daemon:
             print("{} clusters saved to Mongo".format(saved_count))
             print()
 
-    def load_posted_clusters(self, mongo_config_path, posted_clusters_path):
+    def load_posted_clusters(self, mongo_config_path, posted_clusters_path, clusters_offset):
         posted_clusters = Clusters()
         if mongo_config_path:
             print("Reading clusters from Mongo")
-            posted_clusters = Clusters.load_from_mongo(mongo_config_path)
+            posted_clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), clusters_offset)
         elif posted_clusters_path and os.path.exists(posted_clusters_path):
             print("Reading clusters from file")
             posted_clusters = Clusters.load(posted_clusters_path)

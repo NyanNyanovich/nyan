@@ -303,9 +303,9 @@ class Clusters:
         return saved_count
 
     @classmethod
-    def load_from_mongo(cls, mongo_config_path):
+    def load_from_mongo(cls, mongo_config_path, current_ts, offset):
         collection = get_clusters_collection(mongo_config_path)
-        clusters_dicts = list(collection.find({}))
+        clusters_dicts = list(collection.find({"create_time": {"$gte": current_ts - offset}}))
         clusters = cls()
         for cluster_dict in clusters_dicts:
             clusters.add(Cluster.fromdict(cluster_dict))
