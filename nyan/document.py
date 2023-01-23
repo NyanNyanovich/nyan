@@ -64,6 +64,7 @@ class Document(Serializable):
         if is_short:
             record.pop("text")
             record.pop("embedding")
+            record.pop("embedded_images")
         return record
 
 
