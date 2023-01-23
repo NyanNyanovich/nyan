@@ -20,10 +20,13 @@ def main(
     channels = Channels(channels_path)
     annotator = Annotator(annotator_config, channels)
     annotator.embedder = None
+    annotator.image_processor = None
 
     def process_batch(batch, fh):
         clean_docs = annotator(batch)
         for doc in clean_docs:
+            if doc.is_discarded():
+                continue
             doc = doc.asdict()
             for field in rm_fields:
                 doc.pop(field, None)
