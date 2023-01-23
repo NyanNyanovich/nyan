@@ -56,6 +56,10 @@ class Cluster:
     def views_per_hour(self):
         return int(self.views / (self.age / 3600))
 
+    @property
+    def embedding(self):
+        return self.annotation_doc.embedding
+
     @cached_property
     def pub_time_percentile(self):
         timestamps = sorted([d.pub_time for d in self.docs])
@@ -163,7 +167,7 @@ class Cluster:
 
     def asdict(self):
         docs = [d.asdict(is_short=True) for d in self.docs]
-        annotation_doc = self.annotation_doc.asdict(is_short=True)
+        annotation_doc = self.annotation_doc.asdict()
         first_doc = self.first_doc.asdict(is_short=True)
         return {
             "clid": self.clid,
@@ -218,6 +222,18 @@ class Clusters:
             return None
         message = Counter(messages).most_common()[0][0]
         return self.message2cluster.get(message)
+
+    def get_embedded_clusters(self, current_ts, issue):
+        filtered_clusters = []
+        for cluster in self.clid2cluster.values():
+            if not cluster.embedding or not cluster.message:
+                continue
+            if abs(cluster.pub_time - current_ts) > 24 * 3600:
+                continue
+            if cluster.issue != issue:
+                continue
+            filtered_clusters.append(cluster)
+        return filtered_clusters
 
     def add(self, cluster):
         if cluster.clid is None:

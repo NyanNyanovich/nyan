@@ -70,7 +70,8 @@ class TelegramClient:
         text: str,
         issue_name: str,
         photos: Tuple[str] = tuple(),
-        videos: Tuple[str] = tuple()
+        videos: Tuple[str] = tuple(),
+        reply_to: int = None
     ) -> MessageId:
         if issue_name not in self.issues:
             print(f"Missing issue '{issue_name}' in client config")
@@ -78,13 +79,13 @@ class TelegramClient:
         issue = self.issues[issue_name]
         response = None
         if len(photos) == 1:
-            response = self._send_photo(text, photos[0], issue=issue)
+            response = self._send_photo(text, photos[0], issue=issue, reply_to=reply_to)
         elif len(photos) > 1:
-            response = self._send_photos(text, photos, issue=issue)
+            response = self._send_photos(text, photos, issue=issue, reply_to=reply_to)
         elif len(videos) >= 1:
-            response = self._send_video(text, videos[0], issue=issue)
+            response = self._send_video(text, videos[0], issue=issue, reply_to=reply_to)
         else:
-            response = self._send_text(text, issue=issue)
+            response = self._send_text(text, issue=issue, reply_to=reply_to)
 
         print("Send status code:", response.status_code)
         if response.status_code == 400 and "description" in response.text:
@@ -167,7 +168,7 @@ class TelegramClient:
         }
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_text(self, text, issue):
+    def _send_text(self, text, issue, reply_to = None):
         url_template = self.host + "/bot{}/sendMessage"
         params = {
             "chat_id": issue.channel_id,
@@ -176,9 +177,12 @@ class TelegramClient:
             "disable_web_page_preview": True,
             "disable_notification": True
         }
+        if reply_to:
+            params["reply_to_message_id"] = reply_to
+            params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_photo(self, text, photo, issue):
+    def _send_photo(self, text, photo, issue, reply_to = None):
         url_template = self.host + "/bot{}/sendPhoto"
         params = {
             "chat_id": issue.channel_id,
@@ -187,9 +191,12 @@ class TelegramClient:
             "parse_mode": "html",
             "disable_notification": True
         }
+        if reply_to:
+            params["reply_to_message_id"] = reply_to
+            params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_video(self, text, video, issue):
+    def _send_video(self, text, video, issue, reply_to = None):
         url_template = self.host + "/bot{}/sendVideo"
         params = {
             "chat_id": issue.channel_id,
@@ -198,9 +205,12 @@ class TelegramClient:
             "parse_mode": "html",
             "disable_notification": True
         }
+        if reply_to:
+            params["reply_to_message_id"] = reply_to
+            params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_photos(self, text, photos, issue):
+    def _send_photos(self, text, photos, issue, reply_to = None):
         url_template = self.host + "/bot{}/sendMediaGroup"
         media = [{
             "type": "photo",
@@ -213,6 +223,9 @@ class TelegramClient:
             "disable_notification": True,
             "media": json.dumps(media)
         }
+        if reply_to:
+            params["reply_to_message_id"] = reply_to
+            params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
     def _edit_text(self, message_id, text, issue):

@@ -13,15 +13,17 @@ def main(
     ranker_config_path,
     channels_info_path,
     renderer_config_path,
-    mongo_config_path
+    mongo_config_path,
+    daemon_config_path
 ):
     daemon = Daemon(
-        client_config_path,
-        annotator_config_path,
-        clusterer_config_path,
-        ranker_config_path,
-        channels_info_path,
-        renderer_config_path
+        client_config_path=client_config_path,
+        annotator_config_path=annotator_config_path,
+        clusterer_config_path=clusterer_config_path,
+        ranker_config_path=ranker_config_path,
+        channels_info_path=channels_info_path,
+        renderer_config_path=renderer_config_path,
+        daemon_config_path=daemon_config_path
     )
     daemon.run(
         input_path,
@@ -43,5 +45,6 @@ if __name__ == "__main__":
     parser.add_argument("--clusterer-config-path", type=str, default="configs/clusterer_config.json")
     parser.add_argument("--renderer-config-path", type=str, default="configs/renderer_config.json")
     parser.add_argument("--ranker-config-path", type=str, default="configs/ranker_config.json")
+    parser.add_argument("--daemon-config-path", type=str, default="configs/daemon_config.json")
     args = parser.parse_args()
     main(**vars(args))

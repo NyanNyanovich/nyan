@@ -1,8 +1,11 @@
 import argparse
 import os
+import json
 from collections import Counter
 from time import sleep
 from datetime import datetime, timezone
+
+from sklearn.metrics.pairwise import cosine_similarity
 
 from nyan.annotator import Annotator
 from nyan.client import TelegramClient
@@ -24,7 +27,8 @@ class Daemon:
         clusterer_config_path,
         ranker_config_path,
         channels_info_path,
-        renderer_config_path
+        renderer_config_path,
+        daemon_config_path
     ):
         self.client = TelegramClient(client_config_path)
         self.channels = Channels(channels_info_path)
@@ -32,6 +36,10 @@ class Daemon:
         self.clusterer = Clusterer(clusterer_config_path)
         self.renderer = Renderer(renderer_config_path, self.channels)
         self.ranker = Ranker(ranker_config_path)
+
+        assert os.path.exists(daemon_config_path)
+        with open(daemon_config_path) as r:
+            self.config = json.load(r)
 
     def run(
         self,
@@ -151,6 +159,9 @@ class Daemon:
         return final_docs
 
     def send_cluster(self, cluster, posted_clusters, posted_clusters_path, mongo_config_path):
+        sleep_time = self.config["sleep_time"]
+        max_time_updated = self.config["max_time_updated"]
+
         posted_cluster = posted_clusters.find_similar(cluster)
         if posted_cluster:
             message = posted_cluster.message
@@ -163,11 +174,11 @@ class Daemon:
                     discussion_text = self.renderer.render_discussion_message(doc)
                     self.client.send_discussion_message(discussion_text, discussion_message)
                     new_docs_pub_time = max(doc.pub_time, new_docs_pub_time)
-                    sleep(0.3)
+                    sleep(sleep_time)
 
             current_ts = get_current_ts()
             time_diff = abs(current_ts - posted_cluster.pub_time_percentile)
-            if time_diff < 3600 * 3 and posted_cluster.changed():
+            if time_diff < max_time_updated and posted_cluster.changed():
                 cluster_text = self.renderer.render_cluster(posted_cluster)
                 print("Update cluster {} at {}: {}".format(
                     message.message_id, message.issue, posted_cluster.cropped_title
@@ -186,7 +197,15 @@ class Daemon:
 
         issue_name = cluster.issue
         self.client.update_discussion_mapping(issue_name)
-        message = self.client.send_message(cluster_text, issue_name, photos=cluster.images, videos=cluster.videos)
+
+        reply_to = self.calc_reply_to(cluster, posted_clusters)
+        message = self.client.send_message(
+            cluster_text,
+            issue_name,
+            photos=cluster.images,
+            videos=cluster.videos,
+            reply_to=reply_to
+        )
         if message is None:
             return
 
@@ -207,6 +226,27 @@ class Daemon:
         for doc in cluster.docs:
             discussion_text = self.renderer.render_discussion_message(doc)
             self.client.send_discussion_message(discussion_text, discussion_message)
-            sleep(0.3)
+            sleep(sleep_time)
         print()
         return cluster
+
+    def calc_reply_to(self, cluster, posted_clusters):
+        threshold = float(self.config["related_threshold"])
+
+        current_ts = get_current_ts()
+        clusters = posted_clusters.get_embedded_clusters(current_ts, cluster.issue)
+        if not clusters:
+            return None
+
+        pivot_embedding = [cluster.annotation_doc.embedding]
+        embeddings = [cl.embedding for cl in clusters]
+        sims = cosine_similarity(pivot_embedding, embeddings)[0]
+
+        max_index = sims.argmax()
+        max_sim = sims[max_index]
+        best_cluster = clusters[max_index]
+        print("Closest cluster:", max_sim, cluster.cropped_title, best_cluster.cropped_title)
+        if max_sim < threshold:
+            return None
+
+        return best_cluster.message.message_id
