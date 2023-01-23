@@ -12,7 +12,31 @@ with open(input_path) as r, open(output_path, "w") as w, open(docs_path, "r") as
     docs = [json.loads(line) for line in df]
     url2doc = {doc["url"]: doc for doc in docs}
     clusters = [json.loads(line) for line in r]
-    clusters.sort(key=lambda x: min([doc["pub_time"] for doc in x["docs"]]))
+
+    filtered_clusters = []
+    seen = set()
+    for cluster in clusters:
+        if isinstance(cluster["annotation_doc"], str):
+            url = cluster["annotation_doc"]
+            if url not in url2doc:
+                continue
+            cluster["annotation_doc"] = url2doc[url]
+
+            url = cluster["first_doc"]
+            if url not in url2doc:
+                continue
+            cluster["first_doc"] = url2doc[url]
+
+            cluster["docs"] = [url2doc[url] for url in cluster["docs"] if url in url2doc]
+
+        url = cluster["annotation_doc"]["url"]
+        if url not in url2doc or url in seen:
+            continue
+        seen.add(url)
+        filtered_clusters.append(cluster)
+    clusters = filtered_clusters
+
+    clusters.sort(key=lambda x: x["first_doc"]["pub_time"])
     for cluster in tqdm(clusters):
         fixed_docs = []
         for doc in cluster["docs"]:
