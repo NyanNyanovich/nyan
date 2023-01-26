@@ -91,8 +91,9 @@ class TelegramClient:
         if response.status_code == 400 and "description" in response.text:
             response_dict = response.json()
             description = response_dict["description"]
-            if description == "Bad Request: MEDIA_CAPTION_TOO_LONG":
+            if description == "Bad Request: message caption is too long":
                 response = self._send_text(text, issue=issue)
+                print("Text only send status code:", response.status_code)
 
         if response.status_code != 200:
             print("Send error:", response.text)
