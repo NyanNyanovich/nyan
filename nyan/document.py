@@ -9,7 +9,7 @@ from nyan.mongo import get_documents_collection, get_annotated_documents_collect
 from nyan.util import Serializable
 
 
-CURRENT_VERSION = 3
+CURRENT_VERSION = 4
 
 
 @dataclass
@@ -36,6 +36,7 @@ class Document(Serializable):
     category: str = None
     tokens: str = None
     embedding: List[float] = None
+    embedding_key: str = "labse_en_ru"
     embedded_images: List[Dict[str, Any]] = tuple()
 
     version: int = CURRENT_VERSION
