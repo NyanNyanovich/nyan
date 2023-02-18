@@ -7,9 +7,9 @@ from tqdm.auto import tqdm
 
 from nyan.util import write_jsonl
 
+
 def preprocess(text):
-    text = str(text).strip().replace("\n", " ").replace("\xa0", " ")
-    return text
+    return str(text).strip().replace("\n", " ").replace("\xa0", " ")
 
 
 def parse_lenta(input_file, output_file, use_preprocess=True):
@@ -82,6 +82,7 @@ def parse_lenta(input_file, output_file, use_preprocess=True):
             rub_cnt[d["result"]] += 1
         print(rub_cnt.most_common())
         write_jsonl(output_file, records)
+
 
 input_path = sys.argv[1]
 output_path = sys.argv[2]

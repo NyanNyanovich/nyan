@@ -169,7 +169,7 @@ class TelegramClient:
         }
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_text(self, text, issue, reply_to = None):
+    def _send_text(self, text, issue, reply_to: int = None):
         url_template = self.host + "/bot{}/sendMessage"
         params = {
             "chat_id": issue.channel_id,
@@ -183,7 +183,7 @@ class TelegramClient:
             params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_photo(self, text, photo, issue, reply_to = None):
+    def _send_photo(self, text, photo, issue, reply_to: int = None):
         url_template = self.host + "/bot{}/sendPhoto"
         params = {
             "chat_id": issue.channel_id,
@@ -197,7 +197,7 @@ class TelegramClient:
             params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_video(self, text, video, issue, reply_to = None):
+    def _send_video(self, text, video, issue, reply_to: int = None):
         url_template = self.host + "/bot{}/sendVideo"
         params = {
             "chat_id": issue.channel_id,
@@ -211,7 +211,7 @@ class TelegramClient:
             params["allow_sending_without_reply"] = True
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_photos(self, text, photos, issue, reply_to = None):
+    def _send_photos(self, text, photos, issue, reply_to: int = None):
         url_template = self.host + "/bot{}/sendMediaGroup"
         media = [{
             "type": "photo",

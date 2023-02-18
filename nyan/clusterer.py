@@ -49,10 +49,11 @@ class Clusterer:
                 if fix_same_channels and doc1.channel_id == doc2.channel_id:
                     distances[i1, i2] = min(max_distance, distances[i1, i2] * same_channels_penalty)
                     continue
-                images_count = max(len(doc1.embedded_images), len(doc2.embedded_images))
-                if fix_images and doc1.embedded_images and doc2.embedded_images and images_count <= 2:
-                    if image_idx2cluster.get(i1, -1) == image_idx2cluster.get(i2, -2):
-                        distances[i1, i2] = max(min_distance, distances[i1, i2] * (1.0 -  image_bonus))
+                max_images_count = max(len(doc1.embedded_images), len(doc2.embedded_images))
+                min_images_count = min(len(doc1.embedded_images), len(doc2.embedded_images))
+                is_same_image_cluster = image_idx2cluster.get(i1, -1) == image_idx2cluster.get(i2, -2)
+                if fix_images and min_images_count >= 1 and max_images_count <= 2 and is_same_image_cluster:
+                    distances[i1, i2] = max(min_distance, distances[i1, i2] * (1.0 - image_bonus))
                 if fix_time and is_time_fixable_issues:
                     time_diff = abs(doc1.pub_time - doc2.pub_time)
                     hours_shifted = (time_diff / 3600) - time_shift_hours
@@ -92,5 +93,4 @@ class Clusterer:
         )
 
         labels = clustering.fit_predict(embeddings).tolist()
-        result = {image2doc[i]: l for i, l in enumerate(labels)}
-        return result
+        return {image2doc[i]: l for i, l in enumerate(labels)}

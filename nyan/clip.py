@@ -16,7 +16,8 @@ DEFAULT_CLIP_PATH = "openai/clip-vit-base-patch32"
 
 
 class ClipEmbedder:
-    def __init__(self,
+    def __init__(
+        self,
         model_name: str = DEFAULT_CLIP_PATH,
         normalize: bool = True,
         image_batch_size: int = 16,

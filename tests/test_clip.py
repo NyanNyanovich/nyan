@@ -3,6 +3,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from nyan.clip import ClipEmbedder
 from nyan.image import ImageProcessor
 
+
 def test_clip(clip_data):
     texts = [r["en_text"] for r in clip_data]
     images = [r["image"] for r in clip_data]
