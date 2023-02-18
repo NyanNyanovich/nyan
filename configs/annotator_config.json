@@ -119,5 +119,5 @@
         "rm_threshold": 0.9
     },
     "lang_detector": "models/lid.176.bin",
-    "cat_detector": "models/ru_cat_v5.ftz"
+    "cat_detector": "models/ru_cat.ftz"
 }
