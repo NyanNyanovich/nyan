@@ -94,7 +94,7 @@ class Renderer:
         best_blue_cluster, best_red_cluster, best_cluster = None, None, None
 
         for _, cluster in clusters.clid2cluster.items():
-            if cluster.pub_time_percentile < get_current_ts() - duration:
+            if cluster.create_time < get_current_ts() - duration:
                 continue
             if cluster.issue != issue_name:
                 continue

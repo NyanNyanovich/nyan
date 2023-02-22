@@ -68,6 +68,13 @@ class Document(Serializable):
             record.pop("embedded_images")
         return record
 
+    @property
+    def cropped_text(self, max_words_count: int = 50):
+        words = self.patched_text.split()
+        if len(words) < max_words_count:
+            return " ".join(words)
+        return " ".join(words[:max_words_count]) + "..."
+
 
 def read_documents_file(file_path, current_ts=None, offset=None):
     assert os.path.exists(file_path)
