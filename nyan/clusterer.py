@@ -65,9 +65,19 @@ class Clusterer:
         )
 
         labels = clustering.fit_predict(distances).tolist()
-        clusters = [Cluster() for _ in range(max(labels) + 1)]
-        for doc, l in zip(docs, labels):
-            clusters[l].add(doc)
+
+        indices = [[] for _ in range(max(labels) + 1)]
+        for index, label in enumerate(labels):
+            indices[label].append(index)
+
+        clusters = []
+        for doc_indices in indices:
+            cluster = Cluster()
+            for index in doc_indices:
+                cluster.add(docs[index])
+            doc_indices = np.array(doc_indices)
+            cluster.save_distances(distances[doc_indices, doc_indices])
+            clusters.append(cluster)
         return clusters
 
     def find_image_duplicates(self, docs):

@@ -22,6 +22,8 @@ class Cluster:
         self.create_time = None
         self.message = None
 
+        self.distances = None
+
         self.saved_annotation_doc = None
         self.saved_first_doc = None
         self.saved_hash = None
@@ -29,6 +31,9 @@ class Cluster:
     def add(self, doc):
         self.docs.append(doc)
         self.url2doc[doc.url] = doc
+
+    def save_distances(self, distances):
+        self.distances = distances
 
     def has(self, doc):
         return doc.url in self.url2doc
