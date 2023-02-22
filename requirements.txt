@@ -8,6 +8,7 @@ transformers >= 4.16.2
 torch >= 1.10.0
 pyonmttok >= 1.29.0
 natasha >= 1.4.0
+pillow == 9.2.0
 
 # Clustering
 scipy >= 1.7.1
@@ -37,16 +38,11 @@ pytest-check >= 1.0.9
 
 # Analytics
 wordcloud >= 1.8.1
-
-# Bots
-python-telegram-bot >= 13.14
-annoy >= 1.17.1
-
-# Toloka
 toloka-kit >= 1.0.1
 crowd-kit >= 1.1.0
 nltk >= 3.7
 pandas >= 1.5.1
 
-# Images
-pillow == 9.2.0
+# Bots
+python-telegram-bot >= 13.14
+annoy >= 1.17.1
