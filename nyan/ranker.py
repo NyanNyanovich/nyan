@@ -85,8 +85,7 @@ class Ranker:
             print("Blue views coefficient:", coefs["blue"])
             print("Red views coefficient:", coefs["red"])
 
-        all_views_per_hour = [v * coefs[c.group] for v, c in zip(all_views_per_hour, clusters)]
-
+        all_views_per_hour = [int(v * coefs[c.group]) for v, c in zip(all_views_per_hour, clusters)]
         all_views_per_hour.sort()
         n = len(all_views_per_hour)
 
@@ -101,7 +100,7 @@ class Ranker:
         hta = higher_trigger_age_minutes * 60
         filtered_clusters = []
         for cluster in clusters:
-            views_per_hour = cluster.views_per_hour * coefs[cluster.group]
+            views_per_hour = int(cluster.views_per_hour * coefs[cluster.group])
             cropped_title = cluster.cropped_title
             age = cluster.age
             if age > hta and views_per_hour >= border_views_per_hour:
