@@ -470,6 +470,7 @@
       },
       "alias": "TABOO",
       "issue": "main",
+      "disabled": true,
       "recrawl_time": 600
     },
     {
