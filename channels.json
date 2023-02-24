@@ -134,7 +134,8 @@
         "tech": "other"
       },
       "alias": "RT на русском",
-      "issue": "main"
+      "issue": "main",
+      "disabled": true
     },
     {
       "name": "petrovtel",
