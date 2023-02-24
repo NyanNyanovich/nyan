@@ -49,9 +49,22 @@ class Cluster:
     def fetch_time(self):
         return max([doc.fetch_time for doc in self.docs])
 
-    @cached_property
+    @property
     def views(self):
         return sum([doc.views for doc in self.docs])
+
+    @property
+    def debiased_views(self):
+        views = [doc.views for doc in self.unique_docs]
+        if len(views) <= 2:
+            return sum(views)
+        views.sort(reverse=True)
+
+        # Smoothing outliers for cases where
+        # one document has much more views than others
+        views[0] = views[1]
+
+        return sum(views)
 
     @property
     def age(self):
@@ -59,7 +72,7 @@ class Cluster:
 
     @property
     def views_per_hour(self):
-        return int(self.views / (self.age / 3600))
+        return int(self.debiased_views / (self.age / 3600))
 
     @property
     def embedding(self):
