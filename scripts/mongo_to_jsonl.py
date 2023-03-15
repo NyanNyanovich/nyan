@@ -9,7 +9,8 @@ from nyan.util import get_current_ts
 def main(
     output_path,
     mongo_config,
-    annotated
+    annotated,
+    ts_start
 ):
     with open(mongo_config) as r:
         config = json.load(r)
@@ -22,8 +23,9 @@ def main(
         documents_collection_name = config["documents_collection_name"]
     collection = client[database_name][documents_collection_name]
 
-    first_doc = collection.find_one(sort=[("pub_time", 1)])
-    ts_start = first_doc["pub_time"]
+    if not ts_start:
+        first_doc = collection.find_one(sort=[("pub_time", 1)])
+        ts_start = first_doc["pub_time"]
     print(f"Start timestamp: {ts_start}")
     ts_end = get_current_ts()
     print(f"End timestamp: {ts_end}")
@@ -46,6 +48,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-path", type=str, default="data/docs.jsonl")
     parser.add_argument("--annotated", action="store_true")
+    parser.add_argument("--ts-start", type=int, default=None)
     parser.add_argument("--mongo-config", type=str, default="configs/mongo_config.json")
     args = parser.parse_args()
     main(**vars(args))
