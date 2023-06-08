@@ -71,7 +71,8 @@ class TelegramClient:
         issue_name: str,
         photos: Tuple[str] = tuple(),
         videos: Tuple[str] = tuple(),
-        reply_to: int = None
+        reply_to: int = None,
+        parse_mode: str = "html"
     ) -> MessageId:
         if issue_name not in self.issues:
             print(f"Missing issue '{issue_name}' in client config")
@@ -85,7 +86,7 @@ class TelegramClient:
         elif len(videos) >= 1:
             response = self._send_video(text, videos[0], issue=issue, reply_to=reply_to)
         else:
-            response = self._send_text(text, issue=issue, reply_to=reply_to)
+            response = self._send_text(text, issue=issue, reply_to=reply_to, parse_mode=parse_mode)
 
         print("Send status code:", response.status_code)
         if response.status_code == 400 and "description" in response.text:
@@ -169,12 +170,12 @@ class TelegramClient:
         }
         return self._post(url_template.format(issue.bot_token), params)
 
-    def _send_text(self, text, issue, reply_to: int = None):
+    def _send_text(self, text, issue, reply_to: int = None, parse_mode: str = "html"):
         url_template = self.host + "/bot{}/sendMessage"
         params = {
             "chat_id": issue.channel_id,
             "text": text,
-            "parse_mode": "html",
+            "parse_mode": parse_mode,
             "disable_web_page_preview": True,
             "disable_notification": True
         }
