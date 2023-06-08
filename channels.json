@@ -162,6 +162,17 @@
         "tech": "other"
       },
       "alias": "Ньюсач/Двач",
+      "issue": "main",
+      "master": "ru2ch",
+      "disabled": true
+    },
+    {
+      "name": "ru2ch",
+      "groups": {
+        "main": "purple",
+        "tech": "other"
+      },
+      "alias": "Ньюсач/Двач",
       "issue": "main"
     },
     {
@@ -363,7 +374,8 @@
       },
       "alias": "The Village",
       "issue": "main",
-      "recrawl_time": 300
+      "recrawl_time": 300,
+      "disabled": true
     },
     {
       "name": "afishadaily",
