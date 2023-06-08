@@ -3,7 +3,6 @@ scrapy >= 2.5.0
 
 # Annotator
 html2text >= 2020.1.16
-pybind11 == 2.10.0
 fasttext >= 0.9.2
 transformers >= 4.16.2
 torch >= 1.10.0
