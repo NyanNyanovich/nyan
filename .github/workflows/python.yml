@@ -19,7 +19,7 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        apt-get install python3-dev
+        sudo apt-get install python3-dev
         python -m pip install --upgrade pip
         pip install flake8 pytest
         pip install -r requirements.txt
