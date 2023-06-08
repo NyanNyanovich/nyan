@@ -14,10 +14,6 @@ Extensive description (in Russian): [Whitepaper](https://telegra.ph/NYAN-Whitepa
 
 Detailed instruction (in Russian): [Как поднять свой НЯН](https://github.com/NyanNyanovich/nyan/wiki/%D0%9A%D0%B0%D0%BA-%D0%BF%D0%BE%D0%B4%D0%BD%D1%8F%D1%82%D1%8C-%D1%81%D0%B2%D0%BE%D0%B9-%D0%9D%D0%AF%D0%9D)
 
-Other channels with the same engine:
-* [Up News](https://t.me/upnewsua)
-
-
 
 ## Install
 
