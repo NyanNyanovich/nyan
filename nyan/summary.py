@@ -1,4 +1,6 @@
 import argparse
+import random
+from datetime import datetime
 
 from jinja2 import Template
 
@@ -10,14 +12,27 @@ from nyan.util import get_current_ts, ts_to_dt
 from nyan.openai import openai_completion
 
 
-def summarize(clusters, issue_name, prompt_path):
+FINAL_TEMPLATE = """
+*Самое важное за {duration_hours} часов:*
+
+{content}
+
+_Сделано с помощью OpenAI GPT-4. Эксперимент. Сообщение совсем-совсем не достоверно._
+"""
+
+
+def summarize(clusters, issue_name, prompt_path, duration_hours, model_name):
     fixed_clusters = []
-    for cluster in clusters.clid2cluster.values():
+    clusters = list(clusters.clid2cluster.values())
+    clusters.sort(key=lambda cl: cl.create_time)
+    for cluster in clusters:
         if cluster.issue != issue_name:
             continue
+        dt = ts_to_dt(cluster.create_time)
+        date_str = dt.strftime(u"%B %d, %H:%M")
         fixed_clusters.append({
             "url": f"https://t.me/nyannews/{cluster.message.message_id}",
-            "dt":  ts_to_dt(cluster.annotation_doc.pub_time),
+            "dt": date_str,
             "views": cluster.views,
             "source": cluster.annotation_doc.channel_title,
             "text": cluster.annotation_doc.patched_text
@@ -28,9 +43,12 @@ def summarize(clusters, issue_name, prompt_path):
     print(prompt)
 
     messages = [{"role": "user", "content": prompt}]
-    result = openai_completion(messages=messages)
+    result = openai_completion(messages=messages, model_name=model_name)
     content = result.message.content.strip()
-    final_content = "Самое важное за 12 часов:\n\n" + content + "\n\n_Сделано с помощью OpenAI API. Экспериментальная функциональность._"
+    final_content = FINAL_TEMPLATE.format(
+        duration_hours=int(duration_hours),
+        content=content
+    )
     return final_content
 
 
@@ -39,16 +57,23 @@ def main(
     mongo_config_path,
     client_config_path,
     renderer_config_path,
-    duration_days,
+    duration_hours,
     issue_name,
-    prompt_path
+    prompt_path,
+    model_name
 ):
-    duration = int(duration_days * 24 * 3600)
+    duration = int(duration_hours * 3600)
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
     channels = Channels(channels_info_path)
     client = TelegramClient(client_config_path)
 
-    summary_text = summarize(clusters, issue_name, prompt_path)
+    summary_text = summarize(
+        clusters,
+        issue_name=issue_name,
+        prompt_path=prompt_path,
+        duration_hours=duration_hours,
+        model_name=model_name
+    )
     print(summary_text)
 
     client.send_message(summary_text, issue_name=issue_name, parse_mode="Markdown")
@@ -60,8 +85,9 @@ if __name__ == "__main__":
     parser.add_argument("--mongo-config-path", type=str, required=True)
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--renderer-config-path", type=str, required=True)
-    parser.add_argument("--duration-days", type=float, required=True)
+    parser.add_argument("--duration-hours", type=int, default=9)
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)
+    parser.add_argument("--model-name", type=str, default="gpt-4")
     args = parser.parse_args()
     main(**vars(args))
