@@ -1,5 +1,6 @@
 import argparse
 import random
+import json
 from datetime import datetime
 
 from jinja2 import Template
@@ -34,7 +35,7 @@ def summarize(clusters, issue_name, prompt_path, duration_hours, model_name):
             "url": f"https://t.me/nyannews/{cluster.message.message_id}",
             "dt": date_str,
             "views": cluster.views,
-            "source": cluster.annotation_doc.channel_title,
+            "sources": ", ".join([doc.channel_title for doc in cluster.docs]),
             "text": cluster.annotation_doc.patched_text
         })
     with open(prompt_path) as f:
@@ -45,9 +46,14 @@ def summarize(clusters, issue_name, prompt_path, duration_hours, model_name):
     messages = [{"role": "user", "content": prompt}]
     result = openai_completion(messages=messages, model_name=model_name)
     content = result.message.content.strip()
+    print(content)
+    titles = content[content.find("{"):content.rfind("}") + 1]
+    titles = json.loads(titles)["titles"]
+    titles = [r["emoji"] + " " + r["text"] for r in titles]
+
     final_content = FINAL_TEMPLATE.format(
         duration_hours=int(duration_hours),
-        content=content
+        content="\n\n".join(titles)
     )
     return final_content
 
@@ -60,7 +66,8 @@ def main(
     duration_hours,
     issue_name,
     prompt_path,
-    model_name
+    model_name,
+    auto
 ):
     duration = int(duration_hours * 3600)
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
@@ -76,7 +83,12 @@ def main(
     )
     print(summary_text)
 
-    client.send_message(summary_text, issue_name=issue_name, parse_mode="Markdown")
+    should_publish = False
+    if not auto:
+        should_publish = input("Publish? y/n ").strip() == "y"
+
+    if auto or should_publish:
+        client.send_message(summary_text, issue_name=issue_name, parse_mode="Markdown")
 
 
 if __name__ == "__main__":
@@ -89,5 +101,6 @@ if __name__ == "__main__":
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)
     parser.add_argument("--model-name", type=str, default="gpt-4")
+    parser.add_argument("--auto", default=False, action="store_true")
     args = parser.parse_args()
     main(**vars(args))
