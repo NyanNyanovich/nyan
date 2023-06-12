@@ -35,7 +35,7 @@ def summarize(clusters, issue_name, prompt_path, duration_hours, model_name):
             "url": f"https://t.me/nyannews/{cluster.message.message_id}",
             "dt": date_str,
             "views": cluster.views,
-            "sources": ", ".join([doc.channel_title for doc in cluster.docs]),
+            "sources_count": len([doc.channel_title for doc in cluster.docs]),
             "text": cluster.annotation_doc.patched_text
         })
     with open(prompt_path) as f:
@@ -47,13 +47,24 @@ def summarize(clusters, issue_name, prompt_path, duration_hours, model_name):
     result = openai_completion(messages=messages, model_name=model_name)
     content = result.message.content.strip()
     print(content)
+
     titles = content[content.find("{"):content.rfind("}") + 1]
     titles = json.loads(titles)["titles"]
-    titles = [r["emoji"] + " " + r["text"] for r in titles]
+    titles.sort(key=lambda r: r["importance"], reverse=True)
+    titles = titles[:5]
+
+    final_titles = []
+    for r in titles:
+        link = "[{}]({})".format(r["verb"], r["url"])
+        fixed_title = r["title"].replace(r["verb"], link)
+        if fixed_title == r["title"]:
+            link = "[{}]({})".format(r["verb"].capitalize(), r["url"])
+            fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
+        final_titles.append(r["emoji"] + fixed_title)
 
     final_content = FINAL_TEMPLATE.format(
         duration_hours=int(duration_hours),
-        content="\n\n".join(titles)
+        content="\n\n".join(final_titles)
     )
     return final_content
 
