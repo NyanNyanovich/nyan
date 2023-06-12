@@ -10,7 +10,7 @@ import copy
 
 @dataclass
 class OpenAIDecodingArguments:
-    max_tokens: int = 4000
+    max_tokens: int = 3200
     temperature: float = 0.0
     top_p: float = 0.95
     n: int = 1
