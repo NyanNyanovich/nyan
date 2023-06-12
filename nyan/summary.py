@@ -49,7 +49,7 @@ def summarize(clusters, issue_name, prompt_path, duration_hours, model_name):
     print(content)
     titles = content[content.find("{"):content.rfind("}") + 1]
     titles = json.loads(titles)["titles"]
-    titles = [r["emoji"] + " " + r["text"] for r in titles]
+    titles = [r["emoji"] + " " + r["text"].replace("'", '"') for r in titles]
 
     final_content = FINAL_TEMPLATE.format(
         duration_hours=int(duration_hours),
