@@ -69,6 +69,7 @@ def summarize(
 
     titles = all_titles
     titles.sort(key=lambda r: r["importance"], reverse=True)
+    titles = [t for t in titles if not t["is_duplicate"]]
     titles = titles[:5]
 
     final_titles = []
