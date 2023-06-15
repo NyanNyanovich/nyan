@@ -1046,6 +1046,43 @@
       "alias": "Инвест ревью",
       "issue": "economy",
       "recrawl_time": 300
+    },
+    {
+      "name": "pravdadirty",
+      "groups": {
+        "main": "red"
+      },
+      "alias": "ВПШ",
+      "issue": "main"
+    },
+    {
+      "name": "truekpru",
+      "groups": {
+        "main": "red"
+      },
+      "alias": "Комсомольская правда",
+      "issue": "main"
+    },
+    {
+      "name": "rotondamedia",
+      "alias": "Ротонда",
+      "groups": {
+        "main": "blue"
+      },
+      "issue": "main"
+    },
+    {
+      "name": "deptone",
+      "alias": "Первый отдел",
+      "groups": {
+        "main": "blue"
+      },
+      "issue": "main"
+    },
+    {
+      "name": "enews112",
+      "alias": "112",
+      "issue": "main"
     }
   ],
   "emojis": {
