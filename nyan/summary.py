@@ -79,7 +79,7 @@ def summarize(
         if fixed_title == r["title"]:
             link = "[{}]({})".format(r["verb"].capitalize(), r["url"])
             fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
-        final_titles.append(r["emoji"] + fixed_title)
+        final_titles.append(r["emoji"] + " " + fixed_title)
 
     final_content = FINAL_TEMPLATE.format(
         duration_hours=int(duration_hours),
