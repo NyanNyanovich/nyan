@@ -1082,7 +1082,10 @@
     {
       "name": "enews112",
       "alias": "112",
-      "issue": "main"
+      "issue": "main",
+      "groups": {
+        "main": "purple"
+      }
     }
   ],
   "emojis": {
