@@ -161,7 +161,11 @@ class Daemon:
         sleep_time = self.config["sleep_time"]
         max_time_updated = self.config["max_time_updated"]
 
-        posted_cluster = posted_clusters.find_similar(cluster)
+        posted_cluster = posted_clusters.find_similar(
+            cluster,
+            min_size_ratio=self.config["similar_min_size_ratio"],
+            min_intersection_ratio=self.config["similar_min_intersection_ratio"]
+        )
         if posted_cluster:
             message = posted_cluster.message
             discussion_message = self.client.get_discussion(message)
@@ -245,6 +249,10 @@ class Daemon:
         max_sim = sims[max_index]
         best_cluster = clusters[max_index]
         print("Closest cluster:", max_sim, cluster.cropped_title, best_cluster.cropped_title)
+
+        if best_cluster.pub_time_percentile > cluster.pub_time_percentile:
+            return None
+
         if max_sim < threshold:
             return None
 

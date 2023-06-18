@@ -234,12 +234,30 @@ class Clusters:
         self.message2cluster = dict()
         self.max_clid = 0
 
-    def find_similar(self, cluster):
+    def find_similar(
+        self,
+        cluster,
+        min_size_ratio: float = 0.25,
+        min_intersection_ratio: float = 0.25
+    ):
         messages = [self.urls2messages.get(url) for url in cluster.urls if url in self.urls2messages]
         if not messages:
             return None
-        message = Counter(messages).most_common()[0][0]
-        return self.message2cluster.get(message)
+
+        message, intersection_count = Counter(messages).most_common()[0]
+        old_cluster = self.message2cluster.get(message)
+        if old_cluster is None:
+            return None
+
+        new_cluster_size = len(cluster.urls)
+        old_cluster_size = len(old_cluster.urls)
+        intersection_ratio = intersection_count / new_cluster_size
+        intersection_ratio = min(intersection_ratio, intersection_count / old_cluster_size)
+        size_ratio = new_cluster_size / old_cluster_size
+        if size_ratio < min_size_ratio or intersection_ratio < min_intersection_ratio:
+            return None
+
+        return old_cluster
 
     def get_embedded_clusters(self, current_ts, issue):
         filtered_clusters = []
