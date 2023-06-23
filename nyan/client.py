@@ -108,6 +108,20 @@ class TelegramClient:
             from_discussion=False
         )
 
+    def send_poll(self, question, options, issue_name, reply_to: int = None):
+        url_template = self.host + "/bot{}/sendPoll"
+        issue = self.issues[issue_name]
+        params = {
+            "chat_id": issue.channel_id,
+            "disable_notification": True,
+            "question": question,
+            "options": json.dumps(options)
+        }
+        if reply_to:
+            params["reply_to_message_id"] = reply_to
+            params["allow_sending_without_reply"] = True
+        return self._post(url_template.format(issue.bot_token), params)
+
     def update_message(
         self,
         message: MessageId,
