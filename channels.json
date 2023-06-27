@@ -1086,6 +1086,38 @@
       "groups": {
         "main": "purple"
       }
+    },
+    {
+      "name": "staraya",
+      "alias": "Старая площадь",
+      "issue": "main",
+      "groups": {
+        "main": "red"
+      }
+    },
+    {
+      "name": "rusbrief",
+      "alias": "BRIEF",
+      "issue": "main",
+      "groups": {
+        "main": "red"
+      }
+    },
+    {
+      "name": "starhitru",
+      "alias": "Starhit.ru",
+      "issue": "main",
+      "groups": {
+        "main": "red"
+      }
+    },
+    {
+      "name": "novoeizdanie",
+      "alias": "Новое Издание",
+      "issue": "main",
+      "groups": {
+        "main": "blue"
+      }
     }
   ],
   "emojis": {
