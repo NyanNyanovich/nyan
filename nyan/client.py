@@ -9,6 +9,9 @@ from httpx import Timeout, Limits, HTTPTransport, Client
 from nyan.util import Serializable
 
 
+ISSUE_WARNING = "Warning: Missing issue '{issue_name}' in the client config. Did you forget to remove sections from the ranker confg?"
+
+
 @dataclass
 class IssueConfig:
     name: str
@@ -75,7 +78,7 @@ class TelegramClient:
         parse_mode: str = "html"
     ) -> MessageId:
         if issue_name not in self.issues:
-            print(f"Missing issue '{issue_name}' in client config")
+            print(ISSUE_WARNING.format(issue_name=issue_name))
             return None
         issue = self.issues[issue_name]
         response = None

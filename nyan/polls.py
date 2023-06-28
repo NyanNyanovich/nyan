@@ -45,6 +45,8 @@ def make_poll(
     messages = [{"role": "user", "content": prompt}]
     result = openai_completion(messages=messages, model_name=model_name)
     content = result.message.content.strip()
+    print(content)
+
     poll = json.loads(content)
     print(poll)
 
@@ -52,7 +54,6 @@ def make_poll(
 
 
 def main(
-    channels_info_path,
     mongo_config_path,
     client_config_path,
     renderer_config_path,
@@ -63,7 +64,6 @@ def main(
 ):
     duration = int(duration_hours * 3600)
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
-    channels = Channels(channels_info_path)
     client = TelegramClient(client_config_path)
 
     poll = make_poll(
@@ -80,7 +80,6 @@ def main(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--channels-info-path", type=str, required=True)
     parser.add_argument("--mongo-config-path", type=str, required=True)
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--renderer-config-path", type=str, required=True)

@@ -20,9 +20,12 @@ class OpenAIDecodingArguments:
     frequency_penalty: float = 0.0
 
 
+DEFAULT_ARGS = OpenAIDecodingArguments()
+
+
 def openai_completion(
     messages,
-    decoding_args=OpenAIDecodingArguments(),
+    decoding_args=DEFAULT_ARGS,
     model_name="gpt-4",
     sleep_time=2
 ):
@@ -37,10 +40,10 @@ def openai_completion(
             )
             break
         except openai.error.OpenAIError as e:
-            logging.warning(f"OpenAIError: {e}.")
+            logging.warning("OpenAIError: %s.", e)
             if "Please reduce" in str(e):
                 decoding_args.max_tokens = int(decoding_args.max_tokens * 0.8)
-                logging.warning(f"Reducing target length to {decoding_args.max_tokens}, Retrying...")
+                logging.warning("Reducing target length to %d, Retrying...", decoding_args.max_tokens)
             else:
                 logging.warning("Hit request rate limit; retrying...")
                 time.sleep(sleep_time)
