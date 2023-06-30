@@ -6,7 +6,6 @@ from datetime import datetime
 from jinja2 import Template
 
 from nyan.clusters import Clusters
-from nyan.channels import Channels
 from nyan.client import TelegramClient
 from nyan.renderer import Renderer
 from nyan.util import get_current_ts, ts_to_dt, gen_batch
@@ -18,7 +17,7 @@ FINAL_TEMPLATE = """
 
 {content}
 
-_Сделано с помощью OpenAI GPT-4. Эксперимент. Сообщение совсем-совсем не достоверно._
+_Сделано с помощью OpenAI GPT-4. Сообщение совсем не достоверно. Правдивость информации не проверяется._
 """
 
 
@@ -81,15 +80,13 @@ def summarize(
             fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
         final_titles.append(r["emoji"] + " " + fixed_title)
 
-    final_content = FINAL_TEMPLATE.format(
+    return FINAL_TEMPLATE.format(
         duration_hours=int(duration_hours),
         content="\n\n".join(final_titles)
     )
-    return final_content
 
 
 def main(
-    channels_info_path,
     mongo_config_path,
     client_config_path,
     renderer_config_path,
@@ -102,7 +99,6 @@ def main(
 ):
     duration = int(duration_hours * 3600)
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
-    channels = Channels(channels_info_path)
     client = TelegramClient(client_config_path)
 
     summary_text = summarize(
@@ -125,7 +121,6 @@ def main(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--channels-info-path", type=str, required=True)
     parser.add_argument("--mongo-config-path", type=str, required=True)
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--renderer-config-path", type=str, required=True)

@@ -187,12 +187,12 @@ class Daemon:
                     message.message_id, message.issue, posted_cluster.cropped_title
                 ))
                 print("Discussion message id: {}".format(discussion_message.message_id))
-                print()
 
                 is_caption = bool(posted_cluster.images) or bool(posted_cluster.videos)
                 self.client.update_message(message, cluster_text, is_caption)
             else:
                 print("Same cluster {} at {}: {}".format(message.message_id, message.issue, posted_cluster.cropped_title))
+            print()
             return
 
         cluster_text = self.renderer.render_cluster(cluster)
