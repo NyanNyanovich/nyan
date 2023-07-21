@@ -12,26 +12,19 @@ from nyan.util import get_current_ts, ts_to_dt, gen_batch
 from nyan.openai import openai_completion
 
 
-FINAL_TEMPLATE = """
-*Самое важное за {duration_hours} часов:*
-
-{content}
-
-_Сделано с помощью OpenAI GPT-4. Сообщение совсем не достоверно. Правдивость информации не проверяется._
-"""
-
-
-def summarize(
+def extract_topics(
     clusters,
     issue_name,
     prompt_path,
+    template_path,
     duration_hours,
     model_name,
-    news_batch_size
+    max_news_count
 ):
     fixed_clusters = []
     clusters = list(clusters.clid2cluster.values())
     clusters.sort(key=lambda cl: cl.create_time)
+    clusters = clusters[-max_news_count:]
     for cluster in clusters:
         if cluster.issue != issue_name:
             continue
@@ -48,42 +41,32 @@ def summarize(
     with open(prompt_path) as f:
         template = Template(f.read())
 
-    all_titles = []
-    for batch in gen_batch(fixed_clusters, news_batch_size):
-        prompt = template.render(clusters=batch, batch_size=len(batch)).strip() + "\n"
-        print(prompt)
+    prompt = template.render(clusters=fixed_clusters).strip() + "\n"
+    print(prompt)
 
-        messages = [{"role": "user", "content": prompt}]
-        result = openai_completion(messages=messages, model_name=model_name)
-        content = result.message.content.strip()
-        print(content)
+    messages = [{"role": "user", "content": prompt}]
+    result = openai_completion(messages=messages, model_name=model_name)
+    content = result.message.content.strip()
+    print(content)
 
-        titles = content[content.find("{"):content.rfind("}") + 1]
-        titles = json.loads(titles)["titles"]
-        if len(batch) > 1:
-            max_importance = max([int(t["importance"]) for t in titles])
-            for title in titles:
-                title["importance"] = (title["importance"] - 1.0) / (max_importance - 1.0)
-        all_titles.extend(titles)
+    content = content[content.find("{"):content.rfind("}") + 1]
+    content = json.loads(content)
+    topics = content["topics"]
+    for topic in topics:
+        titles = topic["titles"]
+        final_titles = []
+        for r in titles:
+            link = "[{}]({})".format(r["verb"], r["url"])
+            fixed_title = r["title"].replace(r["verb"], link)
+            if fixed_title == r["title"]:
+                link = "[{}]({})".format(r["verb"].capitalize(), r["url"])
+                fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
+            final_titles.append(fixed_title)
+        topic["titles"] = final_titles
 
-    titles = all_titles
-    titles.sort(key=lambda r: r["importance"], reverse=True)
-    titles = [t for t in titles if not t["is_duplicate"]]
-    titles = titles[:5]
-
-    final_titles = []
-    for r in titles:
-        link = "[{}]({})".format(r["verb"], r["url"])
-        fixed_title = r["title"].replace(r["verb"], link)
-        if fixed_title == r["title"]:
-            link = "[{}]({})".format(r["verb"].capitalize(), r["url"])
-            fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
-        final_titles.append(r["emoji"] + " " + fixed_title)
-
-    return FINAL_TEMPLATE.format(
-        duration_hours=int(duration_hours),
-        content="\n\n".join(final_titles)
-    )
+    with open(template_path) as f:
+        template = Template(f.read())
+    return template.render(topics=topics, duration_hours=int(duration_hours))
 
 
 def main(
@@ -91,9 +74,10 @@ def main(
     client_config_path,
     renderer_config_path,
     duration_hours,
-    news_batch_size,
+    max_news_count,
     issue_name,
     prompt_path,
+    template_path,
     model_name,
     auto
 ):
@@ -101,22 +85,23 @@ def main(
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
     client = TelegramClient(client_config_path)
 
-    summary_text = summarize(
+    text = extract_topics(
         clusters,
         issue_name=issue_name,
         prompt_path=prompt_path,
+        template_path=template_path,
         duration_hours=duration_hours,
         model_name=model_name,
-        news_batch_size=news_batch_size
+        max_news_count=max_news_count
     )
-    print(summary_text)
+    print(text)
 
     should_publish = False
     if not auto:
         should_publish = input("Publish? y/n ").strip() == "y"
 
     if auto or should_publish:
-        client.send_message(summary_text, issue_name=issue_name, parse_mode="Markdown")
+        client.send_message(text, issue_name=issue_name, parse_mode="Markdown")
 
 
 if __name__ == "__main__":
@@ -125,9 +110,10 @@ if __name__ == "__main__":
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--renderer-config-path", type=str, required=True)
     parser.add_argument("--duration-hours", type=int, default=12)
-    parser.add_argument("--news-batch-size", type=int, default=12)
+    parser.add_argument("--max-news-count", type=int, default=40)
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)
+    parser.add_argument("--template-path", type=str, required=True)
     parser.add_argument("--model-name", type=str, default="gpt-4")
     parser.add_argument("--auto", default=False, action="store_true")
     args = parser.parse_args()
