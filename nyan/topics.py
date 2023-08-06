@@ -19,10 +19,14 @@ def extract_topics(
     template_path,
     duration_hours,
     model_name,
-    max_news_count
+    max_news_count,
+    min_news_count
 ):
     fixed_clusters = []
     clusters = list(clusters.clid2cluster.values())
+    if len(clusters) < min_news_count:
+        return
+
     clusters.sort(key=lambda cl: cl.create_time)
     clusters = clusters[-max_news_count:]
     for cluster in clusters:
@@ -75,6 +79,7 @@ def main(
     renderer_config_path,
     duration_hours,
     max_news_count,
+    min_news_count,
     issue_name,
     prompt_path,
     template_path,
@@ -92,7 +97,8 @@ def main(
         template_path=template_path,
         duration_hours=duration_hours,
         model_name=model_name,
-        max_news_count=max_news_count
+        max_news_count=max_news_count,
+        min_news_count=min_news_count
     )
     print(text)
 
@@ -111,6 +117,7 @@ if __name__ == "__main__":
     parser.add_argument("--renderer-config-path", type=str, required=True)
     parser.add_argument("--duration-hours", type=int, default=12)
     parser.add_argument("--max-news-count", type=int, default=40)
+    parser.add_argument("--min-news-count", type=int, default=10)
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)
     parser.add_argument("--template-path", type=str, required=True)

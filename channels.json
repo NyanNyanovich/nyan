@@ -1118,6 +1118,64 @@
       "groups": {
         "main": "blue"
       }
+    },
+    {
+      "name": "proimport",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "Импорт в Россию",
+      "issue": "economy",
+      "recrawl_time": 300
+    },
+    {
+      "name": "markettwits",
+      "groups": {
+        "economy": "economy"
+      },
+      "alias": "MarketTwits",
+      "issue": "economy",
+      "recrawl_time": 300
+    },
+    {
+      "name": "prime1",
+      "alias": "ПРАЙМ",
+      "issue": "main",
+      "groups": {
+        "main": "purple"
+      }
+    },
+    {
+      "name": "svobodnieslova",
+      "alias": "Вёрстка",
+      "issue": "main",
+      "groups": {
+        "main": "blue"
+      }
+    },
+    {
+      "name": "chestnyjdetektiv",
+      "alias": "Честный Детектив",
+      "issue": "main",
+      "groups": {
+        "main": "purple"
+      }
+    },
+    {
+      "name": "aifonline",
+      "alias": "Аргументы и Факты",
+      "issue": "main",
+      "groups": {
+        "main": "red"
+      }
+    },
+    {
+      "name": "news_see",
+      "alias": "NEWS_SEE_",
+      "issue": "main",
+      "groups": {
+        "main": "red"
+      }
     }
   ],
   "emojis": {
