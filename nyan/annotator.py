@@ -9,7 +9,7 @@ from tqdm import tqdm
 from nyan.channels import Channels
 from nyan.document import Document
 from nyan.fasttext import FasttextClassifier
-from nyan.labse import Embedder
+from nyan.embedder import Embedder
 from nyan.text import TextProcessor
 from nyan.image import ImageProcessor
 from nyan.tokenizer import Tokenizer
@@ -21,7 +21,7 @@ class Annotator:
         with open(config_path) as r:
             config = json.load(r)
 
-        self.embedder = Embedder(config["model_name"])
+        self.embedder = Embedder(**config["embedder"])
         self.text_processor = TextProcessor(config["text_processor"])
         self.tokenizer = Tokenizer(**config.get("tokenizer", {}))
 

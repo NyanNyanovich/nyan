@@ -5,7 +5,7 @@ from scipy.spatial.distance import cosine
 from sklearn.metrics import roc_auc_score, precision_recall_curve
 import numpy as np
 
-from nyan.labse import Embedder
+from nyan.embedder import Embedder
 
 
 def read_jsonl(path):

@@ -1,5 +1,8 @@
 {
-    "model_name": "cointegrated/LaBSE-en-ru",
+    "embedder": {
+        "model_name": "cointegrated/LaBSE-en-ru",
+        "pooling_method": "default"
+    },
     "text_processor": {
         "rm_substrings": [
             "ДАННОЕ СООБЩЕНИЕ (МАТЕРИАЛ) СОЗДАНО И (ИЛИ) РАСПРОСТРАНЕНО ИНОСТРАННЫМ СРЕДСТВОМ МАССОВОЙ ИНФОРМАЦИИ, ВЫПОЛНЯЮЩИМ ФУНКЦИИ ИНОСТРАННОГО АГЕНТА, И (ИЛИ) РОССИЙСКИМ ЮРИДИЧЕСКИМ ЛИЦОМ, ВЫПОЛНЯЮЩИМ ФУНКЦИИ ИНОСТРАННОГО АГЕНТА",
