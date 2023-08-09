@@ -3,7 +3,7 @@
         "n_clusters": null,
         "affinity": "precomputed",
         "linkage": "average",
-        "distance_threshold": 0.38
+        "distance_threshold": 0.12
     },
     "distances": {
         "same_channels_penalty": 5.0,

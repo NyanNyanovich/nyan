@@ -1,7 +1,8 @@
 {
     "embedder": {
-        "model_name": "cointegrated/LaBSE-en-ru",
-        "pooling_method": "default"
+        "model_name": "intfloat/multilingual-e5-base",
+        "pooling_method": "mean",
+        "text_prefix": "query: "
     },
     "text_processor": {
         "rm_substrings": [
