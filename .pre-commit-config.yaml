@@ -1,6 +1,0 @@
-- repo: https://github.com/pycqa/flake8
-  rev: '5.0.4'
-  hooks:
-    - id: flake8
-      additional_dependencies: ["flake8-builtins", "flake8-simplify", "pep8-naming", "flake8-bugbear", "flake8-pie"]
-      args: ["--ignore=F403,F401,E501,SIM115,PIE786"]
