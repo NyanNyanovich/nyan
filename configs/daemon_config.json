@@ -1,0 +1,9 @@
+{
+    "related_threshold": 0.65,
+    "sleep_time": 0.3,
+    "max_time_updated": 10800,
+    "documents_offset": 86400,
+    "clusters_offset": 259200,
+    "similar_min_size_ratio": 0.15,
+    "similar_min_intersection_ratio": 0.15
+}

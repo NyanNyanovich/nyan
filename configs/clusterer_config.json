@@ -1,0 +1,16 @@
+{
+    "clustering": {
+        "n_clusters": null,
+        "affinity": "precomputed",
+        "linkage": "average",
+        "distance_threshold": 0.38
+    },
+    "distances": {
+        "same_channels_penalty": 5.0,
+        "time_penalty_modifier": 4.0,
+        "image_penalty_modifier": 1.0,
+        "image_bonus": 0.5,
+        "time_shift_hours": 6,
+        "no_time_penalty_issues": ["tech", "economy"]
+    }
+}
