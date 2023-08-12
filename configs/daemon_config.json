@@ -1,5 +1,5 @@
 {
-    "related_threshold": 0.87,
+    "related_threshold": 0.89,
     "sleep_time": 0.3,
     "max_time_updated": 10800,
     "documents_offset": 86400,
