@@ -16,19 +16,10 @@ def extract_topics(
     clusters,
     issue_name,
     prompt_path,
-    template_path,
     duration_hours,
-    model_name,
-    max_news_count,
-    min_news_count
+    model_name
 ):
     fixed_clusters = []
-    clusters = list(clusters.clid2cluster.values())
-    if len(clusters) < min_news_count:
-        return
-
-    clusters.sort(key=lambda cl: cl.create_time)
-    clusters = clusters[-max_news_count:]
     for cluster in clusters:
         if cluster.issue != issue_name:
             continue
@@ -67,10 +58,7 @@ def extract_topics(
                 fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
             final_titles.append(fixed_title)
         topic["titles"] = final_titles
-
-    with open(template_path) as f:
-        template = Template(f.read())
-    return template.render(topics=topics, duration_hours=int(duration_hours))
+    return topics
 
 
 def main(
@@ -84,23 +72,38 @@ def main(
     prompt_path,
     template_path,
     model_name,
-    auto
+    auto,
+    logs_path
 ):
     duration = int(duration_hours * 3600)
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
     client = TelegramClient(client_config_path)
 
-    text = extract_topics(
+    clusters = list(clusters.clid2cluster.values())
+    if len(clusters) < min_news_count:
+        return
+    clusters.sort(key=lambda cl: cl.create_time)
+    clusters = clusters[-max_news_count:]
+
+    topics = extract_topics(
         clusters,
         issue_name=issue_name,
         prompt_path=prompt_path,
-        template_path=template_path,
         duration_hours=duration_hours,
-        model_name=model_name,
-        max_news_count=max_news_count,
-        min_news_count=min_news_count
+        model_name=model_name
     )
+
+    with open(template_path, "r") as f:
+        template = Template(f.read())
+    text = template.render(topics=topics, duration_hours=int(duration_hours))
     print(text)
+
+    with open(logs_path, "a") as f:
+        clusters = [cl.asdict() for cl in clusters]
+        for cl in clusters:
+            cl["annotation_doc"].pop("embedding", None)
+        record = {"clusters": clusters, "topics": topics}
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     should_publish = False
     if not auto:
@@ -121,6 +124,7 @@ if __name__ == "__main__":
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)
     parser.add_argument("--template-path", type=str, required=True)
+    parser.add_argument("--logs-path", type=str, required=True)
     parser.add_argument("--model-name", type=str, default="gpt-4")
     parser.add_argument("--auto", default=False, action="store_true")
     args = parser.parse_args()
