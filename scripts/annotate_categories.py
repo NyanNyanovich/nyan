@@ -35,7 +35,7 @@ def annotate_categories(
     for batch in tqdm(gen_batch(prompts, batch_size=1)):
         batch = [[{"role": "user", "content": prompt}] for prompt in batch]
         results = openai_batch_completion(batch, model_name=model_name)
-        for messages, result in zip(batch, results):
+        for result in results:
             print("Text:", process_text(documents[document_index]["patched_text"]))
             content = result.message.content.strip()
             print("Answer:", content)

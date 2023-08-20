@@ -20,7 +20,6 @@ def eval_clf(
 
     y_pred, y_true = [], []
     for record, embedding in zip(markup, embeddings):
-        url = record["url"]
         text = record["text"]
         embedding = embedding.numpy()
         pred = clf.predict([embedding])
@@ -38,6 +37,7 @@ def eval_clf(
 
     print(classification_report(y_true, y_pred, target_names=label_encoder.classes_))
     print(confusion_matrix(y_true, y_pred))
+
 
 if __name__ == "__main__":
     fire.Fire(eval_clf)

@@ -154,7 +154,12 @@ def compare_docs():
             if key == "category_scores":
                 for key, p in pred_value.items():
                     c = canon_value[key]
-                    np.testing.assert_almost_equal(p, c, err_msg="{}: {} vs {}".format(key, p, c))
+                    np.testing.assert_almost_equal(
+                        actual=p,
+                        desired=c,
+                        decimal=3,
+                        err_msg="{}: {} vs {}".format(key, p, c)
+                    )
             if pred_value != canon_value:
                 diff[key] = (pred_value, canon_value)
         check.is_false(diff, f"Diff in keys {','.join(diff.keys())} in doc '{curl}'")

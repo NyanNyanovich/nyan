@@ -68,9 +68,7 @@ class Annotator:
             for step in post_pipeline:
                 doc = step(doc)
             processed_docs.append(doc)
-        docs = processed_docs
-
-        return docs
+        return processed_docs
 
     def postprocess(self, docs: List[Document]) -> List[Document]:
         return [doc for doc in docs if not doc.is_discarded()]

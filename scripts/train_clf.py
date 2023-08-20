@@ -34,10 +34,10 @@ def train(
         torch.save(embeddings, embeddings_path)
     assert len(embeddings) == len(markup)
 
-    X = embeddings.numpy()
+    x = embeddings.numpy()
     label_encoder = LabelEncoder()
     labels = [min([categories.index(l) for l in r["labels"]]) for r in markup]
-    labels = [categories[l] for l in labels]
+    labels = [categories[label] for label in labels]
     y = label_encoder.fit_transform(labels)
 
     clf = MLPClassifier(
@@ -49,7 +49,7 @@ def train(
         n_iter_no_change=100,
         max_iter=300
     )
-    clf.fit(X, y)
+    clf.fit(x, y)
     dump([clf, label_encoder], output_path)
 
 

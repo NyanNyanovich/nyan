@@ -193,8 +193,7 @@ class Cluster:
         if final_issue in doc_categories:
             return final_issue
 
-        final_issue = doc_categories.most_common(1)[0][0]
-        return final_issue
+        return doc_categories.most_common(1)[0][0]
 
     def asdict(self):
         docs = [d.asdict(is_short=True) for d in self.docs]
