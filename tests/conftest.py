@@ -160,6 +160,7 @@ def compare_docs():
                         decimal=3,
                         err_msg="{}: {} vs {}".format(key, p, c)
                     )
+                continue
             if pred_value != canon_value:
                 diff[key] = (pred_value, canon_value)
         check.is_false(diff, f"Diff in keys {','.join(diff.keys())} in doc '{curl}'")
