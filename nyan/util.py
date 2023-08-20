@@ -9,11 +9,13 @@ import numpy as np
 import torch
 
 
-def read_jsonl(file_path):
+def read_jsonl(file_path, sample_rate: float = 1.0):
     assert os.path.exists(file_path)
     with open(file_path) as r:
         for line in r:
             if not line:
+                continue
+            if random.random() > sample_rate:
                 continue
             yield json.loads(line)
 

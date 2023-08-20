@@ -9,6 +9,7 @@ from tqdm import tqdm
 from nyan.channels import Channels
 from nyan.document import Document
 from nyan.fasttext import FasttextClassifier
+from nyan.classifier import ClassifierHead
 from nyan.embedder import Embedder
 from nyan.text import TextProcessor
 from nyan.image import ImageProcessor
@@ -35,30 +36,39 @@ class Annotator:
 
         self.cat_detector = None
         if "cat_detector" in config:
-            self.cat_detector = FasttextClassifier(config["cat_detector"], use_tokenizer=True, lower=True)
+            self.cat_detector = ClassifierHead(config["cat_detector"])
 
         self.channels = channels
 
     def __call__(self, docs: List[Document]) -> List[Document]:
-        pipeline = (
+        pre_pipeline = (
             self.process_channels_info,
             self.clean_text,
             self.tokenize,
             self.normalize_links,
             self.has_obscene,
             self.predict_language,
-            self.predict_category,
             self.process_images
         )
         processed_docs = list()
-        for doc in tqdm(docs, desc="Annotator pipeline"):
-            for step in pipeline:
+        for doc in tqdm(docs, desc="Annotator pre-embeddings pipeline"):
+            for step in pre_pipeline:
                 doc = step(doc)
             processed_docs.append(doc)
         docs = processed_docs
 
         if self.embedder is not None:
             docs = self.calc_embeddings(docs)
+
+        post_pipeline = (
+            self.predict_category,
+        )
+        processed_docs = list()
+        for doc in tqdm(docs, desc="Annotator post-embeddings pipeline"):
+            for step in post_pipeline:
+                doc = step(doc)
+            processed_docs.append(doc)
+        docs = processed_docs
 
         return docs
 
@@ -135,8 +145,9 @@ class Annotator:
             return doc
         if not doc.patched_text:
             return doc
-        category, prob = self.cat_detector(doc.patched_text)
-        doc.category = category
+        scores = self.cat_detector(doc.embedding, doc.embedding_key)
+        doc.category = max([(score, cat) for cat, score in scores.items()])[1]
+        doc.category_scores = scores
         return doc
 
     def process_images(self, doc):

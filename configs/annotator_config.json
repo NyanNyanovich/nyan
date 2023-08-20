@@ -131,5 +131,8 @@
         "rm_threshold": 0.9
     },
     "lang_detector": "models/lid.176.bin",
-    "cat_detector": "models/ru_cat.ftz"
+    "cat_detector": {
+        "path": "models/multilingual_e5_base_cat_detect.joblib",
+        "embedding_key": "multilingual_e5_base"
+    }
 }

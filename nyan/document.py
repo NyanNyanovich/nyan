@@ -1,7 +1,7 @@
 import json
 import os
 from typing import List, Tuple, Dict, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from tqdm import tqdm
 
@@ -9,7 +9,7 @@ from nyan.mongo import get_documents_collection, get_annotated_documents_collect
 from nyan.util import Serializable
 
 
-CURRENT_VERSION = 5
+CURRENT_VERSION = 6
 
 
 @dataclass
@@ -30,10 +30,11 @@ class Document(Serializable):
     channel_title: str = ""
     has_obscene: bool = False
     patched_text: str = None
-    groups: Dict[str, str] = None
+    groups: Dict[str, str] = field(default_factory=dict)
     issue: str = None
     language: str = None
     category: str = None
+    category_scores: Dict[str, float] = field(default_factory=dict)
     tokens: str = None
     embedding: List[float] = None
     embedding_key: str = "multilingual_e5_base"
@@ -54,7 +55,7 @@ class Document(Serializable):
             return True
         if not self.patched_text or len(self.patched_text) < 12:
             return True
-        return self.category == "not_news"
+        return self.category_scores["not_news"] >= 0.45
 
     def update_meta(self, new_doc):
         self.fetch_time = new_doc.fetch_time

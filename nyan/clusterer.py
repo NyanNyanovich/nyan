@@ -81,12 +81,18 @@ class Clusterer:
         return clusters
 
     def find_image_duplicates(self, docs):
+        if len(docs) < 2:
+            return dict()
+
         embeddings, image2doc = [], []
         for i, doc in enumerate(docs):
             for image in doc.embedded_images:
                 embeddings.append(image["embedding"])
                 image2doc.append(i)
         if not image2doc:
+            return dict()
+
+        if len(embeddings) < 2:
             return dict()
 
         dim = len(embeddings[0])

@@ -52,7 +52,7 @@ def openai_completion(
 
 def openai_batch_completion(
     batch,
-    decoding_args: OpenAIDecodingArguments,
+    decoding_args=DEFAULT_ARGS,
     model_name="gpt-4",
     sleep_time=2
 ):
