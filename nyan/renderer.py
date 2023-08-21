@@ -29,14 +29,13 @@ class Renderer:
         if "ratings_template" in config:
             self.ratings_template = env.get_template(config["ratings_template"])
 
-    def render_cluster(self, cluster: Cluster):
-        issue = cluster.issue
+    def render_cluster(self, cluster: Cluster, issue_name: str):
         groups = defaultdict(list)
         emojis = dict()
         for doc in cluster.docs:
-            group = doc.groups[issue]
+            group = doc.groups[issue_name]
             groups[group].append(doc)
-            emojis[group] = self.channels[doc.channel_id].emojis[issue]
+            emojis[group] = self.channels[doc.channel_id].emojis[issue_name]
 
         used_channels = set()
         for group_name, group in groups.items():

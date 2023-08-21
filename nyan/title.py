@@ -26,11 +26,10 @@ def filter_purple(doc):
     return doc.groups["main"] == "purple"
 
 
-def filter_tech(doc):
-    return doc.groups["tech"] == "tech"
+def choose_title(docs: List[Document], issues: List[str]):
+    if not docs:
+        return None
 
-
-def choose_title(docs: List[Document], issue: str):
     avg_distances = dict()
     for doc1 in docs:
         distances = [cosine(doc1.embedding, doc2.embedding) for doc2 in docs]
@@ -48,11 +47,20 @@ def choose_title(docs: List[Document], issue: str):
         if filtered_docs:
             docs = filtered_docs
 
-    soft_filters = (
-        filter_not_long,
-        filter_tech if issue == "tech" else None,
-        filter_purple
-    )
+    # Choosing documents specific for issues
+    issue_filters = []
+    possible_issues = set(docs[0].groups.keys())
+    for issue in issues:
+        if issue == "main":
+            continue
+        if issue not in possible_issues:
+            continue
+        # Double lambda to capture "issue" properly
+        issue_filter = (lambda x: lambda doc: doc.groups[x] == x)(issue)
+        issue_filters.append(issue_filter)
+
+    soft_filters = [filter_not_long] + issue_filters + [filter_purple]
+
     for f in soft_filters:
         if not f:
             continue

@@ -4,7 +4,6 @@ import shutil
 import hashlib
 from collections import Counter, defaultdict
 from functools import cached_property
-from dataclasses import dataclass
 
 from nyan.client import MessageId
 from nyan.document import Document
@@ -20,7 +19,7 @@ class Cluster:
         self.is_important = False
 
         self.create_time = None
-        self.message = None
+        self.messages = list()
 
         self.distances = None
 
@@ -125,7 +124,7 @@ class Cluster:
     def annotation_doc(self):
         if self.saved_annotation_doc:
             return self.saved_annotation_doc
-        self.saved_annotation_doc = choose_title(self.docs, self.issue)
+        self.saved_annotation_doc = choose_title(self.docs, self.issues)
         return self.saved_annotation_doc
 
     @cached_property
@@ -171,29 +170,29 @@ class Cluster:
         return "purple"
 
     @property
-    def issue(self):
-        if self.message:
-            return self.message.issue
+    def issues(self):
+        if self.messages:
+            return [m.issue for m in self.messages]
 
-        issues = Counter([doc.issue for doc in self.docs])
-        max_cnt = issues.most_common(1)[0][1]
-        best_issues = [issue for issue, cnt in issues.items() if cnt == max_cnt]
+        def get_most_common(items):
+            counter = Counter(items)
+            max_count = counter.most_common(1)[0][1]
+            return [item for item, count in counter.items() if count == max_count]
 
-        # If we have a tie: use specific issues
-        final_issue = None
-        if len(best_issues) == 1:
-            final_issue = best_issues[0]
-        elif "main" in best_issues:
-            best_issues.remove("main")
-        final_issue = best_issues[0]
-        if final_issue == "main":
-            return final_issue
+        issues = get_most_common([doc.issue for doc in self.docs])
+        categories = get_most_common([doc.category for doc in self.docs])
 
-        doc_categories = Counter([doc.category for doc in self.docs])
-        if final_issue in doc_categories:
-            return final_issue
+        final_issues = ["main"]
+        final_issues.extend(issues)
+        final_issues.extend(categories)
+        final_issues = set(final_issues)
+        return list(final_issues)
 
-        return doc_categories.most_common(1)[0][0]
+    def get_issue_message(self, issue):
+        messages = [m for m in self.messages if m.issue == issue]
+        if messages:
+            return messages[0]
+        return None
 
     def asdict(self):
         docs = [d.asdict(is_short=True) for d in self.docs]
@@ -202,7 +201,7 @@ class Cluster:
         return {
             "clid": self.clid,
             "docs": docs,
-            "message": self.message.asdict() if self.message else None,
+            "messages": [m.asdict() for m in self.messages],
             "annotation_doc": annotation_doc,
             "first_doc": first_doc,
             "hash": self.hash,
@@ -218,17 +217,18 @@ class Cluster:
         for doc in d["docs"]:
             cluster.add(Document.fromdict(doc))
 
-        cluster.message = MessageId.fromdict(d.get("message"))
-        if not cluster.message and "message_id" in d:
-            cluster.message = MessageId(message_id=d["message_id"])
+        if "message" in d:
+            cluster.messages = [MessageId.fromdict(d["message"])]
+        elif "messages" in d:
+            cluster.messages = [MessageId.fromdict(m) for m in d["messages"]]
+        elif "message_id" in d:
+            cluster.messages = [MessageId(message_id=d["message_id"])]
 
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
         cluster.saved_hash = d.get("hash")
         cluster.is_important = d.get("is_important", False)
         cluster.create_time = d.get("create_time", None)
-        if not cluster.create_time and d.get("message") and "create_time" in d["message"]:
-            cluster.create_time = d["message"]["create_time"]
 
         return cluster
 
@@ -249,10 +249,16 @@ class Clusters:
     def find_similar(
         self,
         cluster,
+        issue_name: str,
         min_size_ratio: float = 0.25,
         min_intersection_ratio: float = 0.25
     ):
-        messages = [self.urls2messages.get(url) for url in cluster.urls if url in self.urls2messages]
+        messages = list()
+        for url in cluster.urls:
+            message = self.urls2messages[issue_name].get(url)
+            if message is None:
+                continue
+            messages.append(message)
         if not messages:
             return None
 
@@ -266,19 +272,21 @@ class Clusters:
         intersection_ratio = intersection_count / new_cluster_size
         intersection_ratio = min(intersection_ratio, intersection_count / old_cluster_size)
         size_ratio = new_cluster_size / old_cluster_size
+
         if size_ratio < min_size_ratio or intersection_ratio < min_intersection_ratio:
             return None
-
         return old_cluster
 
     def get_embedded_clusters(self, current_ts, issue):
         filtered_clusters = []
         for cluster in self.clid2cluster.values():
-            if not cluster.embedding or not cluster.message:
+            if not cluster.embedding:
+                continue
+            if not cluster.messages:
                 continue
             if abs(cluster.pub_time - current_ts) > 24 * 3600:
                 continue
-            if cluster.issue != issue:
+            if issue not in cluster.issues:
                 continue
             filtered_clusters.append(cluster)
         return filtered_clusters
@@ -288,7 +296,8 @@ class Clusters:
             self.max_clid += 1
             cluster.clid = self.max_clid
 
-        self.message2cluster[cluster.message] = cluster
+        for message in cluster.messages:
+            self.message2cluster[message] = cluster
         self.clid2cluster[cluster.clid] = cluster
         self.max_clid = max(self.max_clid, cluster.clid)
 
@@ -297,10 +306,11 @@ class Clusters:
 
     @cached_property
     def urls2messages(self):
-        result = dict()
+        result = defaultdict(dict)
         for _, cluster in self.clid2cluster.items():
             for url in cluster.urls:
-                result[url] = cluster.message
+                for message in cluster.messages:
+                    result[message.issue][url] = message
         return result
 
     def update_documents(self, documents):

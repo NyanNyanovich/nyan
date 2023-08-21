@@ -15,9 +15,10 @@ class Ranker:
     def __call__(self, all_clusters: List[Cluster]):
         issues = defaultdict(list)
         for cluster in all_clusters:
-            issues[cluster.issue].append(cluster)
+            for issue in cluster.issues:
+                issues[issue].append(cluster)
 
-        final_clusters = []
+        final_clusters = defaultdict(list)
         for issue_config in self.config["issues"]:
             issue_name = issue_config["issue_name"]
             min_channels = issue_config["min_channels"]
@@ -38,7 +39,7 @@ class Ranker:
             print(f"Issue: {issue_name}, clusters after first filter: {len(clusters)}")
 
             if len(clusters) <= 3:
-                final_clusters.extend(clusters)
+                final_clusters[issue_name].extend(clusters)
                 for cluster in clusters:
                     print("Added as no other clusters: {} {}".format(cluster.views_per_hour, cluster.cropped_title))
                 continue
@@ -52,7 +53,7 @@ class Ranker:
             )
             clusters.sort(key=lambda c: c.pub_time_percentile)
             clusters = clusters[-10:]
-            final_clusters.extend(clusters)
+            final_clusters[issue_name].extend(clusters)
         print()
         return final_clusters
 
@@ -110,6 +111,6 @@ class Ranker:
                 cluster.is_important = True
                 filtered_clusters.append(cluster)
                 print("Added by views (important): {} {}".format(views_per_hour, cropped_title))
-            elif cluster.message is None:
+            elif not cluster.messages:
                 print("Skipped by views: {} {}".format(views_per_hour, cropped_title))
         return filtered_clusters

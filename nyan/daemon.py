@@ -90,11 +90,13 @@ class Daemon:
         print("{} clusters overall".format(len(new_clusters)))
 
         new_clusters = self.ranker(new_clusters)
-        print("{} clusters in all issues after filtering".format(len(new_clusters)))
+        num_clusters = sum([len(cl) for cl in new_clusters.values()])
+        print("{} clusters in all issues after filtering".format(num_clusters))
 
         print()
-        for cluster in new_clusters:
-            self.send_cluster(cluster, posted_clusters, posted_clusters_path, mongo_config_path)
+        for issue, clusters in new_clusters.items():
+            for cluster in clusters:
+                self.send_cluster(cluster, issue, posted_clusters, posted_clusters_path, mongo_config_path)
 
         print()
         if posted_clusters_path:
@@ -157,17 +159,26 @@ class Daemon:
 
         return final_docs
 
-    def send_cluster(self, cluster, posted_clusters, posted_clusters_path, mongo_config_path):
+    def send_cluster(
+        self,
+        cluster,
+        issue_name,
+        posted_clusters,
+        posted_clusters_path,
+        mongo_config_path
+    ):
         sleep_time = self.config["sleep_time"]
         max_time_updated = self.config["max_time_updated"]
 
         posted_cluster = posted_clusters.find_similar(
             cluster,
+            issue_name,
             min_size_ratio=self.config["similar_min_size_ratio"],
             min_intersection_ratio=self.config["similar_min_intersection_ratio"]
         )
         if posted_cluster:
-            message = posted_cluster.message
+            message = posted_cluster.get_issue_message(issue_name)
+            assert message
             discussion_message = self.client.get_discussion(message)
 
             new_docs_pub_time = 0
@@ -182,7 +193,7 @@ class Daemon:
             current_ts = get_current_ts()
             time_diff = abs(current_ts - posted_cluster.pub_time_percentile)
             if time_diff < max_time_updated and posted_cluster.changed():
-                cluster_text = self.renderer.render_cluster(posted_cluster)
+                cluster_text = self.renderer.render_cluster(posted_cluster, issue_name)
                 print("Update cluster {} at {}: {}".format(
                     message.message_id, message.issue, posted_cluster.cropped_title
                 ))
@@ -191,17 +202,20 @@ class Daemon:
                 is_caption = bool(posted_cluster.images) or bool(posted_cluster.videos)
                 self.client.update_message(message, cluster_text, is_caption)
             else:
-                print("Same cluster {} at {}: {}".format(message.message_id, message.issue, posted_cluster.cropped_title))
+                print("Same cluster {} at {}: {}".format(
+                    message.message_id,
+                    message.issue,
+                    posted_cluster.cropped_title
+                ))
             print()
             return
 
-        cluster_text = self.renderer.render_cluster(cluster)
-        print("New cluster in {}: {}".format(cluster.issue, cluster.cropped_title))
+        cluster_text = self.renderer.render_cluster(cluster, issue_name)
+        print("New cluster in {}: {}".format(issue_name, cluster.cropped_title))
 
-        issue_name = cluster.issue
         self.client.update_discussion_mapping(issue_name)
 
-        reply_to = self.calc_reply_to(cluster, posted_clusters)
+        reply_to = self.calc_reply_to(cluster, posted_clusters, issue_name)
         message = self.client.send_message(
             cluster_text,
             issue_name,
@@ -213,7 +227,7 @@ class Daemon:
             return
 
         cluster.create_time = get_current_ts()
-        cluster.message = message
+        cluster.messages.append(message)
         posted_clusters.add(cluster)
 
         print("Message id: {}, saving".format(message.message_id))
@@ -231,13 +245,13 @@ class Daemon:
             self.client.send_discussion_message(discussion_text, discussion_message)
             sleep(sleep_time)
         print()
-        return cluster
+        return
 
-    def calc_reply_to(self, cluster, posted_clusters):
+    def calc_reply_to(self, cluster, posted_clusters, issue_name):
         threshold = float(self.config["related_threshold"])
 
         current_ts = get_current_ts()
-        clusters = posted_clusters.get_embedded_clusters(current_ts, cluster.issue)
+        clusters = posted_clusters.get_embedded_clusters(current_ts, issue_name)
         if not clusters:
             return None
 
@@ -256,4 +270,7 @@ class Daemon:
         if max_sim < threshold:
             return None
 
-        return best_cluster.message.message_id
+        for m in best_cluster.messages:
+            if m.issue == issue_name:
+                return m.message_id
+        return None

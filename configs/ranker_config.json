@@ -11,7 +11,7 @@
         {
             "issue_name": "tech",
             "min_channels": 2,
-            "max_age_minutes": 720,
+            "max_age_minutes": 360,
             "views_percentile": 30,
             "higher_views_percentile": 30,
             "higher_trigger_age_minutes": 0
@@ -19,7 +19,7 @@
         {
             "issue_name": "economy",
             "min_channels": 2,
-            "max_age_minutes": 720,
+            "max_age_minutes": 360,
             "views_percentile": 30,
             "higher_views_percentile": 30,
             "higher_trigger_age_minutes": 0
