@@ -18,7 +18,7 @@ def test_clusterer_and_ranker_on_snapshot(
     clusters = clusterer(output_docs)
     assert len(clusters) > 1
 
-    filtered_clusters = ranker(clusters)
+    filtered_clusters = ranker(clusters)["main"]
     assert len(filtered_clusters) >= 1
 
     for pcl, (_, ccl) in zip(filtered_clusters, sorted(output_clusters.clid2cluster.items())):
