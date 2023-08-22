@@ -27,7 +27,7 @@ with open(get_annotator_output_path(), "w") as w:
         w.write(doc.serialize() + "\n")
 
 clusters = clusterer(docs)
-clusters = ranker(clusters)
+clusters = ranker(clusters)["main"]
 with open(get_ranker_output_path(), "w") as w:
     for cluster in clusters:
         w.write(cluster.serialize() + "\n")
