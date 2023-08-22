@@ -143,9 +143,12 @@ class Annotator:
             return doc
         if not doc.patched_text:
             return doc
-        scores = self.cat_detector(doc.embedding, doc.embedding_key)
-        doc.category = max([(score, cat) for cat, score in scores.items()])[1]
+        category, scores = self.cat_detector(
+            doc.embedding,
+            doc.embedding_key
+        )
         doc.category_scores = scores
+        doc.category = category
         return doc
 
     def process_images(self, doc):

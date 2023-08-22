@@ -55,7 +55,7 @@ class Document(Serializable):
             return True
         if not self.patched_text or len(self.patched_text) < 12:
             return True
-        return self.category_scores["not_news"] >= 0.45
+        return self.category == "not_news"
 
     def update_meta(self, new_doc):
         self.fetch_time = new_doc.fetch_time
