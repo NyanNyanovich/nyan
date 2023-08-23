@@ -33,9 +33,10 @@ class Renderer:
         groups = defaultdict(list)
         emojis = dict()
         for doc in cluster.docs:
-            group = doc.groups[issue_name]
+            channel = self.channels[doc.channel_id]
+            group = channel.groups[issue_name]
             groups[group].append(doc)
-            emojis[group] = self.channels[doc.channel_id].emojis[issue_name]
+            emojis[group] = channel.emojis[issue_name]
 
         used_channels = set()
         for group_name, group in groups.items():
