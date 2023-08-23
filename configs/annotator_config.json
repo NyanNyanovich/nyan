@@ -135,6 +135,6 @@
         "path": "models/multilingual_e5_base_cat_detect.joblib",
         "embedding_key": "multilingual_e5_base",
         "not_news_threshold": 0.45,
-        "unknown_threshold": 0.6
+        "unknown_threshold": 0.7
     }
 }
