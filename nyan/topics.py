@@ -21,12 +21,14 @@ def extract_topics(
 ):
     fixed_clusters = []
     for cluster in clusters:
-        if cluster.issue != issue_name:
+        messages = [m for m in cluster.messages if m.issue == issue_name]
+        if not messages:
             continue
+        message = messages[0]
         dt = ts_to_dt(cluster.create_time)
         date_str = dt.strftime(u"%B %d, %H:%M")
         fixed_clusters.append({
-            "url": f"https://t.me/nyannews/{cluster.message.message_id}",
+            "url": f"https://t.me/nyannews/{message.message_id}",
             "dt": date_str,
             "views": cluster.views,
             "sources_count": len([doc.channel_title for doc in cluster.docs]),
