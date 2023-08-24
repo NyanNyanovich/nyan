@@ -1,23 +1,17 @@
-Все новости:
+All news:
 {% for cluster in clusters %}
 ###
 {{cluster.annotation_doc.patched_text}}
 {% endfor %}
 ###
 
-Адаптируй какой-нибудь существующий не очень популярный мем к данной выше новостной повестке. Верни JSON для imgflip API. Сделай максимально смешно, и объясни, почему мем смешной. Делай надписи на русском языке.
+Meme templates:
+{% for template in meme_templates %}
+###
+Name: {{template.name}}
+Example texts: {{template.example.text}}
+Example url: {{template.example.url}}
+{% endfor %}
+###
 
-Не используй мемы:
-- Distracted Boyfriend
-- Mocking SpongeBob
-- Drake Hotline Bling
-
-Используй массив boxes в таком формате:
-[
-    {
-        "text": "Нельзя просто так взять и"
-    },
-    {
-        "text": "Сделать запросы в API"
-    }
-]
+Используя один из шаблонов выше, сделай смешной мем к данной выше новостной повестке. Сделай максимально смешно, и объясни, почему мем смешной. Делай надписи строго на русском языке. Верни JSON с двумя полями: "explanation" и "url".
