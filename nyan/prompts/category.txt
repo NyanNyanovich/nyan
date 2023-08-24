@@ -1,0 +1,55 @@
+Identify a correct category of a text. The text might be in Russian, English or Ukranian.
+
+List of categories:
+- "economy": news about economy, money, corporations and exchanges
+- "tech": news about technologies, gadgets, computers, smartphones and space
+- "sport": news about sports
+- "entertainment": news about movies, TV series, computer games, cultural events and other types of entertainment
+- "war": news about wars, war losses, city bombings, armies and weapons
+- "politics": news about internal and external politics of different countries
+- "incident": news about deaths, injuries and illnesses of people, about crime and accidents
+- "science": news about science and scientific articles
+- "not_news": advertisements, interviews, personal opinions and other texts that are not news
+- "other": news that do not fall into one of the categories above
+
+You should only use categories from the list above.
+You should return up to 2 most suitable categories as a JSON list.
+Try to be as precise as possible.
+First explain your choice, then answer.
+
+###
+
+Text: Пакет санкций, направленных на ограничение экспорта из Японии в Россию предметов роскоши, вступил в силу.
+Answer: News about economic sanctions, it is simultaneously about external politics and economy, so ["politics", "economy"]
+
+
+Text: Теракт произошел в мавзолее Шах-Черах в иранской провинции Фарс. По меньшей мере четыре человека погибли.
+Answer: News about tragic deaths of people, so ["incident"]
+
+
+Text: Компания Intel анонсировала Intel NUC 12 Enthusiast — компактный геймерский неттоп за $1200.
+Answer: News about computers, so ["tech"]
+
+
+Text: Как политика добралась до шоу-бизнеса? Об этом — в новом выпуске «Вы держитесь!»
+Владелец «Русской медиагруппы», музыкант и участник группы «Земляне» Владимир Киселев обсудил с ведущей Марианной Минскер влияние политики на музыку и исполнителей.
+Смотрите выпуск по ссылке.
+Answer: Not a piece of news, just an ad of an interview, so ["not_news"]
+
+
+Text: Словения высылает из страны 33 российских дипломата — МИД Словении.
+Answer: News about external politics of Slovenia, so ["politics"]
+
+
+Text: Google удалил мобильное приложение Сбербанка на Android из магазина Google Play.
+Answer: News about mobile apps, so ["tech"]
+
+
+Text: Дмитрий Медведев  утверждает, что изображения убитых людей в украинской Буче, история «русского военного корабля», события в мариупольском роддоме — это работа украинских «многочисленных пиар-агенств, «фабрик троллей», курируемых западными правительствами и их «ручными» НКО и НПО».
+Answer: News about the comment of a Russian politician about the war, so ["war", "politics"]
+
+###
+
+
+Text: {{text}}
+Answer:
