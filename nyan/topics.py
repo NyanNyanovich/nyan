@@ -21,10 +21,7 @@ def extract_topics(
 ):
     fixed_clusters = []
     for cluster in clusters:
-        messages = [m for m in cluster.messages if m.issue == issue_name]
-        if not messages:
-            continue
-        message = messages[0]
+        message = [m for m in cluster.messages if m.issue == issue_name][0]
         dt = ts_to_dt(cluster.create_time)
         date_str = dt.strftime(u"%B %d, %H:%M")
         fixed_clusters.append({
@@ -79,11 +76,19 @@ def main(
 ):
     duration = int(duration_hours * 3600)
     clusters = Clusters.load_from_mongo(mongo_config_path, get_current_ts(), duration)
-    client = TelegramClient(client_config_path)
-
     clusters = list(clusters.clid2cluster.values())
+
+    fixed_clusters = []
+    for cluster in clusters:
+        messages = [m for m in cluster.messages if m.issue == issue_name]
+        if not messages:
+            continue
+        fixed_clusters.append(cluster)
+    clusters = fixed_clusters
+
     if len(clusters) < min_news_count:
         return
+
     clusters.sort(key=lambda cl: cl.create_time)
     clusters = clusters[-max_news_count:]
 
@@ -111,6 +116,7 @@ def main(
     if not auto:
         should_publish = input("Publish? y/n ").strip() == "y"
 
+    client = TelegramClient(client_config_path)
     if auto or should_publish:
         client.send_message(text, issue_name=issue_name, parse_mode="Markdown")
 
@@ -120,8 +126,8 @@ if __name__ == "__main__":
     parser.add_argument("--mongo-config-path", type=str, required=True)
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--renderer-config-path", type=str, required=True)
-    parser.add_argument("--duration-hours", type=int, default=12)
-    parser.add_argument("--max-news-count", type=int, default=40)
+    parser.add_argument("--duration-hours", type=int, default=8)
+    parser.add_argument("--max-news-count", type=int, default=30)
     parser.add_argument("--min-news-count", type=int, default=10)
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)

@@ -18,9 +18,7 @@ ALL_MEME_TEMPLATES = requests.get("https://api.memegen.link/templates").json()
 
 def get_memegen_meme(
     clusters,
-    issue_name,
     prompt_path,
-    duration_hours,
     model_name,
     templates_count
 ):
@@ -53,6 +51,7 @@ def main(
     duration_hours,
     max_news_count,
     issue_name,
+    target_issue_name,
     prompt_path,
     template_path,
     model_name,
@@ -74,9 +73,7 @@ def main(
 
     image_url, explanation = get_memegen_meme(
         clusters,
-        issue_name=issue_name,
         prompt_path=prompt_path,
-        duration_hours=duration_hours,
         model_name=model_name,
         templates_count=templates_count
     )
@@ -91,7 +88,12 @@ def main(
 
     client = TelegramClient(client_config_path)
     if auto or should_publish:
-        client.send_message(text, photos=[image_url], issue_name=issue_name, parse_mode="html")
+        client.send_message(
+            text,
+            photos=[image_url],
+            issue_name=target_issue_name,
+            parse_mode="html"
+        )
 
 
 if __name__ == "__main__":
@@ -99,9 +101,10 @@ if __name__ == "__main__":
     parser.add_argument("--mongo-config-path", type=str, required=True)
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--duration-hours", type=int, default=12)
-    parser.add_argument("--max-news-count", type=int, default=10)
-    parser.add_argument("--templates-count", type=int, default=6)
+    parser.add_argument("--max-news-count", type=int, default=5)
+    parser.add_argument("--templates-count", type=int, default=5)
     parser.add_argument("--issue-name", type=str, default="main")
+    parser.add_argument("--target-issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, required=True)
     parser.add_argument("--template-path", type=str, required=True)
     parser.add_argument("--model-name", type=str, default="gpt-4")
