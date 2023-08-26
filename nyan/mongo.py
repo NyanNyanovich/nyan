@@ -34,3 +34,17 @@ def get_clusters_collection(mongo_config_path):
     database = get_database(mongo_config)
     clusters_collection_name = mongo_config["clusters_collection_name"]
     return database[clusters_collection_name]
+
+
+def get_memes_collection(mongo_config_path):
+    mongo_config = read_config(mongo_config_path)
+    database = get_database(mongo_config)
+    memes_collection_name = mongo_config.get("memes_collection_name", "memes")
+    return database[memes_collection_name]
+
+
+def get_topics_collection(mongo_config_path):
+    mongo_config = read_config(mongo_config_path)
+    database = get_database(mongo_config)
+    topics_collection_name = mongo_config.get("topics_collection_name", "topics")
+    return database[topics_collection_name]
