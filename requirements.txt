@@ -46,3 +46,10 @@ pandas >= 1.5.1
 # Bots
 python-telegram-bot >= 13.14
 annoy >= 1.17.1
+
+# Language models
+openai >= 0.27.8
+
+# Export
+feedgen == 0.9.0
+ghp-import == 2.1.0

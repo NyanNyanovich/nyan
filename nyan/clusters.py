@@ -84,13 +84,13 @@ class Cluster:
 
     @cached_property
     def images(self):
-        image_doc_count = sum([1 if doc.embedded_images else 0 for doc in self.unique_docs])
+        image_doc_count = sum([1 if doc.images else 0 for doc in self.unique_docs])
         doc_count = len(self.unique_docs)
+        if doc_count == 0:
+            return tuple()
         images = [i["url"] for i in self.annotation_doc.embedded_images]
         if not images:
             return tuple()
-        if doc_count == 0:
-            return images
         if image_doc_count / doc_count >= 0.4 or image_doc_count >= 3:
             return images
         return tuple()
@@ -103,8 +103,12 @@ class Cluster:
         return tuple()
 
     @cached_property
-    def cropped_title(self):
-        return " ".join(self.annotation_doc.patched_text.split()[:10]) + "..."
+    def cropped_title(self, max_words: int = 14):
+        text = self.annotation_doc.patched_text
+        words = text.split()
+        if len(words) < max_words:
+            return " ".join(words)
+        return " ".join(words[:max_words]) + "..."
 
     @property
     def urls(self):
@@ -193,6 +197,13 @@ class Cluster:
         if messages:
             return messages[0]
         return None
+
+    def get_url(self, host, issue):
+        message = self.get_issue_message(issue)
+        if not message:
+            return None
+        message_id = message.message_id
+        return f"{host}/{message_id}"
 
     def asdict(self):
         docs = [d.asdict(is_short=True) for d in self.docs]
