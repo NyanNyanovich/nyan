@@ -240,6 +240,12 @@ class Daemon:
         discussion_message = self.client.get_discussion(message)
         print("Discussion message id: {}".format(discussion_message.message_id))
 
+        sources_text = self.renderer.render_sources(cluster, issue_name)
+        self.client.send_discussion_message(
+            sources_text,
+            discussion_message,
+            disable_web_page_preview=True
+        )
         for doc in cluster.docs:
             discussion_text = self.renderer.render_discussion_message(doc)
             self.client.send_discussion_message(discussion_text, discussion_message)

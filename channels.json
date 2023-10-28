@@ -1186,6 +1186,14 @@
     "economy":"💰",
     "other": "📰"
   },
+  "colors": {
+    "red": "🟥",
+    "blue": "🟦",
+    "purple": "🟪",
+    "tech": "⬛",
+    "economy": "🟨",
+    "other": "⬜"
+  },
   "default_groups": {
     "main": "purple",
     "tech": "other",

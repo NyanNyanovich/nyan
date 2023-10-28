@@ -6,7 +6,10 @@
 
 👁️{{views}}
 {% for group, sources in groups %}
-{{-emojis[group]-}}{%- for source in sources %}<a href="{{source.url}}">{{source.channel_title}}</a>{% if not loop.last %} • {% endif %}{% endfor %}
+{%- if source_count < 6 %}{{-emojis[group]-}}{%- for source in sources %}<a href="{{source.url}}">{{source.channel_title}}</a>{% if not loop.last %} • {% endif %}{% endfor %}{%- else -%}
+{{-emojis[group]-}}{%- for _ in range(color_counts[group]["progress_bar"]) %}{{colors[group]}}{% endfor %} {{color_counts[group]["percent"]}} • {{color_counts[group]["source_count"]}} {% if color_counts[group]["source_count"] == 1 %}канал{% elif color_counts[group]["source_count"] == 2 %}канала{% elif color_counts[group]["source_count"] == 3 %}канала{% elif color_counts[group]["source_count"] == 4 %}канала{% else %}каналов{% endif %}{% endif %}
 {% endfor %}
+{%- if source_count >= 6 -%}<i>Полный список источников в первом комментарии</i>{%- endif %}
+
 ⏱<a href="{{first_doc.url}}">{{first_doc.channel_title}}</a>, {{first_doc.pub_time.strftime("%H:%M")}} {{tz_name}}
 

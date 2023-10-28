@@ -204,7 +204,12 @@ class TelegramClient:
             from_discussion=True
         )
 
-    def send_discussion_message(self, text, discussion_message):
+    def send_discussion_message(
+        self,
+        text: str,
+        discussion_message: MessageId,
+        disable_web_page_preview: bool = False
+    ):
         assert discussion_message.from_discussion
         issue = self.issues[discussion_message.issue]
         if not issue.discussion_id or not discussion_message.message_id:
@@ -214,7 +219,7 @@ class TelegramClient:
             "chat_id": issue.discussion_id,
             "text": text,
             "parse_mode": "html",
-            "disable_web_page_preview": False,
+            "disable_web_page_preview": disable_web_page_preview,
             "reply_to_message_id": discussion_message.message_id
         }
         return self._post(url_template.format(issue.bot_token), params)

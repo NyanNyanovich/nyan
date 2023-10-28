@@ -23,6 +23,7 @@ class Renderer:
         file_loader = FileSystemLoader(".")
         env = Environment(loader=file_loader)
         self.cluster_template = env.get_template(config["cluster_template"])
+        self.sources_template = env.get_template(config["sources_template"])
         self.ratings_template = None
         self.tz_offset = config["tz_offset"]
         self.tz_name = config["tz_name"]
@@ -32,11 +33,13 @@ class Renderer:
     def render_cluster(self, cluster: Cluster, issue_name: str):
         groups = defaultdict(list)
         emojis = dict()
+        colors = dict()
         for doc in cluster.docs:
             channel = self.channels[doc.channel_id]
             group = channel.groups[issue_name]
             groups[group].append(doc)
             emojis[group] = channel.emojis[issue_name]
+            colors[group] = channel.colors[issue_name]
 
         used_channels = set()
         for group_name, group in groups.items():
@@ -50,6 +53,14 @@ class Renderer:
             groups[group_name] = filtered_group
 
         groups = sorted(groups.items(), key=lambda x: x[0])
+        color_counts = {group: len(sources) for group, sources in groups}
+        all_count = sum(color_counts.values())
+
+        color_counts = {group: {
+            "progress_bar": max(int(cnt * 10.0 // all_count), 1),
+            "source_count": cnt,
+            "percent": "{:.1%}".format(cnt / all_count)
+        } for group, cnt in color_counts.items()}
 
         first_doc = copy.deepcopy(cluster.first_doc)
         first_doc.pub_time = ts_to_dt(first_doc.pub_time, self.tz_offset)
@@ -70,10 +81,41 @@ class Renderer:
             first_doc=first_doc,
             groups=groups,
             emojis=emojis,
+            colors=colors,
+            color_counts=color_counts,
+            source_count=all_count,
             views=views,
             is_important=cluster.is_important,
             external_link=external_link,
             tz_name=self.tz_name
+        )
+
+    def render_sources(self, cluster: Cluster, issue_name: str):
+        groups = defaultdict(list)
+        emojis, colors = dict(), dict()
+        for doc in cluster.docs:
+            channel = self.channels[doc.channel_id]
+            group = channel.groups[issue_name]
+            groups[group].append(doc)
+            emojis[group] = channel.emojis[issue_name]
+            colors[group] = channel.colors[issue_name]
+
+        used_channels = set()
+        for group_name, group in groups.items():
+            group.sort(key=lambda x: x.pub_time)
+            filtered_group = list()
+            for doc in group:
+                if doc.channel_id in used_channels:
+                    continue
+                used_channels.add(doc.channel_id)
+                filtered_group.append(doc)
+            groups[group_name] = filtered_group
+
+        groups = sorted(groups.items(), key=lambda x: x[0])
+        return self.sources_template.render(
+            groups=groups,
+            emojis=emojis,
+            colors=colors,
         )
 
     def render_discussion_message(self, doc):

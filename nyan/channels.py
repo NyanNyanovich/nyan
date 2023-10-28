@@ -14,6 +14,7 @@ class Channel(Serializable):
     master: str = None
     disabled: bool = False
     emojis: Dict[str, str] = None
+    colors: Dict[str, str] = None
     issue: str = None
 
 
@@ -24,6 +25,7 @@ class Channels:
         with open(path) as r:
             config = json.load(r)
         emojis = config["emojis"]
+        colors = config["colors"]
         default_groups = config["default_groups"]
         for channel in config["channels"]:
             channel = Channel.fromdict(channel)
@@ -33,6 +35,7 @@ class Channels:
                 if issue not in channel.groups:
                     channel.groups[issue] = group
             channel.emojis = {issue: emojis[group] for issue, group in channel.groups.items()}
+            channel.colors = {issue: colors[group] for issue, group in channel.groups.items()}
             self.add(channel)
 
     def add(self, channel):
