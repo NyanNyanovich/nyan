@@ -38,7 +38,10 @@ class ClipEmbedder:
         for url in urls:
             if not url.startswith("http://") and not url.startswith("https://"):
                 continue
-            response = requests.get(url, stream=True)
+            try:
+                response = requests.get(url, stream=True)
+            except Exception as e:
+                continue
             if response.status_code != 200:
                 continue
             images.append({
