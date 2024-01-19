@@ -1176,6 +1176,155 @@
       "groups": {
         "main": "red"
       }
+    },
+    {
+      "name": "moscowmap",
+      "alias": "Новости Москвы",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "moscowach",
+      "alias": "Москвач",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "msk_live",
+      "alias": "Москва Live",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "mosguru",
+      "alias": "Первый Московский",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "mskmolnia",
+      "alias": "Молния / Новости Москвы",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "infomoscow24",
+      "alias": "Москва 24",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow",
+        "main": "red"
+      }
+    },
+    {
+      "name": "mosnow",
+      "alias": "Москва сейчас",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "mskonline24",
+      "alias": "Москва онлайн",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "moscowtop",
+      "alias": "Москва с огоньком",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "moskvir",
+      "alias": "Новости Москвы",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "mnews_ru",
+      "alias": "Московские новости",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "actualmck",
+      "alias": "Актуальная Москва",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "MoscowDigest",
+      "alias": "Moscow Digest",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "vmoskvanews",
+      "alias": "Вечерняя Москва",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow",
+        "main": "red"
+      }
+    },
+    {
+      "name": "mosrutop",
+      "alias": "Город Москва",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow",
+        "main": "red"
+      }
+    },
+    {
+      "name": "moskwa_life",
+      "alias": "Москва Life",
+      "issue": "moscow",
+      "groups": {
+         "moscow": "moscow",
+         "main": "red"
+      }
+    },
+    {
+      "name": "moslentaru",
+      "alias": "Мослента",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow"
+      }
+    },
+    {
+      "name": "riamo_ru",
+      "alias": "РИАМО",
+      "issue": "moscow",
+      "groups": {
+        "moscow": "moscow",
+        "main": "red"
+      }
     }
   ],
   "emojis": {
@@ -1184,7 +1333,8 @@
     "purple": "⚖️",
     "tech": "💻",
     "economy":"💰",
-    "other": "📰"
+    "other": "📰",
+    "moscow": "🌆"
   },
   "colors": {
     "red": "🟥",
@@ -1192,11 +1342,13 @@
     "purple": "🟪",
     "tech": "⬛",
     "economy": "🟨",
-    "other": "⬜"
+    "other": "⬜",
+    "moscow": "⬜"
   },
   "default_groups": {
     "main": "purple",
     "tech": "other",
-    "economy": "other"
+    "economy": "other",
+    "moscow": "other"
   }
 }

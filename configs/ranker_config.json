@@ -23,6 +23,14 @@
             "views_percentile": 30,
             "higher_views_percentile": 30,
             "higher_trigger_age_minutes": 0
+        },
+        {
+            "issue_name": "moscow",
+            "min_channels": 4,
+            "max_age_minutes": 240,
+            "views_percentile": 40,
+            "higher_views_percentile": 70,
+            "higher_trigger_age_minutes": 15
         }
     ]
 }

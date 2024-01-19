@@ -11,6 +11,18 @@
             "channel_id": -1,
             "discussion_id": -1,
             "bot_token": "token"
+        },
+        {
+            "name": "economy",
+            "channel_id": -1,
+            "discussion_id": -1,
+            "bot_token": "token"
+        },
+        {
+            "name": "moscow",
+            "channel_id": -1,
+            "discussion_id": -1,
+            "bot_token": "token"
         }
     ]
 }

@@ -56,7 +56,7 @@ def choose_title(docs: List[Document], issues: List[str]):
         if issue not in possible_issues:
             continue
         # Double lambda to capture "issue" properly
-        issue_filter = (lambda x: lambda doc: doc.groups[x] == x)(issue)
+        issue_filter = (lambda x: lambda doc: doc.groups.get(x) == x)(issue)
         issue_filters.append(issue_filter)
 
     soft_filters = [filter_not_long] + issue_filters + [filter_purple]
