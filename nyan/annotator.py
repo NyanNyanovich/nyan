@@ -143,6 +143,8 @@ class Annotator:
             return doc
         if not doc.patched_text:
             return doc
+        if not doc.embedding:
+            return doc
         category, scores = self.cat_detector(
             doc.embedding,
             doc.embedding_key

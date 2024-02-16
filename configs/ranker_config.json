@@ -18,8 +18,8 @@
         },
         {
             "issue_name": "economy",
-            "min_channels": 2,
-            "max_age_minutes": 360,
+            "min_channels": 3,
+            "max_age_minutes": 240,
             "views_percentile": 30,
             "higher_views_percentile": 30,
             "higher_trigger_age_minutes": 0

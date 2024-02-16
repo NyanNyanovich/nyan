@@ -1325,6 +1325,15 @@
         "moscow": "moscow",
         "main": "red"
       }
+    },
+    {
+      "name": "pyaroshnaya",
+      "groups": {
+        "tech": "tech"
+      },
+      "alias": "Пиарошная",
+      "issue": "tech",
+      "recrawl_time": 600
     }
   ],
   "emojis": {

@@ -105,6 +105,7 @@ def main(
     if auto or should_publish:
         client = TelegramClient(client_config_path)
         client.send_message(text, issue_name=issue_name, parse_mode="Markdown")
+        client.send_message(text, issue_name="summary", parse_mode="Markdown")
 
     collection = get_topics_collection(mongo_config_path)
     record = {"clusters": clusters, "topics": topics}
@@ -117,11 +118,11 @@ if __name__ == "__main__":
     parser.add_argument("--client-config-path", type=str, required=True)
     parser.add_argument("--duration-hours", type=int, default=8)
     parser.add_argument("--max-news-count", type=int, default=30)
-    parser.add_argument("--min-news-count", type=int, default=10)
+    parser.add_argument("--min-news-count", type=int, default=5)
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, default="nyan/prompts/topics.txt")
     parser.add_argument("--template-path", type=str, default="nyan/templates/topics.html")
-    parser.add_argument("--model-name", type=str, default="gpt-4")
+    parser.add_argument("--model-name", type=str, default="gpt-4-1106-preview")
     parser.add_argument("--auto", default=False, action="store_true")
     args = parser.parse_args()
     main(**vars(args))
