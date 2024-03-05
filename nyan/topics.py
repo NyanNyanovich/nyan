@@ -122,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument("--issue-name", type=str, default="main")
     parser.add_argument("--prompt-path", type=str, default="nyan/prompts/topics.txt")
     parser.add_argument("--template-path", type=str, default="nyan/templates/topics.html")
-    parser.add_argument("--model-name", type=str, default="gpt-4-1106-preview")
+    parser.add_argument("--model-name", type=str, default="gpt-4-turbo-preview")
     parser.add_argument("--auto", default=False, action="store_true")
     args = parser.parse_args()
     main(**vars(args))

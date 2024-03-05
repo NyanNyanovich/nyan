@@ -299,7 +299,8 @@
         "tech": "other"
       },
       "alias": "Пивоваров (Редакция)",
-      "issue": "main"
+      "issue": "main",
+      "disabled": true
     },
     {
       "name": "stalin_gulag",
@@ -469,7 +470,8 @@
       "name": "concertzaal",
       "groups": {
         "main": "purple",
-        "tech": "other"
+        "tech": "other",
+        "entertainment": "entertainment"
       },
       "alias": "Concertzaal",
       "issue": "main",
@@ -1050,7 +1052,8 @@
     {
       "name": "pravdadirty",
       "groups": {
-        "main": "red"
+        "main": "red",
+        "entertainment": "entertainment"
       },
       "alias": "ВПШ",
       "issue": "main"
@@ -1108,7 +1111,8 @@
       "alias": "Starhit.ru",
       "issue": "main",
       "groups": {
-        "main": "red"
+        "main": "red",
+        "entertainment": "entertainment"
       }
     },
     {
@@ -1328,12 +1332,119 @@
     },
     {
       "name": "pyaroshnaya",
+      "alias": "Пиарошная",
+      "issue": "tech",
       "groups": {
         "tech": "tech"
       },
-      "alias": "Пиарошная",
-      "issue": "tech",
       "recrawl_time": 600
+    },
+    {
+      "name": "kinopoisk_soon",
+      "alias": "Кинопоиск",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "cherevatstreams",
+      "alias": "CherevatBlog",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "cronenberg1664",
+      "alias": "Кроненберг нефильтрованный",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "filmru",
+      "alias": "Film.ru",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "filmzru",
+      "alias": "FILMZ.RU: Настоящее кино",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "rhsnews",
+      "alias": "RHS News",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "kosti",
+      "alias": "KOSTI",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "badmads",
+      "alias": "MADS",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "superru",
+      "alias": "Super.ru",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "ebobo_rus",
+      "alias": "ebobo",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "novostishowbiz",
+      "alias": "Новости Шоу-Бизнеса",
+      "issue": "entertainment",
+      "groups": {
+        "entertainment": "entertainment"
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "kontext_channel",
+      "alias": "Контекст",
+      "issue": "main",
+      "groups": {
+        "main": "purple"
+      }
     }
   ],
   "emojis": {
@@ -1343,7 +1454,8 @@
     "tech": "💻",
     "economy":"💰",
     "other": "📰",
-    "moscow": "🌆"
+    "moscow": "🌆",
+    "entertainment": "🎭"
   },
   "colors": {
     "red": "🟥",
@@ -1352,12 +1464,14 @@
     "tech": "⬛",
     "economy": "🟨",
     "other": "⬜",
-    "moscow": "⬜"
+    "moscow": "⬜",
+    "entertainment": "🟩"
   },
   "default_groups": {
     "main": "purple",
     "tech": "other",
     "economy": "other",
-    "moscow": "other"
+    "moscow": "other",
+    "entertainment": "other"
   }
 }
