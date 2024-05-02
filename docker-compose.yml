@@ -4,8 +4,27 @@ services:
     image: mongo:4.4.0
     container_name: mongo
     environment:
-        MONGO_INITDB_DATABASE: main
-    volumes:
-      - ./mongo:/data/db
+      MONGO_INITDB_DATABASE: main
     ports:
       - 27017:27017
+    volumes:
+      - ./mongo:/data/db
+    restart: always
+
+  nyan-send:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - mongo
+    restart: always
+    command: bash send_container.sh
+
+  nyan-crawl:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - mongo
+    restart: always
+    command: bash crawl.sh

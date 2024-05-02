@@ -1,0 +1,10 @@
+{
+    "client": {
+        "host": "mongodb://mongo",
+        "port": 27017
+    },
+    "database_name": "main",
+    "documents_collection_name": "documents",
+    "annotated_documents_collection_name": "annotated_documents",
+    "clusters_collection_name": "clusters"
+}
