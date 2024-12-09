@@ -194,7 +194,7 @@ class Daemon:
             time_diff = abs(current_ts - posted_cluster.pub_time_percentile)
             if time_diff < max_time_updated and posted_cluster.changed():
                 cluster_text = self.renderer.render_cluster(posted_cluster, issue_name)
-                print("Update cluster {} at {}: {}".format(
+                print("Update message {} at {}: {}".format(
                     message.message_id, message.issue, posted_cluster.cropped_title
                 ))
                 print("Discussion message id: {}".format(discussion_message.message_id))

@@ -319,7 +319,8 @@
         "tech": "other"
       },
       "alias": "Санкции в РФ",
-      "issue": "main"
+      "issue": "main",
+      "disabled": true
     },
     {
       "name": "ovsyanka",
@@ -841,7 +842,7 @@
     {
       "name": "svtvnews",
       "groups": {
-        "main": "blue",
+        "main": "purple",
         "tech": "other"
       },
       "alias": "SVTV News",
@@ -1104,7 +1105,8 @@
       "issue": "main",
       "groups": {
         "main": "purple"
-      }
+      },
+      "disabled": true
     },
     {
       "name": "starhitru",
@@ -1441,6 +1443,48 @@
     {
       "name": "kontext_channel",
       "alias": "Контекст",
+      "issue": "main",
+      "groups": {
+        "main": "purple"
+      }
+    },
+    {
+      "name": "groza_media",
+      "alias": "Гроза",
+      "issue": "main",
+      "groups": {
+        "main": "blue"
+      }
+    },
+    {
+      "name": "tvrain",
+      "alias": "Дождь",
+      "issue": "main",
+      "groups": {
+        "main": "blue"
+      }
+    },
+    {
+      "name": "bankrollo",
+      "alias": "Банки, деньги, два офшора",
+      "issue": "main",
+      "groups": {
+        "main": "red",
+        "economy": "economy"
+      }
+    },
+    {
+      "name": "banki_oil",
+      "alias": "Баррель черной икры",
+      "issue": "main",
+      "groups": {
+        "main": "purple",
+        "economy": "economy"
+      }
+    },
+    {
+      "name": "gnews_ru",
+      "alias": "GNews",
       "issue": "main",
       "groups": {
         "main": "purple"
