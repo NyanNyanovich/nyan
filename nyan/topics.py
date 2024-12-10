@@ -82,6 +82,7 @@ def main(
     clusters = fixed_clusters
 
     if len(clusters) < min_news_count:
+        print("Not enough news")
         return
     clusters = clusters[-max_news_count:]
 
