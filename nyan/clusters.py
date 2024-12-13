@@ -2,13 +2,20 @@ import json
 import os
 import shutil
 import hashlib
+from pathlib import Path
 from collections import Counter, defaultdict
 from functools import cached_property
+
+from jinja2 import Template
 
 from nyan.client import MessageId
 from nyan.document import Document
 from nyan.mongo import get_clusters_collection
 from nyan.title import choose_title
+from nyan.openai import openai_completion
+
+
+BASE_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 
 
 class Cluster:
@@ -26,6 +33,7 @@ class Cluster:
         self.saved_annotation_doc = None
         self.saved_first_doc = None
         self.saved_hash = None
+        self.saved_diff = None
 
     def add(self, doc):
         self.docs.append(doc)
@@ -125,6 +133,28 @@ class Cluster:
         return min(self.docs, key=lambda x: x.pub_time)
 
     @property
+    def diff(self):
+        if self.saved_diff is not None:
+            return self.saved_diff
+
+        prompt_path: Path = BASE_DIR / "prompts/diff.txt"
+        with open(prompt_path) as f:
+            template = Template(f.read())
+        prompt = template.render(docs=self.docs, annotation_doc=self.annotation_doc)
+        messages = [{"role": "user", "content": prompt}]
+
+        try:
+            print("OpenAI call...")
+            result = openai_completion(messages=messages, model_name="gpt-4o")
+            content = result.message.content.strip()
+            content = content[content.find("{"):content.rfind("}") + 1]
+            content = json.loads(content)
+            differences = content["differences"]
+        except Exception:
+            differences = []
+        return differences
+
+    @property
     def annotation_doc(self):
         if self.saved_annotation_doc:
             return self.saved_annotation_doc
@@ -216,6 +246,7 @@ class Cluster:
             "annotation_doc": annotation_doc,
             "first_doc": first_doc,
             "hash": self.hash,
+            "diff": self.diff,
             "is_important": self.is_important,
             "create_time": self.create_time
         }
@@ -238,6 +269,7 @@ class Cluster:
         cluster.saved_annotation_doc = Document.fromdict(d.get("annotation_doc"))
         cluster.saved_first_doc = Document.fromdict(d.get("first_doc"))
         cluster.saved_hash = d.get("hash")
+        cluster.saved_diff = d.get("diff", None)
         cluster.is_important = d.get("is_important", False)
         cluster.create_time = d.get("create_time", None)
 
@@ -255,7 +287,7 @@ class Clusters:
     def __init__(self):
         self.clid2cluster = dict()
         self.message2cluster = dict()
-        self.max_clid = 0
+        self.max_clid = 60000
 
     def find_similar(
         self,

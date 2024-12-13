@@ -1,6 +1,10 @@
 {{annotation_doc.patched_text|e}} — <a href="{{annotation_doc.url}}">{{annotation_doc.channel_title}}</a>
 {% if external_link %}
 Вероятный первоисточник: <a href="{{external_link.url}}">{{external_link.host}}</a>
+{% endif %} {% if diff %}
+Другие подробности:{% for d in diff %}
+— {{d}}{% endfor %}
+<i>Секция составлена языковой моделью.</i>
 {% endif %}
 <i>Новости группируются автоматически. Сообщение не достоверно. Правдивость информации не проверяется.</i>
 

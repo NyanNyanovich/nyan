@@ -78,6 +78,7 @@ class Renderer:
         views = self.views_to_str(cluster.views)
         return self.cluster_template.render(
             annotation_doc=cluster.annotation_doc,
+            diff=cluster.diff,
             first_doc=first_doc,
             groups=groups,
             emojis=emojis,

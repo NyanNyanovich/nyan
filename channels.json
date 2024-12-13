@@ -1488,7 +1488,17 @@
       "issue": "main",
       "groups": {
         "main": "purple"
-      }
+      },
+      "recrawl_time": 600
+    },
+    {
+      "name": "oninvest_media",
+      "alias": "Oninvest",
+      "issue": "economy",
+      "groups": {
+        "economy": "economy"
+      },
+      "recrawl_time": 300
     }
   ],
   "emojis": {
