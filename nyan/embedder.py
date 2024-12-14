@@ -1,5 +1,7 @@
+from typing import List
+
 import torch
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer  # type: ignore
 from tqdm.auto import tqdm
 
 from nyan.util import set_random_seed, gen_batch
@@ -17,8 +19,8 @@ class Embedder:
         device: str = DEVICE,
         pooling_method: str = "default",
         normalize: bool = True,
-        text_prefix: str = ""
-    ):
+        text_prefix: str = "",
+    ) -> None:
         set_random_seed(56154)
         self.model_name = model_name
         self.model = AutoModel.from_pretrained(model_name).to(device)
@@ -30,19 +32,23 @@ class Embedder:
         self.normalize = normalize
         self.text_prefix = text_prefix
 
-    def __call__(self, texts):
-        embeddings = torch.zeros((len(texts), self.model.config.hidden_size))
+    def __call__(self, texts: List[str]) -> torch.Tensor:
+        embeddings: torch.Tensor = torch.zeros(
+            (len(texts), self.model.config.hidden_size)
+        )
         total = len(texts) // self.batch_size + 1
         desc = "Calc embeddings"
         if self.text_prefix:
             texts = [self.text_prefix + text for text in texts]
-        for batch_num, batch in enumerate(tqdm(gen_batch(texts, self.batch_size), total=total, desc=desc)):
+        for batch_num, batch in enumerate(
+            tqdm(gen_batch(texts, self.batch_size), total=total, desc=desc)
+        ):
             inputs = self.tokenizer(
                 batch,
                 return_tensors="pt",
                 padding=True,
                 truncation=True,
-                max_length=self.max_length
+                max_length=self.max_length,
             ).to(self.model.device)
             with torch.no_grad():
                 out = self.model(**inputs)
@@ -51,8 +57,12 @@ class Embedder:
                 elif self.pooling_method == "mean":
                     hidden_states = out.last_hidden_state
                     attention_mask = inputs["attention_mask"]
-                    last_hidden = hidden_states.masked_fill(~attention_mask[..., None].bool(), 0.0)
-                    batch_embeddings = last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
+                    last_hidden = hidden_states.masked_fill(
+                        ~attention_mask[..., None].bool(), 0.0
+                    )
+                    batch_embeddings = (
+                        last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
+                    )
                 if self.normalize:
                     batch_embeddings = torch.nn.functional.normalize(batch_embeddings)
             start_index = batch_num * self.batch_size

@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from nyan.channels import Channels
 from nyan.document import Document
-from nyan.fasttext import FasttextClassifier
+from nyan.fasttext_clf import FasttextClassifier
 from nyan.classifier import ClassifierHead
 from nyan.embedder import Embedder
 from nyan.text import TextProcessor
@@ -48,7 +48,7 @@ class Annotator:
             self.normalize_links,
             self.has_obscene,
             self.predict_language,
-            self.process_images
+            self.process_images,
         )
         processed_docs = list()
         for doc in tqdm(docs, desc="Annotator pre-embeddings pipeline"):
@@ -60,9 +60,7 @@ class Annotator:
         if self.embedder is not None:
             docs = self.calc_embeddings(docs)
 
-        post_pipeline = (
-            self.predict_category,
-        )
+        post_pipeline = (self.predict_category,)
         processed_docs = list()
         for doc in tqdm(docs, desc="Annotator post-embeddings pipeline"):
             for step in post_pipeline:
@@ -73,7 +71,7 @@ class Annotator:
     def postprocess(self, docs: List[Document]) -> List[Document]:
         return [doc for doc in docs if not doc.is_discarded()]
 
-    def process_channels_info(self, doc):
+    def process_channels_info(self, doc: Document) -> Document:
         channel_id = doc.channel_id.strip().lower()
         if channel_id not in self.channels:
             return doc
@@ -87,20 +85,24 @@ class Annotator:
             doc.channel_title = channel_alias
         return doc
 
-    def clean_text(self, doc):
+    def clean_text(self, doc: Document) -> Document:
+        if not doc.text:
+            return doc
         doc.patched_text = self.text_processor(doc.text)
         return doc
 
-    def tokenize(self, doc):
+    def tokenize(self, doc: Document) -> Document:
         if not doc.patched_text:
             return doc
         tokens = self.tokenizer(doc.patched_text)
-        tokens = ["{}_{}".format(t.lemma.lower().replace("_", ""), t.pos) for t in tokens]
+        tokens = [
+            "{}_{}".format(t.lemma.lower().replace("_", ""), t.pos) for t in tokens
+        ]
         doc.tokens = " ".join(tokens)
         return doc
 
-    def normalize_links(self, doc):
-        def has_cyrillic(text):
+    def normalize_links(self, doc: Document) -> Document:
+        def has_cyrillic(text: str) -> bool:
             return bool(re.search("[а-яА-Я]", text))
 
         fixed_links = []
@@ -116,20 +118,21 @@ class Annotator:
         doc.links = fixed_links
         return doc
 
-    def has_obscene(self, doc):
+    def has_obscene(self, doc: Document) -> Document:
         if not doc.patched_text:
             return doc
         doc.has_obscene = self.text_processor.has_obscene(doc.patched_text)
         return doc
 
-    def calc_embeddings(self, docs):
-        texts = [d.patched_text for d in docs]
+    def calc_embeddings(self, docs: List[Document]) -> List[Document]:
+        ready_docs = [d for d in docs if d.patched_text is not None]
+        texts = [d.patched_text for d in ready_docs]
         embeddings = self.embedder(texts)
-        for d, embedding in zip(docs, embeddings):
+        for d, embedding in zip(ready_docs, embeddings):
             d.embedding = embedding.numpy().tolist()
-        return docs
+        return ready_docs
 
-    def predict_language(self, doc):
+    def predict_language(self, doc: Document) -> Document:
         if not self.lang_detector:
             return doc
         if not doc.patched_text:
@@ -138,23 +141,20 @@ class Annotator:
         doc.language = language
         return doc
 
-    def predict_category(self, doc):
+    def predict_category(self, doc: Document) -> Document:
         if not self.cat_detector:
             return doc
         if not doc.patched_text:
             return doc
         if not doc.embedding:
             return doc
-        category, scores = self.cat_detector(
-            doc.embedding,
-            doc.embedding_key
-        )
+        category, scores = self.cat_detector(doc.embedding, doc.embedding_key)
         doc.category_scores = scores
         doc.category = category
         return doc
 
-    def process_images(self, doc):
+    def process_images(self, doc: Document) -> Document:
         if not self.image_processor:
             return doc
-        doc.embedded_images = self.image_processor(doc.images)
+        doc.embedded_images = self.image_processor(list(doc.images))
         return doc

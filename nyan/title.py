@@ -1,32 +1,36 @@
-from typing import List
+from typing import List, Optional
 from statistics import mean
 
-from scipy.spatial.distance import cosine
+from scipy.spatial.distance import cosine  # type: ignore
 
 from nyan.document import Document
 
 
-def filter_ru_only(doc):
+def filter_ru_only(doc: Document) -> bool:
     return doc.language == "ru"
 
 
-def filter_not_obscene(doc):
+def filter_not_obscene(doc: Document) -> bool:
     return not doc.has_obscene
 
 
-def filter_not_long(doc):
+def filter_not_long(doc: Document) -> bool:
+    if not doc.text:
+        return False
     return len(doc.text) < 500
 
 
-def filter_fresh(doc):
+def filter_fresh(doc: Document) -> bool:
+    if not doc.fetch_time or not doc.pub_time:
+        return False
     return abs(doc.fetch_time - doc.pub_time) < 3600
 
 
-def filter_purple(doc):
+def filter_purple(doc: Document) -> bool:
     return doc.groups["main"] == "purple"
 
 
-def choose_title(docs: List[Document], issues: List[str]):
+def choose_title(docs: List[Document], issues: List[str]) -> Optional[Document]:
     if not docs:
         return None
 
@@ -35,15 +39,9 @@ def choose_title(docs: List[Document], issues: List[str]):
         distances = [cosine(doc1.embedding, doc2.embedding) for doc2 in docs]
         avg_distances[doc1.url] = mean(distances)
 
-    hard_filters = (
-        filter_ru_only,
-        filter_not_obscene,
-        filter_fresh
-    )
-    for f in hard_filters:
-        if not f:
-            continue
-        filtered_docs = list(filter(f, docs))
+    hard_filters = (filter_ru_only, filter_not_obscene, filter_fresh)
+    for flt in hard_filters:
+        filtered_docs = list(filter(flt, docs))
         if filtered_docs:
             docs = filtered_docs
 

@@ -3,7 +3,7 @@ import os
 from typing import List, Tuple, Dict, Any, Optional, Iterable
 from dataclasses import dataclass, field
 
-from tqdm import tqdm  # type: ignore
+from tqdm import tqdm
 
 from nyan.mongo import get_documents_collection, get_annotated_documents_collection
 from nyan.util import Serializable

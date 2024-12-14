@@ -1,4 +1,5 @@
 import re
+from typing import Any, Dict
 
 EMOJI_PATTERN = re.compile(
     "(["
@@ -14,33 +15,35 @@ EMOJI_PATTERN = re.compile(
     "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
     "\U00002600-\U00002B55"
     "\U0000FE0E-\U0000FE0F"
-    "])", \
-    flags=re.UNICODE
+    "])",
+    flags=re.UNICODE,
 )
 URL_PATTERN = re.compile(r"(http\S+|www\.\S+)", flags=re.UNICODE)
-URL_WITHOUT_HTTP_PATTERN = re.compile(r"[\S]+\.(ru|me|com|org)[/][\S]+", flags=re.UNICODE)
+URL_WITHOUT_HTTP_PATTERN = re.compile(
+    r"[\S]+\.(ru|me|com|org)[/][\S]+", flags=re.UNICODE
+)
 USERS_PATTERN = re.compile(r"\s@(\w+)", flags=re.UNICODE)
 HASHTAG_PATTERN = re.compile(r"#(\w+)", flags=re.UNICODE)
 
 
-def remove_emoji(text):
-    return EMOJI_PATTERN.sub(r'', text)
+def remove_emoji(text: str) -> str:
+    return EMOJI_PATTERN.sub(r"", text)
 
 
-def remove_hashtags(text):
-    return HASHTAG_PATTERN.sub(r'', text)
+def remove_hashtags(text: str) -> str:
+    return HASHTAG_PATTERN.sub(r"", text)
 
 
-def remove_urls(text):
-    text1 = URL_PATTERN.sub(r'', text)
-    return URL_WITHOUT_HTTP_PATTERN.sub(r'', text1)
+def remove_urls(text: str) -> str:
+    text1 = URL_PATTERN.sub(r"", text)
+    return URL_WITHOUT_HTTP_PATTERN.sub(r"", text1)
 
 
-def remove_users(text):
-    return USERS_PATTERN.sub(r'', text)
+def remove_users(text: str) -> str:
+    return USERS_PATTERN.sub(r"", text)
 
 
-def fix_paragraphs(text):
+def fix_paragraphs(text: str) -> str:
     paragraphs = text.split("\n")
     for i, paragraph in enumerate(paragraphs):
         paragraphs[i] = " ".join(paragraph.split()).strip()
@@ -48,7 +51,7 @@ def fix_paragraphs(text):
     return "\n".join(paragraphs)
 
 
-def remove_bad_punct(text):
+def remove_bad_punct(text: str) -> str:
     paragraphs = text.split("\n")
     for i, paragraph in enumerate(paragraphs):
         paragraph = paragraph.replace(". .", ".").replace("..", ".")
@@ -60,20 +63,20 @@ def remove_bad_punct(text):
 
 
 class TextProcessor:
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.pipeline = (
             remove_emoji,
             remove_hashtags,
             remove_users,
             remove_urls,
             remove_bad_punct,
-            fix_paragraphs
+            fix_paragraphs,
         )
         self.skip_substrings = config["skip_substrings"]
         self.rm_substrings = config["rm_substrings"]
         self.obscene_substrings = config["obscene_substrings"]
 
-    def __call__(self, text):
+    def __call__(self, text: str) -> str:
         if not text:
             return ""
         if self.is_bad_text(text):
@@ -89,13 +92,13 @@ class TextProcessor:
 
         return text.strip()
 
-    def has_obscene(self, text):
+    def has_obscene(self, text: str) -> bool:
         return any(ss in text for ss in self.obscene_substrings)
 
-    def is_bad_text(self, text):
+    def is_bad_text(self, text: str) -> bool:
         return any(ss in text for ss in self.skip_substrings)
 
-    def remove_bad_text(self, text):
+    def remove_bad_text(self, text: str) -> str:
         for ss in self.rm_substrings:
             if ss in text:
                 text = text.replace(ss, " ")

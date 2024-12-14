@@ -55,3 +55,9 @@ openai >= 0.27.8
 # Export
 feedgen == 0.9.0
 ghp-import == 2.1.0
+
+
+# Types
+types-requests == 2.32.0.20241016
+types-tqdm == 4.67.0.20241119
+types-pillow == 10.2.0.20240822
