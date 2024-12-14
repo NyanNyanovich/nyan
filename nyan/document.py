@@ -1,9 +1,9 @@
 import json
 import os
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Optional, Iterable
 from dataclasses import dataclass, field
 
-from tqdm import tqdm
+from tqdm import tqdm  # type: ignore
 
 from nyan.mongo import get_documents_collection, get_annotated_documents_collection
 from nyan.util import Serializable
@@ -19,36 +19,36 @@ class Document(Serializable):
     post_id: int
     views: int
     pub_time: int
-    text: str = None
-    fetch_time: int = None
-    images: List[str] = tuple()
-    links: List[str] = tuple()
-    videos: List[str] = tuple()
-    reply_to: str = None
-    forward_from: str = None
+    text: Optional[str] = None
+    fetch_time: Optional[int] = None
+    images: Iterable[str] = tuple()
+    links: Iterable[str] = tuple()
+    videos: Iterable[str] = tuple()
+    reply_to: Optional[str] = None
+    forward_from: Optional[str] = None
 
     channel_title: str = ""
     has_obscene: bool = False
-    patched_text: str = None
+    patched_text: Optional[str] = None
     groups: Dict[str, str] = field(default_factory=dict)
-    issue: str = None
-    language: str = None
-    category: str = None
+    issue: Optional[str] = None
+    language: Optional[str] = None
+    category: Optional[str] = None
     category_scores: Dict[str, float] = field(default_factory=dict)
-    tokens: str = None
-    embedding: List[float] = None
+    tokens: Optional[str] = None
+    embedding: Optional[List[float]] = None
     embedding_key: str = "multilingual_e5_base"
-    embedded_images: List[Dict[str, Any]] = tuple()
+    embedded_images: Iterable[Dict[str, Any]] = tuple()
 
     version: int = CURRENT_VERSION
 
-    def is_reannotation_needed(self, new_doc):
+    def is_reannotation_needed(self, new_doc: "Document") -> bool:
         assert new_doc.url == self.url
         if self.version != CURRENT_VERSION:
             return True
         return new_doc.text != self.text
 
-    def is_discarded(self):
+    def is_discarded(self) -> bool:
         if self.issue is None:
             return True
         if self.groups is None:
@@ -57,11 +57,11 @@ class Document(Serializable):
             return True
         return self.category == "not_news"
 
-    def update_meta(self, new_doc):
+    def update_meta(self, new_doc: "Document") -> None:
         self.fetch_time = new_doc.fetch_time
         self.views = new_doc.views
 
-    def asdict(self, is_short: bool = False):
+    def asdict(self, is_short: bool = False) -> Dict[str, Any]:
         record = super().asdict()
         if is_short:
             record.pop("text")
@@ -70,14 +70,18 @@ class Document(Serializable):
         return record
 
     @property
-    def cropped_text(self, max_words_count: int = 50):
+    def cropped_text(self, max_words_count: int = 50) -> str:
+        if not self.patched_text:
+            return ""
         words = self.patched_text.split()
         if len(words) < max_words_count:
             return " ".join(words)
         return " ".join(words[:max_words_count]) + "..."
 
 
-def read_documents_file(file_path, current_ts=None, offset=None):
+def read_documents_file(
+    file_path: str, current_ts: Optional[int] = None, offset: Optional[int] = None
+) -> List[Document]:
     assert os.path.exists(file_path)
     with open(file_path) as r:
         docs = [Document.deserialize(line) for line in r]
@@ -86,13 +90,17 @@ def read_documents_file(file_path, current_ts=None, offset=None):
     return docs
 
 
-def read_documents_mongo(mongo_config_path, current_ts, offset):
+def read_documents_mongo(
+    mongo_config_path: str, current_ts: int, offset: int
+) -> List[Document]:
     collection = get_documents_collection(mongo_config_path)
     docs = list(collection.find({"pub_time": {"$gte": current_ts - offset}}))
     return [Document.fromdict(doc) for doc in docs]
 
 
-def read_annotated_documents_mongo(mongo_config_path, docs):
+def read_annotated_documents_mongo(
+    mongo_config_path: str, docs: List[Document]
+) -> Tuple[List[Document], List[Document]]:
     collection = get_annotated_documents_collection(mongo_config_path)
     annotated_docs = []
     remaining_docs = []
@@ -102,19 +110,21 @@ def read_annotated_documents_mongo(mongo_config_path, docs):
             remaining_docs.append(doc)
             continue
 
-        annotated_doc = Document.fromdict(annotated_doc)
-        if annotated_doc.is_reannotation_needed(doc):
+        annotated_doc_loaded: Document = Document.fromdict(annotated_doc)
+        if annotated_doc_loaded.is_reannotation_needed(doc):
             remaining_docs.append(doc)
             continue
 
-        annotated_doc.update_meta(doc)
-        assert annotated_doc.embedding is not None
-        assert annotated_doc.patched_text is not None
-        annotated_docs.append(annotated_doc)
+        annotated_doc_loaded.update_meta(doc)
+        assert annotated_doc_loaded.embedding is not None
+        assert annotated_doc_loaded.patched_text is not None
+        annotated_docs.append(annotated_doc_loaded)
     return annotated_docs, remaining_docs
 
 
-def write_annotated_documents_mongo(mongo_config_path, docs):
+def write_annotated_documents_mongo(
+    mongo_config_path: str, docs: List[Document]
+) -> None:
     collection = get_annotated_documents_collection(mongo_config_path)
 
     indices = collection.index_information()
