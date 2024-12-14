@@ -144,12 +144,19 @@ class Cluster:
         messages = [{"role": "user", "content": prompt}]
 
         try:
-            print("OpenAI call...")
             result = openai_completion(messages=messages, model_name="gpt-4o")
             content = result.message.content.strip()
             content = content[content.find("{"):content.rfind("}") + 1]
             content = json.loads(content)
             differences = content["differences"]
+
+            channel_titles = {doc.channel_id: doc.channel_title for doc in self.docs}
+            doc_urls = {doc.channel_id: doc.url for doc in self.docs}
+            for diff in differences:
+                ids = diff["channel_ids"][:3]
+                ids = [i for i in ids if i in channel_titles and i in doc_urls]
+                channels = ['<a href="{}">{}</a>'.format(doc_urls[i], channel_titles[i]) for i in ids]
+                diff["channels"] = ", ".join(channels)
         except Exception:
             differences = []
         return differences

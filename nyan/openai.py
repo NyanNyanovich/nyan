@@ -45,8 +45,7 @@ def openai_completion(
                 decoding_args.max_tokens = int(decoding_args.max_tokens * 0.8)
                 logging.warning("Reducing target length to %d, Retrying...", decoding_args.max_tokens)
             else:
-                logging.warning("Hit request rate limit; retrying...")
-                time.sleep(sleep_time)
+                raise e
     return completions.choices[0]
 
 
