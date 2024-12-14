@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 import shutil
 import hashlib
 from pathlib import Path
@@ -158,6 +159,7 @@ class Cluster:
                 channels = ['<a href="{}">{}</a>'.format(doc_urls[i], channel_titles[i]) for i in ids]
                 diff["channels"] = ", ".join(channels)
         except Exception:
+            traceback.print_exc()
             differences = []
         return differences
 

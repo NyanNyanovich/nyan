@@ -38,6 +38,10 @@ def main(
             clusters = list(collection.find({"clid": {"$gte": current_clid_start, "$lt": current_clid_end}}))
             clusters.sort(key=lambda x: x["annotation_doc"]["pub_time"])
             for cluster in clusters:
+                if cluster["clid"] < clid_start:
+                    continue
+                if cluster["clid"] > clid_end:
+                    continue
                 cluster.pop("_id")
                 cluster["annotation_doc"].pop("embedding", None)
                 cluster["annotation_doc"].pop("embedded_images", None)
