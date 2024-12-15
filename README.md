@@ -59,3 +59,5 @@ Run server
 ```
 bash send.sh
 ```
+
+You can provide OPENAI_API_KEY environment variable to use LLM-related features.
