@@ -68,7 +68,7 @@ def set_random_seed(seed: int) -> None:
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
-    torch.use_deterministic_algorithms(True)  # type: ignore
+    torch.use_deterministic_algorithms(True)
 
 
 def gen_batch(records: List[Any], batch_size: int) -> Iterable[List[Any]]:

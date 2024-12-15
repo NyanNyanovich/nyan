@@ -36,8 +36,8 @@ def openai_completion(
                 messages=messages, model=model_name, **decoding_args.__dict__
             )
             break
-        except openai.error.OpenAIError as e:
-            logging.warning("OpenAIError: %s.", e)
+        except Exception as e:
+            logging.warning("OpenAI error: %s.", e)
             if "Please reduce" in str(e):
                 decoding_args.max_tokens = int(decoding_args.max_tokens * 0.8)
                 logging.warning(
