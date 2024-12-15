@@ -2,7 +2,6 @@ import json
 import re
 from typing import List
 from urllib.parse import unquote, urlparse
-import numpy as np
 
 from tqdm import tqdm
 
@@ -126,7 +125,7 @@ class Annotator:
 
     def calc_embeddings(self, docs: List[Document]) -> List[Document]:
         ready_docs = [d for d in docs if d.patched_text is not None]
-        texts = [d.patched_text for d in ready_docs]
+        texts = [d.patched_text for d in ready_docs if d.patched_text is not None]
         embeddings = self.embedder(texts)
         for d, embedding in zip(ready_docs, embeddings):
             d.embedding = embedding.numpy().tolist()

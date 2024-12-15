@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from statistics import mean
 
 from scipy.spatial.distance import cosine  # type: ignore
@@ -30,9 +30,8 @@ def filter_purple(doc: Document) -> bool:
     return doc.groups["main"] == "purple"
 
 
-def choose_title(docs: List[Document], issues: List[str]) -> Optional[Document]:
-    if not docs:
-        return None
+def choose_title(docs: List[Document], issues: List[str]) -> Document:
+    assert docs
 
     avg_distances = dict()
     for doc1 in docs:

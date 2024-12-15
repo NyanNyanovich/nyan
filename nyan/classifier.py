@@ -1,8 +1,6 @@
 from typing import Dict, Any, Tuple, List
 from joblib import load  # type: ignore
 
-from nyan.embedder import Embedder
-
 
 class ClassifierHead:
     def __init__(self, config: Dict[str, Any]) -> None:

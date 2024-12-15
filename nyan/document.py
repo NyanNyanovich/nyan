@@ -1,7 +1,7 @@
-import json
 import os
-from typing import List, Tuple, Dict, Any, Optional, Iterable
+from typing import List, Tuple, Dict, Any, Optional, Sequence
 from dataclasses import dataclass, field
+from datetime import datetime
 
 from tqdm import tqdm
 
@@ -19,11 +19,12 @@ class Document(Serializable):
     post_id: int
     views: int
     pub_time: int
+    pub_time_dt: Optional[datetime] = None
     text: Optional[str] = None
     fetch_time: Optional[int] = None
-    images: Iterable[str] = tuple()
-    links: Iterable[str] = tuple()
-    videos: Iterable[str] = tuple()
+    images: Sequence[str] = tuple()
+    links: Sequence[str] = tuple()
+    videos: Sequence[str] = tuple()
     reply_to: Optional[str] = None
     forward_from: Optional[str] = None
 
@@ -38,7 +39,7 @@ class Document(Serializable):
     tokens: Optional[str] = None
     embedding: Optional[List[float]] = None
     embedding_key: str = "multilingual_e5_base"
-    embedded_images: Iterable[Dict[str, Any]] = tuple()
+    embedded_images: Sequence[Dict[str, Any]] = tuple()
 
     version: int = CURRENT_VERSION
 

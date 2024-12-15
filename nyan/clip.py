@@ -1,15 +1,14 @@
 from typing import TypeVar, Callable, Dict, List, Any, cast
 
-import os
 import numpy as np
 from numpy.typing import NDArray
 import requests
 import torch
-from transformers import CLIPProcessor, CLIPModel, AutoTokenizer  # type: ignore
+from transformers import CLIPProcessor, CLIPModel  # type: ignore
 from tqdm.auto import tqdm
 from PIL import Image
 
-from nyan.util import set_random_seed, gen_batch
+from nyan.util import gen_batch
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"

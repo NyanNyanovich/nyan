@@ -1,9 +1,8 @@
-from typing import List, Any
+from typing import Any
 
 from natasha import (  # type: ignore
     Segmenter,
     MorphVocab,
-    NamesExtractor,
     NewsEmbedding,
     NewsMorphTagger,
     Doc,

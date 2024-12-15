@@ -1,5 +1,3 @@
-import json
-
 import fire
 from joblib import load
 from sklearn.metrics import classification_report, confusion_matrix

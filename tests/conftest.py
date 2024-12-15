@@ -9,7 +9,7 @@ from nyan.annotator import Annotator
 from nyan.document import read_documents_file, Document
 from nyan.clusterer import Clusterer
 from nyan.ranker import Ranker
-from nyan.fasttext import FasttextClassifier
+from nyan.fasttext_clf import FasttextClassifier
 from nyan.renderer import Renderer
 from nyan.channels import Channels
 from nyan.clusters import Clusters

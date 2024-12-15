@@ -2,8 +2,6 @@ import sys
 import json
 from collections import Counter
 
-from tqdm import tqdm
-
 input_path = sys.argv[1]
 output_path = sys.argv[2]
 docs_path = sys.argv[3]

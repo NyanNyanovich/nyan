@@ -33,5 +33,5 @@ class FasttextClassifier:
 
         text_sample = " ".join(tokens[: self.max_tokens])
         (label,), (prob,) = self.model.predict(text_sample, k=1)
-        label = label[self.label_offset :]
+        label = label[self.label_offset:]
         return label, prob

@@ -1,18 +1,18 @@
 import json
 import os
-from typing import List
-from collections import defaultdict, Counter
+from typing import List, Dict
+from collections import defaultdict
 
 from nyan.clusters import Cluster
 
 
 class Ranker:
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: str) -> None:
         assert os.path.exists(config_path)
         with open(config_path) as r:
             self.config = json.load(r)
 
-    def __call__(self, all_clusters: List[Cluster]):
+    def __call__(self, all_clusters: List[Cluster]) -> Dict[str, List[Cluster]]:
         issues = defaultdict(list)
         for cluster in all_clusters:
             for issue in cluster.issues:
@@ -41,7 +41,11 @@ class Ranker:
             if len(clusters) <= 3:
                 final_clusters[issue_name].extend(clusters)
                 for cluster in clusters:
-                    print("Added as no other clusters: {} {}".format(cluster.views_per_hour, cluster.cropped_title))
+                    print(
+                        "Added as no other clusters: {} {}".format(
+                            cluster.views_per_hour, cluster.cropped_title
+                        )
+                    )
                 continue
 
             clusters = self.filter_by_views(
@@ -49,7 +53,7 @@ class Ranker:
                 issue_name,
                 issue_config["views_percentile"],
                 issue_config["higher_views_percentile"],
-                issue_config["higher_trigger_age_minutes"]
+                issue_config["higher_trigger_age_minutes"],
             )
             clusters.sort(key=lambda c: c.pub_time_percentile)
             clusters = clusters[-10:]
@@ -59,12 +63,12 @@ class Ranker:
 
     def filter_by_views(
         self,
-        clusters,
-        issue_name,
+        clusters: List[Cluster],
+        issue_name: str,
         views_percentile: int,
         higher_views_percentile: int,
-        higher_trigger_age_minutes: int
-    ):
+        higher_trigger_age_minutes: int,
+    ) -> List[Cluster]:
         all_views_per_hour = [cluster.views_per_hour for cluster in clusters]
 
         coefs = {"blue": 1.0, "red": 1.0, "purple": 1.0}
@@ -81,12 +85,14 @@ class Ranker:
             coefs = {
                 "blue": (max_views / blue_views) if blue_views != 0 else 1.0,
                 "red": (max_views / red_views) if red_views != 0 else 1.0,
-                "purple": 1.0
+                "purple": 1.0,
             }
             print("Blue views coefficient:", coefs["blue"])
             print("Red views coefficient:", coefs["red"])
 
-        all_views_per_hour = [int(v * coefs[c.group]) for v, c in zip(all_views_per_hour, clusters)]
+        all_views_per_hour = [
+            int(v * coefs[c.group]) for v, c in zip(all_views_per_hour, clusters)
+        ]
         all_views_per_hour.sort()
         n = len(all_views_per_hour)
 
@@ -110,7 +116,11 @@ class Ranker:
             elif age < hta and views_per_hour >= higher_border_views_per_hour:
                 cluster.is_important = True
                 filtered_clusters.append(cluster)
-                print("Added by views (important): {} {}".format(views_per_hour, cropped_title))
+                print(
+                    "Added by views (important): {} {}".format(
+                        views_per_hour, cropped_title
+                    )
+                )
             elif not cluster.messages:
                 print("Skipped by views: {} {}".format(views_per_hour, cropped_title))
         return filtered_clusters

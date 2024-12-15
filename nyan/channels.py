@@ -1,6 +1,5 @@
-import os
 import json
-from typing import Dict, Optional, Iterable, Tuple
+from typing import Dict, Optional, Iterator, Tuple
 from dataclasses import dataclass
 
 from nyan.util import Serializable
@@ -51,5 +50,5 @@ class Channels:
     def __contains__(self, chid: str) -> bool:
         return chid in self.channels
 
-    def __iter__(self) -> Iterable[Tuple[str, Channel]]:
+    def __iter__(self) -> Iterator[Tuple[str, Channel]]:
         return iter(self.channels.items())
