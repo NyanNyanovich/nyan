@@ -1,5 +1,0 @@
-Полный список источников:
-
-{% for group, sources in groups %}
-{{-emojis[group]-}}{%- for source in sources %}<a href="{{source.url}}">{{source.channel_title}}</a>{% if not loop.last %} • {% endif %}{% endfor %}
-{% endfor %}

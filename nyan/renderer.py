@@ -23,12 +23,8 @@ class Renderer:
         file_loader = FileSystemLoader(".")
         env = Environment(loader=file_loader)
         self.cluster_template = env.get_template(config["cluster_template"])
-        self.sources_template = env.get_template(config["sources_template"])
-        self.ratings_template = None
         self.tz_offset = config["tz_offset"]
         self.tz_name = config["tz_name"]
-        if "ratings_template" in config:
-            self.ratings_template = env.get_template(config["ratings_template"])
 
     def render_cluster(self, cluster: Cluster, issue_name: str) -> str:
         groups = defaultdict(list)
