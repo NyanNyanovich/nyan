@@ -35,10 +35,12 @@ def extract_topics(
         final_titles = []
         for r in titles:
             link = "[{}]({})".format(r["verb"], r["url"])
-            fixed_title = r["title"].replace(r["verb"], link)
+            fixed_title = r["title"].replace(" " + r["verb"], " " + link, 1)
+            if fixed_title == r["title"]:
+                fixed_title = r["title"].replace(r["verb"], link, 1)
             if fixed_title == r["title"]:
                 link = "[{}]({})".format(r["verb"].capitalize(), r["url"])
-                fixed_title = fixed_title.replace(r["verb"].capitalize(), link)
+                fixed_title = fixed_title.replace(r["verb"].capitalize(), link, 1)
             final_titles.append(fixed_title)
         topic["titles"] = final_titles
     return topics

@@ -589,11 +589,10 @@
     {
       "name": "exploitex",
       "groups": {
-        "main": "purple",
-        "tech": "tech"
+        "main": "purple"
       },
       "alias": "Эксплойт",
-      "issue": "tech",
+      "issue": "main",
       "recrawl_time": 300
     },
     {
@@ -649,11 +648,10 @@
     {
       "name": "trendwatching24",
       "groups": {
-        "main": "purple",
-        "tech": "tech"
+        "main": "purple"
       },
       "alias": "TrendWatching",
-      "issue": "tech",
+      "issue": "main",
       "recrawl_time": 300
     },
     {
