@@ -63,6 +63,9 @@ class Embedder:
                     batch_embeddings = (
                         last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
                     )
+                elif self.pooling_method == "cls":
+                    hidden_states = out.last_hidden_state
+                    batch_embeddings = hidden_states[:, 0, :]
                 if self.normalize:
                     batch_embeddings = torch.nn.functional.normalize(batch_embeddings)
             start_index = batch_num * self.batch_size
