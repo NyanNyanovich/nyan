@@ -11,6 +11,8 @@ from nyan.channels import Channels
 from nyan.document import Document
 from nyan.util import ts_to_dt
 
+from nyan.issues import IssueConfigs, IssueConfig
+from typing import Dict
 
 class Renderer:
     def __init__(self, config_path: str, channels: Channels) -> None:
@@ -25,8 +27,14 @@ class Renderer:
         self.cluster_template = env.get_template(config["cluster_template"])
         self.tz_offset = config["tz_offset"]
         self.tz_name = config["tz_name"]
+        issue_configs = IssueConfigs(self.config["issues"])
+        self.issues: Dict[str, IssueConfig] = issue_configs.get_issues()
 
     def render_cluster(self, cluster: Cluster, issue_name: str) -> str:
+        issue_config = self.issues[issue_name]
+        if issue_config.style_name:
+            return cluster.get_styled_text(issue_config.style_name)
+        
         groups = defaultdict(list)
         emojis = dict()
         colors = dict()

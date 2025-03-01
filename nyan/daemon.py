@@ -23,6 +23,7 @@ from nyan.document import (
 )
 from nyan.util import get_current_ts, ts_to_dt
 
+import nyan.config as config
 
 class Daemon:
     def __init__(
@@ -213,6 +214,8 @@ class Daemon:
             min_size_ratio=self.config["similar_min_size_ratio"],
             min_intersection_ratio=self.config["similar_min_intersection_ratio"],
         )
+        if not config.UPDATE_POSTED_CLUSTERS:
+            return
         if posted_cluster:
             message = posted_cluster.get_issue_message(issue_name)
             assert message
@@ -281,16 +284,20 @@ class Daemon:
         discussion_message = self.client.get_discussion(message)
         print("Discussion message id: {}".format(discussion_message.message_id))
 
-        for doc in cluster.docs:
-            discussion_text = self.renderer.render_discussion_message(doc)
-            self.client.send_discussion_message(discussion_text, discussion_message)
-            sleep(sleep_time)
-        print()
+        if config.SEND_DISCUSSION_MESSAGES:
+            for doc in cluster.docs:
+                discussion_text = self.renderer.render_discussion_message(doc)
+                self.client.send_discussion_message(discussion_text, discussion_message)
+                sleep(sleep_time)
+            print()
         return
 
     def calc_reply_to(
         self, cluster: Cluster, posted_clusters: Clusters, issue_name: str
     ) -> Optional[int]:
+        if not config.RELATED_CLUSTERS_ENABLED:
+            return None
+        
         threshold = float(self.config["related_threshold"])
 
         current_ts = get_current_ts()

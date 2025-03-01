@@ -179,6 +179,21 @@ class Cluster:
         return differences
 
     @property
+    def get_styled_text(self, style_name: str) -> str:
+        if style_name is None:
+            return self.annotation_doc.patched_text
+        prompt_path: Path = BASE_DIR / "prompts/styles/{}.txt".format(style_name)
+        try:
+            with open(prompt_path) as f:
+                template = Template(f.read())
+            prompt = template.render(annotation_doc=self.annotation_doc)
+        except Exception:
+            return self.annotation_doc.patched_text
+        messages = [{"role": "user", "content": prompt}]
+        content = openai_completion(messages=messages, model_name="gpt-4o")
+        return content
+
+    @property
     def annotation_doc(self) -> Document:
         if self.saved_annotation_doc is not None:
             return self.saved_annotation_doc

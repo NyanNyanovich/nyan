@@ -7,17 +7,9 @@ from httpx import Timeout, Limits, HTTPTransport, Client, Response
 
 from nyan.util import Serializable
 
+from nyan.issues import IssueConfigs, IssueConfig
 
 ISSUE_WARNING = "Warning: Missing issue '{issue_name}' in the client config."
-
-
-@dataclass
-class IssueConfig:
-    name: str
-    channel_id: int
-    discussion_id: int
-    bot_token: str
-    last_update_id: int = 0
 
 
 @dataclass
@@ -58,9 +50,8 @@ class TelegramClient:
         transport = HTTPTransport(retries=self.config.get("retries", 5))
         self.client = Client(timeout=timeout, limits=limits, transport=transport)
 
-        self.issues: Dict[str, IssueConfig] = {
-            config["name"]: IssueConfig(**config) for config in self.config["issues"]
-        }
+        issue_configs = IssueConfigs(self.config["issues"])
+        self.issues: Dict[str, IssueConfig] = issue_configs.get_issues()
         self.discussions: Dict[str, Dict[int, Any]] = {
             issue.name: dict() for _, issue in self.issues.items()
         }

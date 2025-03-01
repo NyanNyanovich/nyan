@@ -4,7 +4,7 @@ from statistics import mean
 from scipy.spatial.distance import cosine  # type: ignore
 
 from nyan.document import Document
-
+import nyan.config as config
 
 def filter_ru_only(doc: Document) -> bool:
     return doc.language == "ru"
@@ -38,7 +38,11 @@ def choose_title(docs: List[Document], issues: List[str]) -> Document:
         distances = [cosine(doc1.embedding, doc2.embedding) for doc2 in docs]
         avg_distances[doc1.url] = mean(distances)
 
-    hard_filters = (filter_ru_only, filter_not_obscene, filter_fresh)
+    hard_filters = (
+        filter_ru_only if config.FILTER_TITILE_RU_ONLY else lambda x: True, 
+        filter_not_obscene if config.FILTER_TITILE_OBSCENE else lambda x: True,  
+        filter_fresh
+    )
     for flt in hard_filters:
         filtered_docs = list(filter(flt, docs))
         if filtered_docs:
