@@ -7,5 +7,11 @@ services:
         MONGO_INITDB_DATABASE: main
     volumes:
       - ./mongo:/data/db
-    ports:
-      - 27017:27017
+  core:
+    build:
+      context: .
+      dockerfile: core-Dockerfile:3.11
+  crawler:
+    build:
+      context: .
+      dockerfile: crawler-Dockerfile:3.11
