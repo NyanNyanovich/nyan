@@ -1,0 +1,47 @@
+FROM python:3.11 AS base
+
+ENV CHANNELS_INFO_PATH="channels.json"
+ENV CLIENT_CONFIG_PATH="configs/client_config.json"
+ENV MONGO_CONFIG_PATH="configs/mongo_config.json"
+ENV ANNOTATOR_CONFIG_PATH="configs/annotator_config.json"
+ENV RENDERER_CONFIG_PATH="configs/renderer_config.json"
+ENV DAEMON_CONFIG_PATH="configs/daemon_config.json"
+
+FROM base AS runner
+WORKDIR /app
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+COPY download_models.sh download_models.sh
+RUN bash download_models.sh
+
+COPY LICENSE channels.json .
+COPY configs configs
+COPY nyan nyan
+COPY scripts scripts
+RUN mkdir -p data
+
+# Security
+RUN useradd nyan
+RUN mkdir -p /home/nyan
+RUN chown -R nyan:nyan /app /home/nyan
+USER nyan
+
+# Trigger all models loading
+RUN until \
+    python3 -m nyan.preloader \
+      --channels-info-path $CHANNELS_INFO_PATH \
+      --client-config-path $CLIENT_CONFIG_PATH \
+      --mongo-config-path $MONGO_CONFIG_PATH \
+      --annotator-config-path $ANNOTATOR_CONFIG_PATH \
+      --renderer-config-path $RENDERER_CONFIG_PATH \
+      --daemon-config-path $DAEMON_CONFIG_PATH ; do true; done
+
+# Default command
+CMD ["sh", "-c", "\
+    python3 -m nyan.send \
+      --channels-info-path $CHANNELS_INFO_PATH \
+      --client-config-path $CLIENT_CONFIG_PATH \
+      --mongo-config-path $MONGO_CONFIG_PATH \
+      --annotator-config-path $ANNOTATOR_CONFIG_PATH \
+      --renderer-config-path $RENDERER_CONFIG_PATH \
+      --daemon-config-path $DAEMON_CONFIG_PATH"]

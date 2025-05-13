@@ -1,0 +1,22 @@
+FROM python:3.11 AS base
+
+FROM base AS runner
+WORKDIR /app
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+COPY LICENSE channels.json scrapy.cfg .
+COPY crawler crawler
+COPY crowd crowd
+COPY configs configs
+
+# Security
+RUN useradd nyan
+RUN mkdir -p /home/nyan
+RUN chown -R nyan:nyan /app /home/nyan
+USER nyan
+
+CMD ["scrapy", "crawl", "telegram",\
+     "-a", "channels_file=channels.json",\
+     "-a", "fetch_times=crawler/fetch_times.json",\
+     "-a", "hours=24"]
