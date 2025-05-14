@@ -15,49 +15,59 @@ Extensive description (in Russian): [Whitepaper](https://telegra.ph/NYAN-Whitepa
 Detailed instruction (in Russian): [Как поднять свой НЯН](https://github.com/NyanNyanovich/nyan/wiki/%D0%9A%D0%B0%D0%BA-%D0%BF%D0%BE%D0%B4%D0%BD%D1%8F%D1%82%D1%8C-%D1%81%D0%B2%D0%BE%D0%B9-%D0%9D%D0%AF%D0%9D)
 
 
-## Install
+## Docker compose setup
 
-Install git and pip
-```
-sudo apt-get install git python3-pip
-```
+1. Install Docker and Docker Compose.
+> Docker instructions: https://docs.docker.com/engine/install \
+> Docker Compose instructions: https://docs.docker.com/compose/install
 
-Clone repo
+2. Clone the repository.
 ```
 git clone https://github.com/NyanNyanovich/nyan
 ```
 
-Install Python requirements
+3. Go to the repository directory.
 ```
-pip3 install -r requirements.txt
-```
-
-Download models
-```
-bash download_models.sh
+cd nyan
 ```
 
-Install Docker and Docker Compose.
-* Docker instructions: https://docs.docker.com/engine/install
-* Docker Compose instructions: https://docs.docker.com/compose/install
+4. Provide Telegram API credentials to
+> [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json).
 
-Provide Telegram API credentials to [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json).
-
-## Run
-
-Run Mongo container
+6. Run everything.
 ```
-docker-compose up
+docker compose up -d
 ```
 
-Run crawler
+## Kubernetes setup
+
+Assuming you already have a running kubernetes cluster.
+
+1. Clone the repository.
 ```
-bash crawl.sh
+git clone https://github.com/NyanNyanovich/nyan
 ```
 
-Run server
+2. Go to the kubernetes directory.
 ```
-bash send.sh
+cd nyan/kubernetes
 ```
 
-You can provide OPENAI_API_KEY environment variable to use LLM-related features.
+3. Prepare configmaps and secret (entire client_config is stored as a secret).
+```
+bash generate-configs.sh
+```
+
+4. Apply kubernetes configuration.
+> [!WARNING]
+> Default setup assumes you have a ceph filesystem named `ceph-filesystem`. \
+> If that is not the case modify [mongo/mongo-pvc.yaml](https://github.com/NyanNyanovich/nyan/blob/main/kubernetes/mongo/mongo-pvc.yaml) to suit your needs.
+```
+kubectl apply -f ns.yaml
+kubectl apply -f mongo/
+kubectl apply -f configs/
+kubectl apply -f nyan/
+```
+---
+> [!TIP]
+> You can provide `OPENAI_API_KEY` environment variable in the `core` container to use LLM-related features for both deployment scenarios.
