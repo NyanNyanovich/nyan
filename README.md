@@ -35,6 +35,9 @@ cd nyan
 > [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json).
 
 6. Run everything.
+> [!NOTE]
+> `core` Dockerfile incorporates model preloading during build so you don't have to wait for models to load during runtime. \
+> If you'd like to disable this you can comment out the `RUN until python3 -m nyan.preloader ...` instruction.
 ```
 docker compose up -d
 ```
