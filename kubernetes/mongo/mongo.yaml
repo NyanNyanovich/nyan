@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mongo
+  name: mongo
+  namespace: nyan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - image: mongo:4.4.0
+          name: mongo
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: main
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: pv
+              mountPath: /data/db
+      volumes:
+        - name: pv
+          persistentVolumeClaim:
+            claimName: mongo-pvc
