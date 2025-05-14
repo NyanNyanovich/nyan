@@ -32,7 +32,7 @@ cd nyan
 ```
 
 4. Provide Telegram API credentials to
-> [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json).
+> [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json)
 
 6. Run everything.
 > [!NOTE]
@@ -56,7 +56,10 @@ git clone https://github.com/NyanNyanovich/nyan
 cd nyan/kubernetes
 ```
 
-3. Prepare configmaps and secret (entire client_config is stored as a secret).
+4. Provide Telegram API credentials to
+> [../configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json)
+
+3. Prepare configmaps and secret (entire [configs/client_config.json](https://github.com/NyanNyanovich/nyan/blob/main/configs/client_config.json) is stored as a secret).
 ```
 bash generate-configs.sh
 ```
