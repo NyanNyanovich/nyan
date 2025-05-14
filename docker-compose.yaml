@@ -11,7 +11,9 @@ services:
     build:
       context: .
       dockerfile: core-Dockerfile:3.11
+    restart: on-failure
   crawler:
     build:
       context: .
       dockerfile: crawler-Dockerfile:3.11
+    restart: always
