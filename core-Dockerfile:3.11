@@ -44,4 +44,5 @@ CMD ["sh", "-c", "\
       --mongo-config-path $MONGO_CONFIG_PATH \
       --annotator-config-path $ANNOTATOR_CONFIG_PATH \
       --renderer-config-path $RENDERER_CONFIG_PATH \
-      --daemon-config-path $DAEMON_CONFIG_PATH"]
+      --daemon-config-path $DAEMON_CONFIG_PATH \
+    2>&1 | tee -a /var/log/core"]

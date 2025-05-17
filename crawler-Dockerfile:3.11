@@ -16,7 +16,7 @@ RUN mkdir -p /home/nyan
 RUN chown -R nyan:nyan /app /home/nyan
 USER nyan
 
-CMD ["scrapy", "crawl", "telegram",\
-     "-a", "channels_file=channels.json",\
-     "-a", "fetch_times=crawler/fetch_times.json",\
-     "-a", "hours=24"]
+CMD ["sh", "-c", "scrapy crawl telegram \
+     -a channels_file=channels.json \
+     -a fetch_times=crawler/fetch_times.json \
+     -a hours=24 2>&1 | tee -a /var/log/crawler"]
