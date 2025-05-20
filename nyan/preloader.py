@@ -16,7 +16,7 @@ def main(
     mongo_config_path: Optional[str],
     daemon_config_path: str,
 ) -> None:
-    daemon = Daemon(
+    Daemon(
         client_config_path=client_config_path,
         annotator_config_path=annotator_config_path,
         clusterer_config_path=clusterer_config_path,
