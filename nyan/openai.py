@@ -1,10 +1,11 @@
 import logging
+import os
 from dataclasses import dataclass
 from typing import Optional, Sequence, List, Dict, Any, cast
 from multiprocessing.pool import ThreadPool
 
-import openai
 import copy
+from openai import OpenAI
 
 
 @dataclass
@@ -20,6 +21,8 @@ class OpenAIDecodingArguments:
 
 
 DEFAULT_ARGS = OpenAIDecodingArguments()
+_openai_api_key = os.environ["OPENAI_API_KEY"] if os.getenv("OPENAI_API_KEY") else ""
+_openai_client = OpenAI(api_key=_openai_api_key)
 
 
 def openai_completion(
@@ -32,7 +35,7 @@ def openai_completion(
     assert decoding_args.n == 1
     while True:
         try:
-            completions = openai.ChatCompletion.create(  # type: ignore
+            completions = _openai_client.ChatCompletion.create(  # type: ignore
                 messages=messages, model=model_name, **decoding_args.__dict__
             )
             break
