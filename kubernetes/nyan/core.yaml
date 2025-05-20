@@ -6,6 +6,7 @@ metadata:
   name: core
   namespace: nyan
 spec:
+  revisionHistoryLimit: 0
   replicas: 1
   selector:
     matchLabels:
@@ -15,18 +16,18 @@ spec:
       labels:
         app: core
     spec:
-      resources:
-        requests:
-          cpu: "4"
-          memory: "4Gi"
-        limits:
-          cpu: "4"
-          memory: "4Gi"
       containers:
-        - image: harbor.lolava.xyz/nyan/core:latest
+        - image: docker.lolava.xyz/nyan/core:latest
           name: core
           securityContext:
             runAsUser: 1000
+          resources:
+            requests:
+              cpu: "4"
+              memory: "4Gi"
+            limits:
+              cpu: "4"
+              memory: "4Gi"
           volumeMounts:
             - name: c
               mountPath: /app/channels.json
