@@ -29,13 +29,12 @@ def openai_completion(
     messages: List[Dict[str, Any]],
     decoding_args: OpenAIDecodingArguments = DEFAULT_ARGS,
     model_name: str = "gpt-4",
-    sleep_time: int = 2,
 ) -> str:
     decoding_args = copy.deepcopy(decoding_args)
     assert decoding_args.n == 1
     while True:
         try:
-            completions = _openai_client.Completion.create(  # type: ignore
+            completions = _openai_client.responses.create(  # type: ignore
                 messages=messages, model=model_name, **decoding_args.__dict__
             )
             break

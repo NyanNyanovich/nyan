@@ -1,7 +1,7 @@
 from typing import List
 
 import torch
-from transformers import AutoModel, AutoTokenizer  # type: ignore
+from transformers import AutoModel, AutoTokenizer
 from tqdm.auto import tqdm
 
 from nyan.util import set_random_seed, gen_batch
@@ -23,7 +23,7 @@ class Embedder:
     ) -> None:
         set_random_seed(56154)
         self.model_name = model_name
-        self.model = AutoModel.from_pretrained(model_name).to(device)
+        self.model = AutoModel.from_pretrained(model_name).to(device) # type: ignore
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.device = device
         self.batch_size = batch_size
