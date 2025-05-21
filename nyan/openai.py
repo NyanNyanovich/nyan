@@ -35,7 +35,7 @@ def openai_completion(
     assert decoding_args.n == 1
     while True:
         try:
-            completions = _openai_client.ChatCompletion.create(  # type: ignore
+            completions = _openai_client.Completion.create(  # type: ignore
                 messages=messages, model=model_name, **decoding_args.__dict__
             )
             break
