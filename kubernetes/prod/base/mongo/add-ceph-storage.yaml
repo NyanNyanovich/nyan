@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  template:
+    spec:
+      containers:
+        - name: mongo
+          volumeMounts:
+            - name: pv
+              mountPath: /data/db
+      volumes:
+        - name: pv
+          persistentVolumeClaim:
+            claimName: mongo
