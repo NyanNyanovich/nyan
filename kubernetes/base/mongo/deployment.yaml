@@ -4,7 +4,6 @@ metadata:
   labels:
     app: mongo
   name: mongo
-  namespace: nyan
 spec:
   revisionHistoryLimit: 0
   replicas: 1
@@ -18,7 +17,7 @@ spec:
         app: mongo
     spec:
       containers:
-        - image: docker.lolava.xyz/library/mongo:4.4.0
+        - image: mongo:4.4.0
           name: mongo
           env:
             - name: MONGO_INITDB_DATABASE

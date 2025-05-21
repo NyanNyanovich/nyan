@@ -4,7 +4,6 @@ metadata:
   labels:
     app: crawler
   name: crawler
-  namespace: nyan
 spec:
   schedule: '* * * * *'
   concurrencyPolicy: Forbid
@@ -18,7 +17,7 @@ spec:
             app: crawler
         spec:
           containers:
-            - image: harbor.lolava.xyz/nyan/crawler:latest
+            - image: nyan/crawler:latest
               name: crawler
               securityContext:
                 runAsUser: 1000

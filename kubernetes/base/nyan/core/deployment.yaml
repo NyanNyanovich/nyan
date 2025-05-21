@@ -4,7 +4,6 @@ metadata:
   labels:
     app: core
   name: core
-  namespace: nyan
 spec:
   revisionHistoryLimit: 0
   replicas: 1
@@ -17,7 +16,7 @@ spec:
         app: core
     spec:
       containers:
-        - image: docker.lolava.xyz/nyan/core:latest
+        - image: nyan/core:latest
           name: core
           securityContext:
             runAsUser: 1000

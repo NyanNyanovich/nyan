@@ -4,7 +4,6 @@ metadata:
   labels:
     app: mongo
   name: mongo
-  namespace: nyan
 spec:
   ports:
   - name: 27017-27017
