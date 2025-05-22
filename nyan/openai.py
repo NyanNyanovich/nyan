@@ -35,7 +35,7 @@ def openai_completion(
     while True:
         try:
             completions = _openai_client.responses.create(  # type: ignore
-                messages=messages, model=model_name, **decoding_args.__dict__
+                input=messages, model=model_name, **decoding_args.__dict__
             )
             break
         except Exception as e:
