@@ -23,7 +23,7 @@ class Embedder:
     ) -> None:
         set_random_seed(56154)
         self.model_name = model_name
-        self.model = AutoModel.from_pretrained(model_name).to(device) # type: ignore
+        self.model = AutoModel.from_pretrained(model_name).to(device)  # type: ignore
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.device = device
         self.batch_size = batch_size
