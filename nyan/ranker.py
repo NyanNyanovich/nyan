@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from typing import List, Dict
 from collections import defaultdict
@@ -35,13 +36,13 @@ class Ranker:
                     filtered_clusters.append(cluster)
             clusters = filtered_clusters
 
-            print()
-            print(f"Issue: {issue_name}, clusters after first filter: {len(clusters)}")
+            logging.info()
+            logging.info(f"Issue: {issue_name}, clusters after first filter: {len(clusters)}")
 
             if len(clusters) <= 3:
                 final_clusters[issue_name].extend(clusters)
                 for cluster in clusters:
-                    print(
+                    logging.info(
                         "Added as no other clusters: {} {}".format(
                             cluster.views_per_hour, cluster.cropped_title
                         )
@@ -58,7 +59,7 @@ class Ranker:
             clusters.sort(key=lambda c: c.pub_time_percentile)
             clusters = clusters[-10:]
             final_clusters[issue_name].extend(clusters)
-        print()
+        logging.info()
         return final_clusters
 
     def filter_by_views(
@@ -87,8 +88,8 @@ class Ranker:
                 "red": (max_views / red_views) if red_views != 0 else 1.0,
                 "purple": 1.0,
             }
-            print("Blue views coefficient:", coefs["blue"])
-            print("Red views coefficient:", coefs["red"])
+            logging.info("Blue views coefficient:", coefs["blue"])
+            logging.info("Red views coefficient:", coefs["red"])
 
         all_views_per_hour = [
             int(v * coefs[c.group]) for v, c in zip(all_views_per_hour, clusters)
@@ -98,11 +99,11 @@ class Ranker:
 
         border_index = max(0, min(n - 1, n * views_percentile // 100))
         border_views_per_hour = all_views_per_hour[border_index]
-        print("Views border:", border_views_per_hour)
+        logging.info("Views border:", border_views_per_hour)
 
         higher_border_index = max(0, min(n - 1, n * higher_views_percentile // 100))
         higher_border_views_per_hour = all_views_per_hour[higher_border_index]
-        print("Higher views border:", higher_border_views_per_hour)
+        logging.info("Higher views border:", higher_border_views_per_hour)
 
         hta = higher_trigger_age_minutes * 60
         filtered_clusters = []
@@ -112,15 +113,15 @@ class Ranker:
             age = cluster.age
             if age > hta and views_per_hour >= border_views_per_hour:
                 filtered_clusters.append(cluster)
-                print("Added by views: {} {}".format(views_per_hour, cropped_title))
+                logging.info("Added by views: {} {}".format(views_per_hour, cropped_title))
             elif age < hta and views_per_hour >= higher_border_views_per_hour:
                 cluster.is_important = True
                 filtered_clusters.append(cluster)
-                print(
+                logging.info(
                     "Added by views (important): {} {}".format(
                         views_per_hour, cropped_title
                     )
                 )
             elif not cluster.messages:
-                print("Skipped by views: {} {}".format(views_per_hour, cropped_title))
+                logging.info("Skipped by views: {} {}".format(views_per_hour, cropped_title))
         return filtered_clusters
