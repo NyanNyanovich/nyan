@@ -96,16 +96,15 @@ class Daemon:
         annotated_docs = self.annotate_documents(docs, mongo_config_path)
 
         updates_count = posted_clusters.update_documents(annotated_docs)
-        logging.info("{} updated documents".format(updates_count))
+        logging.info("%i updated documents", updates_count)
 
         new_clusters: List[Cluster] = self.clusterer(annotated_docs)
-        logging.info("{} clusters overall".format(len(new_clusters)))
+        logging.info("%i clusters overall", len(new_clusters))
 
         ranked_clusters: Dict[str, List[Cluster]] = self.ranker(new_clusters)
         num_clusters = sum([len(cl) for cl in ranked_clusters.values()])
-        logging.info("{} clusters in all issues after filtering".format(num_clusters))
+        logging.info("%i clusters in all issues after filtering", num_clusters)
 
-        logging.info()
         for issue, clusters in ranked_clusters.items():
             for cluster in clusters:
                 self.send_cluster(
@@ -116,14 +115,12 @@ class Daemon:
                     mongo_config_path,
                 )
 
-        logging.info()
         if posted_clusters_path:
             posted_clusters.save(posted_clusters_path)
-            logging.info("{} clusters saved to file".format(len(posted_clusters)))
+            logging.info("%i clusters saved to file", len(posted_clusters))
         if mongo_config_path:
             saved_count = posted_clusters.save_to_mongo(mongo_config_path)
-            logging.info("{} clusters saved to Mongo".format(saved_count))
-            logging.info()
+            logging.info("%i clusters saved to Mongo", saved_count)
 
     def load_posted_clusters(
         self,
@@ -140,7 +137,7 @@ class Daemon:
         elif posted_clusters_path and os.path.exists(posted_clusters_path):
             logging.info("Reading clusters from file")
             posted_clusters = Clusters.load(posted_clusters_path)
-        logging.info("{} clusters loaded".format(len(posted_clusters)))
+        logging.info("%i clusters loaded", len(posted_clusters))
         return posted_clusters
 
     def read_documents(
@@ -159,11 +156,11 @@ class Daemon:
             )
         else:
             raise AssertionError()
-        logging.info("{} docs loaded".format(len(docs)))
+        logging.info("%i docs loaded", len(docs))
         max_pub_time = ts_to_dt(max([d.pub_time for d in docs])).strftime(
             "%d-%m-%y %H:%M"
         )
-        logging.info("Last document: {}".format(max_pub_time))
+        logging.info("Last document: %s", max_pub_time)
         return docs
 
     def print_bad_channels(self, docs: List[Document]) -> None:
@@ -173,7 +170,7 @@ class Daemon:
         for channel_id, channel in self.channels:
             cnt = doc_channels_cnt.get(channel_id, 0)
             if cnt <= 1 and not channel.disabled and channel.issue == "main":
-                logging.info("Warning: {} docs from channel {}".format(cnt, channel_id))
+                logging.info("Warning: %i docs from channel %s", cnt, channel_id)
 
     def annotate_documents(
         self, docs: List[Document], mongo_config_path: Optional[str]
@@ -185,21 +182,20 @@ class Daemon:
                 mongo_config_path, docs
             )
             logging.info(
-                "{} docs already annotated, {} docs to annotate".format(
-                    len(all_annotated_docs), len(remaining_docs)
-                )
+                "%i docs already annotated, %i docs to annotate",
+                len(all_annotated_docs), len(remaining_docs)
             )
 
         if remaining_docs:
             annotated_docs = self.annotator(remaining_docs)
-            logging.info("{} docs annotated".format(len(annotated_docs)))
+            logging.info("%i docs annotated", len(annotated_docs))
 
         if mongo_config_path and remaining_docs:
             write_annotated_documents_mongo(mongo_config_path, annotated_docs)
             all_annotated_docs += annotated_docs
 
         final_docs = self.annotator.postprocess(all_annotated_docs)
-        logging.info("{} docs before clustering".format(len(final_docs)))
+        logging.info("%i docs before clustering", len(final_docs))
 
         return final_docs
 
@@ -241,25 +237,22 @@ class Daemon:
             if time_diff < max_time_updated and posted_cluster.changed():
                 cluster_text = self.renderer.render_cluster(posted_cluster, issue_name)
                 logging.info(
-                    "Update message {} at {}: {}".format(
-                        message.message_id, message.issue, posted_cluster.cropped_title
-                    )
+                    "Update message %i at %s: %s",
+                    message.message_id, message.issue, posted_cluster.cropped_title
                 )
-                logging.info("Discussion message id: {}".format(discussion_message.message_id))
+                logging.info("Discussion message id: %i", discussion_message.message_id)
 
                 is_caption = bool(posted_cluster.images) or bool(posted_cluster.videos)
                 self.client.update_message(message, cluster_text, is_caption)
             else:
                 logging.info(
-                    "Same cluster {} at {}: {}".format(
-                        message.message_id, message.issue, posted_cluster.cropped_title
-                    )
+                    "Same cluster %i at %s: %s",
+                    message.message_id, message.issue, posted_cluster.cropped_title
                 )
-            logging.info()
             return
 
         cluster_text = self.renderer.render_cluster(cluster, issue_name)
-        logging.info("New cluster in {}: {}".format(issue_name, cluster.cropped_title))
+        logging.info("New cluster in %s: %s", issue_name, cluster.cropped_title)
 
         self.client.update_discussion_mapping(issue_name)
 
@@ -278,7 +271,7 @@ class Daemon:
         cluster.messages.append(message)
         posted_clusters.add(cluster)
 
-        logging.info("Message id: {}, saving".format(message.message_id))
+        logging.info("Message id: %i, saving", message.message_id)
         if posted_clusters_path:
             posted_clusters.save(posted_clusters_path)
         if mongo_config_path:
@@ -286,13 +279,12 @@ class Daemon:
 
         self.client.update_discussion_mapping(issue_name)
         discussion_message = self.client.get_discussion(message)
-        logging.info("Discussion message id: {}".format(discussion_message.message_id))
+        logging.info("Discussion message id: %i", discussion_message.message_id)
 
         for doc in cluster.docs:
             discussion_text = self.renderer.render_discussion_message(doc)
             self.client.send_discussion_message(discussion_text, discussion_message)
             sleep(sleep_time)
-        logging.info()
         return
 
     def calc_reply_to(

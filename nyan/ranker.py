@@ -36,16 +36,14 @@ class Ranker:
                     filtered_clusters.append(cluster)
             clusters = filtered_clusters
 
-            logging.info()
-            logging.info(f"Issue: {issue_name}, clusters after first filter: {len(clusters)}")
+            logging.info("Issue: %s, clusters after first filter: %i", issue_name, len(clusters))
 
             if len(clusters) <= 3:
                 final_clusters[issue_name].extend(clusters)
                 for cluster in clusters:
                     logging.info(
-                        "Added as no other clusters: {} {}".format(
-                            cluster.views_per_hour, cluster.cropped_title
-                        )
+                        "Added as no other clusters: %i %s",
+                        cluster.views_per_hour, cluster.cropped_title
                     )
                 continue
 
@@ -59,7 +57,6 @@ class Ranker:
             clusters.sort(key=lambda c: c.pub_time_percentile)
             clusters = clusters[-10:]
             final_clusters[issue_name].extend(clusters)
-        logging.info()
         return final_clusters
 
     def filter_by_views(
@@ -113,15 +110,14 @@ class Ranker:
             age = cluster.age
             if age > hta and views_per_hour >= border_views_per_hour:
                 filtered_clusters.append(cluster)
-                logging.info("Added by views: {} {}".format(views_per_hour, cropped_title))
+                logging.info("Added by views: %i %s", views_per_hour, cropped_title)
             elif age < hta and views_per_hour >= higher_border_views_per_hour:
                 cluster.is_important = True
                 filtered_clusters.append(cluster)
                 logging.info(
-                    "Added by views (important): {} {}".format(
-                        views_per_hour, cropped_title
-                    )
+                    "Added by views (important): %i %s",
+                    views_per_hour, cropped_title
                 )
             elif not cluster.messages:
-                logging.info("Skipped by views: {} {}".format(views_per_hour, cropped_title))
+                logging.info("Skipped by views: %i %s", views_per_hour, cropped_title)
         return filtered_clusters
