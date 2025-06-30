@@ -32,10 +32,11 @@ def openai_completion(
 ) -> str:
     decoding_args = copy.deepcopy(decoding_args)
     assert decoding_args.n == 1
+    stripped_messages = [message["content"] for message in messages]
     while True:
         try:
-            completions = _openai_client.responses.create(  # type: ignore
-                input=messages, model=model_name, **decoding_args.__dict__
+            completions = _openai_client.responses.create(
+                input=stripped_messages, model=model_name, **decoding_args.__dict__
             )
             break
         except Exception as e:
