@@ -10,14 +10,14 @@ from openai import OpenAI
 
 @dataclass
 class OpenAIDecodingArguments:
-    max_tokens: int = 2400
+    #max_tokens: int = 2400
     temperature: float = 0.0
     top_p: float = 0.95
-    n: int = 1
+    #n: int = 1
     stream: bool = False
-    stop: Optional[Sequence[str]] = None
-    presence_penalty: float = 0.0
-    frequency_penalty: float = 0.0
+    #stop: Optional[Sequence[str]] = None
+    #presence_penalty: float = 0.0
+    #frequency_penalty: float = 0.0
 
 
 DEFAULT_ARGS = OpenAIDecodingArguments()
@@ -31,12 +31,12 @@ def openai_completion(
     model_name: str = "gpt-4",
 ) -> str:
     decoding_args = copy.deepcopy(decoding_args)
-    assert decoding_args.n == 1
+    #assert decoding_args.n == 1
     stripped_messages = [message["content"] for message in messages]
     while True:
         try:
             completions = _openai_client.responses.create(
-                input=stripped_messages, model=model_name, **decoding_args.__dict__
+                input=messages, model=model_name, **decoding_args.__dict__
             )
             break
         except Exception as e:
