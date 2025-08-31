@@ -236,12 +236,12 @@ class TelegramClient:
         parse_mode: str = "html",
     ) -> Response:
         url_template = self.host + "/bot{}/sendPhoto"
-        
+
         # TODO: TEMPORARY FIX - Replace telesco.pe with old CDN domain
         # See issue #31 for proper long-term solutions
         if "telesco.pe" in photo:
             photo = photo.replace("telesco.pe", "cdn-telegram.org")
-        
+
         params = {
             "chat_id": issue.channel_id,
             "caption": text,
@@ -284,12 +284,12 @@ class TelegramClient:
         parse_mode: str = "html",
     ) -> Response:
         url_template = self.host + "/bot{}/sendVideo"
-        
+
         # TODO: TEMPORARY FIX - Replace telesco.pe with old CDN domain
         # See issue #31 for proper long-term solutions
         if "telesco.pe" in video:
             video = video.replace("telesco.pe", "cdn-telegram.org")
-        
+
         params = {
             "chat_id": issue.channel_id,
             "caption": text,
@@ -311,7 +311,7 @@ class TelegramClient:
         parse_mode: str = "html",
     ) -> Response:
         url_template = self.host + "/bot{}/sendMediaGroup"
-        
+
         # TODO: TEMPORARY FIX - Replace telesco.pe with old CDN domain
         # See issue #31 for proper long-term solutions
         fixed_photos = []
@@ -320,7 +320,7 @@ class TelegramClient:
                 fixed_photos.append(photo.replace("telesco.pe", "cdn-telegram.org"))
             else:
                 fixed_photos.append(photo)
-        
+
         media = [
             {
                 "type": "photo",
