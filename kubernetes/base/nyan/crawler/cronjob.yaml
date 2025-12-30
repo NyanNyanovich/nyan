@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: crawler
+  name: crawler
+spec:
+  schedule: '* * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: crawler
+        spec:
+          containers:
+            - image: nyan/crawler:latest
+              name: crawler
+              securityContext:
+                runAsUser: 1000
+          restartPolicy: OnFailure

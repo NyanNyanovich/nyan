@@ -1,0 +1,9 @@
+resources:
+- mongo/deployment.yaml
+- mongo/svc.yaml
+- nyan/core/deployment.yaml
+- nyan/crawler/cronjob.yaml
+patches:
+- path: security/harden-mongo.yaml
+- path: security/harden-core.yaml
+- path: security/harden-crawler.yaml

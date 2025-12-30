@@ -1,3 +1,4 @@
+import logging
 import os
 import json
 from typing import Tuple, Optional, Any, Dict, List, Sequence
@@ -78,7 +79,7 @@ class TelegramClient:
         parse_mode: str = "html",
     ) -> Optional[MessageId]:
         if issue_name not in self.issues:
-            print(ISSUE_WARNING.format(issue_name=issue_name))
+            logging.info(ISSUE_WARNING.format(issue_name=issue_name))
             return None
         issue = self.issues[issue_name]
         response = None
@@ -107,16 +108,16 @@ class TelegramClient:
                 text, issue=issue, reply_to=reply_to, parse_mode=parse_mode
             )
 
-        print("Send status code:", response.status_code)
+        logging.info("Send status code:", response.status_code)
         if response.status_code == 400 and "description" in response.text:
             response_dict = response.json()
             description = response_dict["description"]
             if description == "Bad Request: message caption is too long":
                 response = self._send_text(text, issue=issue)
-                print("Text only send status code:", response.status_code)
+                logging.info("Text only send status code:", response.status_code)
 
         if response.status_code != 200:
-            print("Send error:", response.text)
+            logging.info("Send error:", response.text)
             return None
 
         result = response.json()["result"]
@@ -153,13 +154,13 @@ class TelegramClient:
             response = self._edit_text(message_id, text, issue=issue)
         else:
             response = self._edit_caption(message_id, text, issue=issue)
-        print("Update status code:", response.status_code)
+        logging.info("Update status code:", response.status_code)
         if response.status_code != 200:
-            print("Update error:", response.text)
+            logging.info("Update error:", response.text)
 
     def update_discussion_mapping(self, issue_name: str) -> None:
         if issue_name not in self.issues:
-            print(f"Missing issue '{issue_name}' in client config")
+            logging.info("Missing issue '%s' in client config", issue_name)
             return None
         issue = self.issues[issue_name]
         updates = self._get_updates(issue)

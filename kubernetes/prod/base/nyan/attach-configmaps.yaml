@@ -1,0 +1,170 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crawler
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: crawler
+              volumeMounts:
+                - name: c
+                  mountPath: /app/channels.json
+                  subPath: channels.json
+                - name: cc
+                  mountPath: /app/configs/client_config.json
+                  subPath: client_config.json
+                - name: clrc
+                  mountPath: /app/configs/clusterer_config.json
+                  subPath: clusterer_config.json
+                - name: mc
+                  mountPath: /app/configs/mongo_config.json
+                  subPath: mongo_config.json
+                - name: ac
+                  mountPath: /app/configs/annotator_config.json
+                  subPath: annotator_config.json
+                - name: rc
+                  mountPath: /app/configs/renderer_config.json
+                  subPath: renderer_config.json
+                - name: rac
+                  mountPath: /app/configs/ranker_config.json
+                  subPath: ranker_config.json
+                - name: dc
+                  mountPath: /app/configs/daemon_config.json
+                  subPath: daemon_config.json
+          volumes:
+            - name: c
+              configMap:
+                name: channels
+                items:
+                  - key: channels.json
+                    path: channels.json
+            - name: cc
+              secret:
+                secretName: client-config
+                items:
+                  - key: client_config.json
+                    path: client_config.json
+            - name: clrc
+              configMap:
+                name: clusterer-config
+                items:
+                  - key: clusterer_config.json
+                    path: clusterer_config.json
+            - name: mc
+              configMap:
+                name: mongo-config
+                items:
+                  - key: mongo_config.json
+                    path: mongo_config.json
+            - name: ac
+              configMap:
+                name: annotator-config
+                items:
+                  - key: annotator_config.json
+                    path: annotator_config.json
+            - name: rc
+              configMap:
+                name: renderer-config
+                items:
+                  - key: renderer_config.json
+                    path: renderer_config.json
+            - name: rac
+              configMap:
+                name: ranker-config
+                items:
+                  - key: ranker_config.json
+                    path: ranker_config.json
+            - name: dc
+              configMap:
+                name: daemon-config
+                items:
+                  - key: daemon_config.json
+                    path: daemon_config.json
+          restartPolicy: OnFailure
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core
+spec:
+  template:
+    spec:
+      containers:
+        - name: core
+          volumeMounts:
+            - name: c
+              mountPath: /app/channels.json
+              subPath: channels.json
+            - name: cc
+              mountPath: /app/configs/client_config.json
+              subPath: client_config.json
+            - name: clrc
+              mountPath: /app/configs/clusterer_config.json
+              subPath: clusterer_config.json
+            - name: mc
+              mountPath: /app/configs/mongo_config.json
+              subPath: mongo_config.json
+            - name: ac
+              mountPath: /app/configs/annotator_config.json
+              subPath: annotator_config.json
+            - name: rc
+              mountPath: /app/configs/renderer_config.json
+              subPath: renderer_config.json
+            - name: rac
+              mountPath: /app/configs/ranker_config.json
+              subPath: ranker_config.json
+            - name: dc
+              mountPath: /app/configs/daemon_config.json
+              subPath: daemon_config.json
+      volumes:
+        - name: c
+          configMap:
+            name: channels
+            items:
+              - key: channels.json
+                path: channels.json
+        - name: cc
+          secret:
+            secretName: client-config
+            items:
+              - key: client_config.json
+                path: client_config.json
+        - name: clrc
+          configMap:
+            name: clusterer-config
+            items:
+              - key: clusterer_config.json
+                path: clusterer_config.json
+        - name: mc
+          configMap:
+            name: mongo-config
+            items:
+              - key: mongo_config.json
+                path: mongo_config.json
+        - name: ac
+          configMap:
+            name: annotator-config
+            items:
+              - key: annotator_config.json
+                path: annotator_config.json
+        - name: rc
+          configMap:
+            name: renderer-config
+            items:
+              - key: renderer_config.json
+                path: renderer_config.json
+        - name: rac
+          configMap:
+            name: ranker-config
+            items:
+              - key: ranker_config.json
+                path: ranker_config.json
+        - name: dc
+          configMap:
+            name: daemon-config
+            items:
+              - key: daemon_config.json
+                path: daemon_config.json

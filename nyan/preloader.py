@@ -1,7 +1,4 @@
 import argparse
-import logging
-import os
-import sys
 from typing import Optional
 
 from nyan.daemon import Daemon
@@ -19,7 +16,7 @@ def main(
     mongo_config_path: Optional[str],
     daemon_config_path: str,
 ) -> None:
-    daemon = Daemon(
+    Daemon(
         client_config_path=client_config_path,
         annotator_config_path=annotator_config_path,
         clusterer_config_path=clusterer_config_path,
@@ -28,8 +25,6 @@ def main(
         renderer_config_path=renderer_config_path,
         daemon_config_path=daemon_config_path,
     )
-    logging.info("daemon starting")
-    daemon.run(input_path, mongo_config_path, posted_clusters_path)
 
 
 if __name__ == "__main__":
@@ -57,10 +52,4 @@ if __name__ == "__main__":
         "--daemon-config-path", type=str, default="configs/daemon_config.json"
     )
     args = parser.parse_args()
-    debug = os.getenv("DEBUG")
-    logging.basicConfig(stream=sys.stdout,
-                        level=logging.DEBUG if debug is not None else logging.INFO,
-                        format='%(asctime)s %(levelname)-8s %(name)-16s: %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    logging.debug("debug enabled")
     main(**vars(args))

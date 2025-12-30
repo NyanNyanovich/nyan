@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  mongodb:
+    image: mongo:4.4.0
+    container_name: mongo
+    environment:
+        MONGO_INITDB_DATABASE: main
+    volumes:
+      - ./mongo:/data/db
+  core:
+    build:
+      context: .
+      dockerfile: core-Dockerfile:3.11
+    restart: on-failure
+  crawler:
+    build:
+      context: .
+      dockerfile: crawler-Dockerfile:3.11
+    restart: always

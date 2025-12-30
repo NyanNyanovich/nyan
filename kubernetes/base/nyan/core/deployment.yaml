@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: core
+  name: core
+spec:
+  revisionHistoryLimit: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core
+  template:
+    metadata:
+      labels:
+        app: core
+    spec:
+      containers:
+        - image: nyan/core:latest
+          name: core
+          securityContext:
+            runAsUser: 1000
+          resources:
+            requests:
+              cpu: "4"
+              memory: "4Gi"
+            limits:
+              cpu: "4"
+              memory: "4Gi"
