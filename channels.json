@@ -53,6 +53,16 @@
         "tech": "other"
       },
       "alias": "Mash",
+      "issue": "main",
+      "disabled": true
+    },
+    {
+      "name": "mash",
+      "groups": {
+        "main": "red",
+        "tech": "other"
+      },
+      "alias": "Mash",
       "issue": "main"
     },
     {
@@ -310,7 +320,8 @@
       },
       "alias": "Сталингулаг",
       "issue": "main",
-      "recrawl_time": 600
+      "recrawl_time": 600,
+      "disabled": true
     },
     {
       "name": "rusanctions",
@@ -445,7 +456,8 @@
         "tech": "other"
       },
       "alias": "Avtozak LIVE",
-      "issue": "main"
+      "issue": "main",
+      "disabled": true
     },
     {
       "name": "tele_eve",
@@ -853,7 +865,8 @@
         "tech": "other"
       },
       "alias": "Российская Газета",
-      "issue": "main"
+      "issue": "main",
+      "disabled": true
     },
     {
       "name": "consultant_plus",
@@ -992,7 +1005,8 @@
       },
       "alias": "Голос Америки",
       "issue": "main",
-      "recrawl_time": 300
+      "recrawl_time": 300,
+      "disabled": true
     },
     {
       "name": "govorit_nemoskva",
@@ -1163,7 +1177,8 @@
       "issue": "main",
       "groups": {
         "main": "purple"
-      }
+      },
+      "disabled": true
     },
     {
       "name": "aifonline",
@@ -1487,7 +1502,8 @@
       "groups": {
         "main": "purple"
       },
-      "recrawl_time": 600
+      "recrawl_time": 600,
+      "disabled": true
     },
     {
       "name": "oninvest_media",
