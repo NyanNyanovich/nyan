@@ -4,7 +4,7 @@ import numpy as np
 from numpy.typing import NDArray
 import requests
 import torch
-from transformers import CLIPProcessor, CLIPModel  # type: ignore
+from transformers import CLIPProcessor, CLIPModel
 from tqdm.auto import tqdm
 from PIL import Image
 

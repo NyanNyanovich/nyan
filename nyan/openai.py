@@ -1,39 +1,42 @@
 import logging
+import os
 from dataclasses import dataclass
 from typing import Optional, Sequence, List, Dict, Any, cast
 from multiprocessing.pool import ThreadPool
 
-import openai
 import copy
+from openai import OpenAI
 
 
 @dataclass
 class OpenAIDecodingArguments:
-    max_tokens: int = 2400
+    #max_tokens: int = 2400
     temperature: float = 0.0
     top_p: float = 0.95
-    n: int = 1
+    #n: int = 1
     stream: bool = False
-    stop: Optional[Sequence[str]] = None
-    presence_penalty: float = 0.0
-    frequency_penalty: float = 0.0
+    #stop: Optional[Sequence[str]] = None
+    #presence_penalty: float = 0.0
+    #frequency_penalty: float = 0.0
 
 
 DEFAULT_ARGS = OpenAIDecodingArguments()
+_openai_api_key = os.environ["OPENAI_API_KEY"] if os.getenv("OPENAI_API_KEY") else ""
+_openai_client = OpenAI(api_key=_openai_api_key)
 
 
 def openai_completion(
     messages: List[Dict[str, Any]],
     decoding_args: OpenAIDecodingArguments = DEFAULT_ARGS,
     model_name: str = "gpt-4",
-    sleep_time: int = 2,
 ) -> str:
     decoding_args = copy.deepcopy(decoding_args)
-    assert decoding_args.n == 1
+    #assert decoding_args.n == 1
+    stripped_messages = [message["content"] for message in messages]
     while True:
         try:
-            completions = openai.ChatCompletion.create(  # type: ignore
-                messages=messages, model=model_name, **decoding_args.__dict__
+            completions = _openai_client.responses.create(
+                input=messages, model=model_name, **decoding_args.__dict__
             )
             break
         except Exception as e:

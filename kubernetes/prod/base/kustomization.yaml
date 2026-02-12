@@ -1,0 +1,36 @@
+resources:
+- ../../base
+- ns.yaml
+- mongo/pvc.yaml
+namespace: prod-nyan
+patches:
+- path: mongo/add-ceph-storage.yaml
+- path: nyan/attach-configmaps.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+- name: channels
+  files:
+  - ../../../channels.json
+- name: annotator-config
+  files:
+  - ../../../configs/annotator_config.json
+- name: clusterer-config
+  files:
+  - ../../../configs/clusterer_config.json
+- name: mongo-config
+  files:
+  - ../../../configs/mongo_config.json
+- name: ranker-config
+  files:
+  - ../../../configs/ranker_config.json
+- name: daemon-config
+  files:
+  - ../../../configs/daemon_config.json
+- name: renderer-config
+  files:
+  - ../../../configs/renderer_config.json
+secretGenerator:
+- name: client-config
+  files:
+  - ../../../configs/client_config.json

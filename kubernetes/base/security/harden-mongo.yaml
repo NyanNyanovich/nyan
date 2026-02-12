@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  template:
+    spec:
+      containers:
+      - name: mongo
+        securityContext:
+          seccompProfile:
+            type: RuntimeDefault

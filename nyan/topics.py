@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 from typing import List, Dict, Any
 
 from jinja2 import Template
@@ -22,11 +23,11 @@ def extract_topics(
         template = Template(f.read())
 
     prompt = template.render(clusters=clusters).strip() + "\n"
-    print(prompt)
+    logging.info(prompt)
 
     messages = [{"role": "user", "content": prompt}]
     content = openai_completion(messages=messages, model_name=model_name)
-    print(content)
+    logging.info(content)
 
     content = content[content.find("{") : content.rfind("}") + 1]
     topics: List[Dict[str, Any]] = json.loads(content)["topics"]
@@ -86,7 +87,7 @@ def main(
         )
 
     if len(fixed_clusters) < min_news_count:
-        print("Not enough news")
+        logging.info("Not enough news")
         return
     fixed_clusters = fixed_clusters[-max_news_count:]
 
@@ -101,7 +102,7 @@ def main(
     with open(template_path, "r") as f:
         template = Template(f.read())
     text = template.render(topics=topics, duration_hours=int(duration_hours))
-    print(text)
+    logging.info(text)
 
     should_publish = False
     if not auto:

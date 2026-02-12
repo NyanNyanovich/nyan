@@ -1,0 +1,9 @@
+resources:
+- ../base
+images:
+- name: nyan/core
+  newName: docker.lolava.xyz/nyan/core
+- name: nyan/crawler
+  newName: docker.lolava.xyz/nyan/crawler
+- name: mongo
+  newName: docker.lolava.xyz/library/mongo
