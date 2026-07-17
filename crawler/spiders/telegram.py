@@ -1,13 +1,13 @@
 import json
 import shutil
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 import scrapy
 import html2text
 
 
 def get_current_ts():
-    return int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    return int(datetime.now(timezone.utc).timestamp())
 
 
 def process_views(views):
@@ -48,8 +48,8 @@ def html2text_setup():
 
 class TelegramSpider(scrapy.Spider):
     name = "telegram"
-    channel_url_template = "https://t.me/s/{}"
-    post_url_template = "https://t.me/{}?embed=1"
+    channel_url_template = "https://telegram.me/s/{}"
+    post_url_template = "https://telegram.me/{}?embed=1"
 
     def __init__(self, *args, **kwargs):
         assert "channels_file" in kwargs
@@ -63,7 +63,7 @@ class TelegramSpider(scrapy.Spider):
 
         assert "hours" in kwargs
         hours = int(kwargs.pop("hours"))
-        self.until_ts = int((datetime.now() - timedelta(hours=hours)).timestamp())
+        self.until_ts = get_current_ts() - hours * 3600
         print("Considering last {} hours".format(hours))
 
         self.html2text = html2text_setup()
@@ -153,7 +153,7 @@ class TelegramSpider(scrapy.Spider):
 
         item["text"] = self._parse_html(text_element.extract_first())
         item["links"] = text_element.css("a::attr(href)").getall()
-        item["fetch_time"] = int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+        item["fetch_time"] = get_current_ts()
 
         views_element = post_element.css(views_path)
         if not views_element:

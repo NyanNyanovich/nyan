@@ -29,6 +29,7 @@ class Clusterer:
         ntp_issues = distances_config.get("no_time_penalty_issues", tuple())
         image_bonus = distances_config.get("image_bonus", 0.0)
         fix_images = image_bonus > 0.0
+        image_idx2cluster: Dict[int, int] = dict()
         if fix_images:
             image_idx2cluster = self.find_image_duplicates(docs)
 
@@ -95,8 +96,7 @@ class Clusterer:
             cluster = Cluster()
             for index in doc_indices:
                 cluster.add(docs[index])
-            doc_indices_np = np.array(doc_indices)
-            cluster.save_distances(distances[doc_indices_np, doc_indices_np])
+            cluster.save_distances(distances[np.ix_(doc_indices, doc_indices)])
             clusters.append(cluster)
         return clusters
 

@@ -22,8 +22,10 @@ class ImageProcessor:
             return []
         contents: List[Image.Image] = [i["content"] for i in fetched_images]
         image_embeddings = self.clip_embedder.embed_images(contents)
-        rm_scores = cosine_similarity(image_embeddings, self.rm_embeddings)
-        rm_scores = rm_scores.max(axis=1)
+        rm_scores: List[float] = [0.0] * len(fetched_images)
+        if len(self.rm_embeddings) != 0:
+            similarities = cosine_similarity(image_embeddings, self.rm_embeddings)
+            rm_scores = list(similarities.max(axis=1))
         assert len(rm_scores) == len(fetched_images)
         embedded_images = []
         for image, embedding, rm_score in zip(

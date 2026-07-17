@@ -23,6 +23,15 @@ T = TypeVar("T")
 
 
 class Cluster:
+    CACHED_PROPERTIES = (
+        "fetch_time",
+        "pub_time_percentile",
+        "images",
+        "videos",
+        "cropped_title",
+        "hash",
+    )
+
     def __init__(self) -> None:
         self.docs: List[Document] = list()
         self.url2doc: Dict[str, Document] = dict()
@@ -39,9 +48,14 @@ class Cluster:
         self.saved_hash: Optional[str] = None
         self.saved_diff: Optional[List[Dict[str, Any]]] = None
 
+    def invalidate_caches(self) -> None:
+        for name in self.CACHED_PROPERTIES:
+            self.__dict__.pop(name, None)
+
     def add(self, doc: Document) -> None:
         self.docs.append(doc)
         self.url2doc[doc.url] = doc
+        self.invalidate_caches()
 
     def save_distances(self, distances: List[float]) -> None:
         self.distances = distances
@@ -86,7 +100,8 @@ class Cluster:
 
     @property
     def views_per_hour(self) -> int:
-        return int(self.debiased_views / (self.age / 3600))
+        age = max(self.age, 60)
+        return int(self.debiased_views / (age / 3600))
 
     @property
     def embedding(self) -> Optional[List[float]]:
@@ -105,9 +120,7 @@ class Cluster:
         doc_count = len(self.unique_docs)
         if doc_count == 0:
             return tuple()
-        images = [
-            i["url"] for i in self.annotation_doc.embedded_images if self.annotation_doc
-        ]
+        images = [i["url"] for i in self.annotation_doc.embedded_images]
         if not images:
             return tuple()
         if image_doc_count / doc_count >= 0.4 or image_doc_count >= 3:
@@ -377,6 +390,7 @@ class Clusters:
             self.message2cluster[message] = cluster
         self.clid2cluster[cluster.clid] = cluster
         self.max_clid = max(self.max_clid, cluster.clid)
+        self.__dict__.pop("urls2messages", None)
 
     def __len__(self) -> int:
         return len(self.clid2cluster)
@@ -406,6 +420,7 @@ class Clusters:
                     continue
                 cluster.docs[doc_index] = new_doc
                 cluster.url2doc[url] = new_doc
+                cluster.invalidate_caches()
                 if (
                     cluster.saved_annotation_doc
                     and cluster.saved_annotation_doc.url == url

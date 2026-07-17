@@ -27,7 +27,7 @@ def write_jsonl(file_path: str, records: List[Dict[str, Any]]) -> None:
 
 
 def get_current_ts() -> int:
-    return int(datetime.now().replace(tzinfo=timezone.utc).timestamp())
+    return int(datetime.now(timezone.utc).timestamp())
 
 
 def ts_to_dt(timestamp: int, offset: int = 3) -> datetime:

@@ -13,6 +13,7 @@ from nyan.util import gen_batch
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DEFAULT_CLIP_PATH = "openai/clip-vit-base-patch32"
+FETCH_TIMEOUT = 10.0
 T = TypeVar("T")
 
 
@@ -40,12 +41,14 @@ class ClipEmbedder:
             if not url.startswith("http://") and not url.startswith("https://"):
                 continue
             try:
-                response = requests.get(url, stream=True)
+                response = requests.get(url, stream=True, timeout=FETCH_TIMEOUT)
+                if response.status_code != 200:
+                    continue
+                image = Image.open(response.raw)
+                image.load()
             except Exception:
                 continue
-            if response.status_code != 200:
-                continue
-            images.append({"url": url, "content": Image.open(response.raw)})
+            images.append({"url": url, "content": image})
         return images
 
     def embed_images(self, images: List[Image.Image]) -> NDArray[np.float32]:

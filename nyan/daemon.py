@@ -186,9 +186,8 @@ class Daemon:
         if remaining_docs:
             annotated_docs = self.annotator(remaining_docs)
             print("{} docs annotated".format(len(annotated_docs)))
-
-        if mongo_config_path and remaining_docs:
-            write_annotated_documents_mongo(mongo_config_path, annotated_docs)
+            if mongo_config_path:
+                write_annotated_documents_mongo(mongo_config_path, annotated_docs)
             all_annotated_docs += annotated_docs
 
         final_docs = self.annotator.postprocess(all_annotated_docs)
