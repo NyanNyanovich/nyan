@@ -61,3 +61,27 @@ bash send.sh
 ```
 
 You can provide OPENAI_API_KEY environment variable to use LLM-related features.
+It can also be put into a `.env` file in the repo root:
+
+```
+OPENAI_API_KEY=...
+OPENROUTER_API_KEY=...
+# optional
+LLM_PROVIDER=openrouter
+OPENROUTER_SITE_URL=https://t.me/nyannews
+OPENROUTER_APP_NAME=nyan
+```
+
+The model is set in `configs/llm_config.json`, passed to the daemon with
+`--llm-config-path` like every other config:
+
+```
+{
+    "model_name": "deepseek/deepseek-v4-pro",
+    "provider_name": "openrouter"
+}
+```
+
+With `provider_name` set to null the provider is taken from `LLM_PROVIDER`, and
+otherwise from the model name: namespaced names such as `anthropic/claude-sonnet-4.5`
+go to OpenRouter, bare ones such as `gpt-4o` to OpenAI.

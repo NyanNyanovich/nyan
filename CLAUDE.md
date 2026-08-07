@@ -16,7 +16,7 @@ bash download_models.sh          # unpacks fasttext lang id + category classifie
 docker-compose up                # MongoDB on :27017 — the only datastore
 ```
 
-Telegram bot tokens and channel ids go in `configs/client_config.json` (one entry per issue). `OPENAI_API_KEY` in the env enables the LLM features (`nyan/topics.py`, `nyan/title.py`, `nyan/openai.py`).
+Telegram bot tokens and channel ids go in `configs/client_config.json` (one entry per issue). `OPENAI_API_KEY` (or `OPENROUTER_API_KEY`) enables the LLM features (`nyan/topics.py`, `nyan/openai.py`); both are read from the environment or from a `.env` in the repo root. `nyan/openai.py` picks the provider from an explicit `provider_name`, then `LLM_PROVIDER`, then the model name — namespaced names (`anthropic/claude-sonnet-4.5`) go to OpenRouter, bare ones (`gpt-4o`) to OpenAI.
 
 ## Commands
 

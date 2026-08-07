@@ -1,13 +1,13 @@
-import argparse
 import json
 from typing import List, Dict, Any
 
+import fire  # type: ignore
 from jinja2 import Template
 
 from nyan.clusters import Clusters
 from nyan.client import TelegramClient
 from nyan.util import get_current_ts, ts_to_dt
-from nyan.openai import openai_completion
+from nyan.openai import LLM
 from nyan.mongo import get_topics_collection
 
 
@@ -16,7 +16,7 @@ def extract_topics(
     issue_name: str,
     prompt_path: str,
     duration_hours: int,
-    model_name: str,
+    llm: LLM,
 ) -> List[Dict[str, Any]]:
     with open(prompt_path) as f:
         template = Template(f.read())
@@ -25,7 +25,7 @@ def extract_topics(
     print(prompt)
 
     messages = [{"role": "user", "content": prompt}]
-    content = openai_completion(messages=messages, model_name=model_name)
+    content = llm(messages)
     print(content)
 
     content = content[content.find("{") : content.rfind("}") + 1]
@@ -49,14 +49,14 @@ def extract_topics(
 def main(
     mongo_config_path: str,
     client_config_path: str,
-    duration_hours: int,
-    max_news_count: int,
-    min_news_count: int,
-    issue_name: str,
-    prompt_path: str,
-    template_path: str,
-    model_name: str,
-    auto: bool,
+    duration_hours: int = 8,
+    max_news_count: int = 30,
+    min_news_count: int = 5,
+    issue_name: str = "main",
+    prompt_path: str = "nyan/prompts/topics.txt",
+    template_path: str = "nyan/templates/topics.html",
+    llm_config_path: str = "configs/llm_config.json",
+    auto: bool = False,
 ) -> None:
     duration = int(duration_hours * 3600)
     clusters_obj = Clusters.load_from_mongo(
@@ -95,7 +95,7 @@ def main(
         issue_name=issue_name,
         prompt_path=prompt_path,
         duration_hours=duration_hours,
-        model_name=model_name,
+        llm=LLM(llm_config_path),
     )
 
     with open(template_path, "r") as f:
@@ -118,18 +118,4 @@ def main(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--mongo-config-path", type=str, required=True)
-    parser.add_argument("--client-config-path", type=str, required=True)
-    parser.add_argument("--duration-hours", type=int, default=8)
-    parser.add_argument("--max-news-count", type=int, default=30)
-    parser.add_argument("--min-news-count", type=int, default=5)
-    parser.add_argument("--issue-name", type=str, default="main")
-    parser.add_argument("--prompt-path", type=str, default="nyan/prompts/topics.txt")
-    parser.add_argument(
-        "--template-path", type=str, default="nyan/templates/topics.html"
-    )
-    parser.add_argument("--model-name", type=str, default="gpt-4o")
-    parser.add_argument("--auto", default=False, action="store_true")
-    args = parser.parse_args()
-    main(**vars(args))
+    fire.Fire(main)

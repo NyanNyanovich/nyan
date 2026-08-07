@@ -15,6 +15,7 @@ def main(
     renderer_config_path: str,
     mongo_config_path: Optional[str],
     daemon_config_path: str,
+    llm_config_path: str,
 ) -> None:
     daemon = Daemon(
         client_config_path=client_config_path,
@@ -24,6 +25,7 @@ def main(
         channels_info_path=channels_info_path,
         renderer_config_path=renderer_config_path,
         daemon_config_path=daemon_config_path,
+        llm_config_path=llm_config_path,
     )
     daemon.run(input_path, mongo_config_path, posted_clusters_path)
 
@@ -51,6 +53,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--daemon-config-path", type=str, default="configs/daemon_config.json"
+    )
+    parser.add_argument(
+        "--llm-config-path", type=str, default="configs/llm_config.json"
     )
     args = parser.parse_args()
     main(**vars(args))

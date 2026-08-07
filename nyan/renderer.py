@@ -1,6 +1,7 @@
 import copy
 import os
 import json
+from typing import Optional
 from urllib.parse import urlsplit
 from collections import defaultdict
 
@@ -9,16 +10,20 @@ from jinja2 import Environment, FileSystemLoader
 from nyan.clusters import Cluster
 from nyan.channels import Channels
 from nyan.document import Document
+from nyan.openai import LLM
 from nyan.util import ts_to_dt
 
 
 class Renderer:
-    def __init__(self, config_path: str, channels: Channels) -> None:
+    def __init__(
+        self, config_path: str, channels: Channels, llm: Optional[LLM] = None
+    ) -> None:
         assert os.path.exists(config_path)
         with open(config_path) as r:
             config = json.load(r)
 
         self.channels = channels
+        self.llm = llm
 
         file_loader = FileSystemLoader(".")
         env = Environment(loader=file_loader)
@@ -62,9 +67,10 @@ class Renderer:
                 external_link = {"url": external_link_url, "host": external_link_host}
 
         views = self.views_to_str(cluster.views)
+        diff = cluster.compute_diff(self.llm) if self.llm else cluster.diff
         return self.cluster_template.render(
             annotation_doc=cluster.annotation_doc,
-            diff=cluster.diff,
+            diff=diff,
             first_doc=first_doc,
             groups=sorted_groups,
             emojis=emojis,

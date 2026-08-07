@@ -14,6 +14,7 @@ from nyan.clusterer import Clusterer
 from nyan.channels import Channels
 from nyan.ranker import Ranker
 from nyan.renderer import Renderer
+from nyan.openai import LLM
 from nyan.document import (
     read_documents_file,
     read_documents_mongo,
@@ -34,12 +35,14 @@ class Daemon:
         channels_info_path: str,
         renderer_config_path: str,
         daemon_config_path: str,
+        llm_config_path: str,
     ) -> None:
         self.client = TelegramClient(client_config_path)
         self.channels = Channels(channels_info_path)
         self.annotator = Annotator(annotator_config_path, self.channels)
         self.clusterer = Clusterer(clusterer_config_path)
-        self.renderer = Renderer(renderer_config_path, self.channels)
+        self.llm = LLM(llm_config_path)
+        self.renderer = Renderer(renderer_config_path, self.channels, self.llm)
         self.ranker = Ranker(ranker_config_path)
 
         assert os.path.exists(daemon_config_path)

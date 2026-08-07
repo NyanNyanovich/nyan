@@ -1,0 +1,7 @@
+{
+    "model_name": "deepseek/deepseek-v4-pro",
+    "provider_name": "openrouter",
+    "decoding_args": {
+        "max_tokens": 16000
+    }
+}
