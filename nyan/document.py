@@ -5,7 +5,11 @@ from datetime import datetime
 
 from tqdm import tqdm
 
-from nyan.mongo import get_documents_collection, get_annotated_documents_collection
+from nyan.mongo import (
+    ensure_index,
+    get_documents_collection,
+    get_annotated_documents_collection,
+)
 from nyan.util import Serializable
 
 
@@ -95,6 +99,7 @@ def read_documents_mongo(
     mongo_config_path: str, current_ts: int, offset: int
 ) -> List[Document]:
     collection = get_documents_collection(mongo_config_path)
+    ensure_index(collection, "pub_time")
     docs = list(collection.find({"pub_time": {"$gte": current_ts - offset}}))
     return [Document.fromdict(doc) for doc in docs]
 
@@ -103,6 +108,7 @@ def read_annotated_documents_mongo(
     mongo_config_path: str, docs: List[Document]
 ) -> Tuple[List[Document], List[Document]]:
     collection = get_annotated_documents_collection(mongo_config_path)
+    ensure_index(collection, "url")
     annotated_docs = []
     remaining_docs = []
     for doc in tqdm(docs, desc="Reading annotated docs from Mongo"):
@@ -128,9 +134,7 @@ def write_annotated_documents_mongo(
 ) -> None:
     collection = get_annotated_documents_collection(mongo_config_path)
 
-    indices = collection.index_information()
-    if "url_1" not in indices:
-        collection.create_index([("url", 1)], name="url_1")
+    ensure_index(collection, "url")
 
     for doc in docs:
         assert doc.embedding is not None
