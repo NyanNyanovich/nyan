@@ -17,6 +17,10 @@ class Channel(Serializable):
     issue: Optional[str] = None
 
 
+def normalize_channel_id(chid: str) -> str:
+    return chid.strip().lower()
+
+
 class Channels:
     def __init__(self, path: str) -> None:
         self.channels: Dict[str, Channel] = dict()
@@ -25,6 +29,8 @@ class Channels:
             config = json.load(r)
         emojis = config["emojis"]
         colors = config["colors"]
+        self.emojis: Dict[str, str] = emojis
+        self.colors: Dict[str, str] = colors
         default_groups = config["default_groups"]
         for channel in config["channels"]:
             channel = Channel.fromdict(channel)
@@ -42,13 +48,15 @@ class Channels:
             self.add(channel)
 
     def add(self, channel: Channel) -> None:
-        self.channels[channel.name] = channel
+        chid = normalize_channel_id(channel.name)
+        assert chid not in self.channels, "Duplicate channel: {}".format(channel.name)
+        self.channels[chid] = channel
 
     def __getitem__(self, chid: str) -> Channel:
-        return self.channels[chid]
+        return self.channels[normalize_channel_id(chid)]
 
     def __contains__(self, chid: str) -> bool:
-        return chid in self.channels
+        return normalize_channel_id(chid) in self.channels
 
     def __iter__(self) -> Iterator[Tuple[str, Channel]]:
         return iter(self.channels.items())

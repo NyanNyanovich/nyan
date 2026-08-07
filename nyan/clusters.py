@@ -254,6 +254,8 @@ class Cluster:
             return [m.issue for m in self.messages]
 
         def get_most_common(items: List[T]) -> List[T]:
+            if not items:
+                return []
             counter = Counter(items)
             max_count = counter.most_common(1)[0][1]
             return [item for item, count in counter.items() if count == max_count]
