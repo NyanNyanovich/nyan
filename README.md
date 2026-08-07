@@ -75,3 +75,12 @@ OPENROUTER_APP_NAME=nyan
 OpenRouter is used automatically for namespaced model names, for example
 `python3 -m nyan.topics --model_name anthropic/claude-sonnet-4.5 ...`, and can be
 forced for any model with `--provider_name openrouter` or `LLM_PROVIDER=openrouter`.
+
+The model used by default is set in `configs/llm_config.json`:
+
+```
+{
+    "model_name": "gpt-4o",
+    "provider_name": null
+}
+```

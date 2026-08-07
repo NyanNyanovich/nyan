@@ -16,7 +16,7 @@ def extract_topics(
     issue_name: str,
     prompt_path: str,
     duration_hours: int,
-    model_name: str,
+    model_name: Optional[str] = None,
     provider_name: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     with open(prompt_path) as f:
@@ -58,7 +58,7 @@ def main(
     issue_name: str = "main",
     prompt_path: str = "nyan/prompts/topics.txt",
     template_path: str = "nyan/templates/topics.html",
-    model_name: str = "gpt-4o",
+    model_name: Optional[str] = None,
     provider_name: Optional[str] = None,
     auto: bool = False,
 ) -> None:
