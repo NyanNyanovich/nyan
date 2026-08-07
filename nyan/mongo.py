@@ -21,6 +21,12 @@ def get_database(mongo_config_path: str) -> Database[Dict[str, Any]]:
     return client[database_name]
 
 
+def ensure_index(collection: Collection[Dict[str, Any]], field: str) -> None:
+    name = field + "_1"
+    if name not in collection.index_information():
+        collection.create_index([(field, 1)], name=name)
+
+
 def get_documents_collection(mongo_config_path: str) -> Collection[Dict[str, Any]]:
     mongo_config = read_config(mongo_config_path)
     database = get_database(mongo_config_path)

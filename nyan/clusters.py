@@ -13,7 +13,7 @@ from jinja2 import Template
 
 from nyan.client import MessageId
 from nyan.document import Document
-from nyan.mongo import get_clusters_collection
+from nyan.mongo import ensure_index, get_clusters_collection
 from nyan.title import choose_title
 from nyan.openai import LLM
 
@@ -456,6 +456,7 @@ class Clusters:
 
     def save_to_mongo(self, mongo_config_path: str, only_new: bool = True) -> int:
         collection = get_clusters_collection(mongo_config_path)
+        ensure_index(collection, "clid")
         if not self.clid2cluster:
             return 0
         max_cluster_fetch_time = max(
@@ -474,6 +475,7 @@ class Clusters:
         cls, mongo_config_path: str, current_ts: int, offset: int
     ) -> "Clusters":
         collection = get_clusters_collection(mongo_config_path)
+        ensure_index(collection, "create_time")
         clusters_dicts = list(
             collection.find({"create_time": {"$gte": current_ts - offset}})
         )
