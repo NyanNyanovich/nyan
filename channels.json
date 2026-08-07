@@ -552,15 +552,6 @@
       "issue": "main"
     },
     {
-      "name": "moscowach",
-      "groups": {
-        "main": "purple",
-        "tech": "other"
-      },
-      "alias": "Москвач",
-      "issue": "main"
-    },
-    {
       "name": "agentstvonews",
       "groups": {
         "main": "blue",

@@ -31,18 +31,33 @@ class Renderer:
         self.tz_offset = config["tz_offset"]
         self.tz_name = config["tz_name"]
 
+    def get_doc_group(self, doc: Document, issue_name: str) -> Optional[str]:
+        if doc.channel_id in self.channels:
+            group = self.channels[doc.channel_id].groups.get(issue_name)
+            if group is not None:
+                return group
+        return doc.groups.get(issue_name)
+
     def render_cluster(self, cluster: Cluster, issue_name: str) -> str:
         groups = defaultdict(list)
         emojis = dict()
         colors = dict()
         for doc in cluster.docs:
-            channel = self.channels[doc.channel_id]
-            group = channel.groups[issue_name]
+            group = self.get_doc_group(doc, issue_name)
+            if group is None:
+                print(
+                    "Warning: no '{}' group for channel {}, skipping it".format(
+                        issue_name, doc.channel_id
+                    )
+                )
+                continue
             groups[group].append(doc)
-            if channel.emojis:
-                emojis[group] = channel.emojis[issue_name]
-            if channel.colors:
-                colors[group] = channel.colors[issue_name]
+            emoji = self.channels.emojis.get(group)
+            if emoji:
+                emojis[group] = emoji
+            color = self.channels.colors.get(group)
+            if color:
+                colors[group] = color
 
         used_channels = set()
         for group_name, group_docs in groups.items():
