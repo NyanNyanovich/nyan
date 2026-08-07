@@ -1,14 +1,72 @@
 import logging
-from dataclasses import dataclass
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
 from time import sleep
 from typing import Optional, Sequence, List, Dict, Any, cast
 from multiprocessing.pool import ThreadPool
 
 import openai
 import copy
+from dotenv import load_dotenv
 
 
 MIN_MAX_TOKENS = 128
+DOTENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
+OPENAI_API_BASE = "https://api.openai.com/v1"
+
+
+@dataclass
+class Provider:
+    name: str
+    api_key: str
+    api_base: str
+    headers: Dict[str, str] = field(default_factory=dict)
+
+
+def get_provider(model_name: str, provider_name: Optional[str] = None) -> Provider:
+    load_dotenv(DOTENV_PATH)
+
+    if provider_name is None:
+        provider_name = os.environ.get("LLM_PROVIDER")
+    if provider_name is None:
+        provider_name = "openrouter" if "/" in model_name else "openai"
+    provider_name = provider_name.lower()
+
+    if provider_name == "openrouter":
+        api_key = os.environ.get("OPENROUTER_API_KEY", "")
+        if not api_key:
+            raise RuntimeError(
+                "OPENROUTER_API_KEY is not set, put it in the environment or in .env"
+            )
+        headers = dict()
+        site_url = os.environ.get("OPENROUTER_SITE_URL")
+        app_name = os.environ.get("OPENROUTER_APP_NAME")
+        if site_url:
+            headers["HTTP-Referer"] = site_url
+        if app_name:
+            headers["X-Title"] = app_name
+        return Provider(
+            name=provider_name,
+            api_key=api_key,
+            api_base=os.environ.get("OPENROUTER_API_BASE", OPENROUTER_API_BASE),
+            headers=headers,
+        )
+
+    if provider_name == "openai":
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            raise RuntimeError(
+                "OPENAI_API_KEY is not set, put it in the environment or in .env"
+            )
+        return Provider(
+            name=provider_name,
+            api_key=api_key,
+            api_base=os.environ.get("OPENAI_API_BASE", OPENAI_API_BASE),
+        )
+
+    raise ValueError(f"Unknown provider: {provider_name}")
 
 
 @dataclass
@@ -31,17 +89,24 @@ def openai_completion(
     decoding_args: OpenAIDecodingArguments = DEFAULT_ARGS,
     model_name: str = "gpt-4",
     sleep_time: int = 2,
+    provider_name: Optional[str] = None,
 ) -> str:
     decoding_args = copy.deepcopy(decoding_args)
     assert decoding_args.n == 1
+    provider = get_provider(model_name, provider_name)
     while True:
         try:
             completions = openai.ChatCompletion.create(  # type: ignore
-                messages=messages, model=model_name, **decoding_args.__dict__
+                messages=messages,
+                model=model_name,
+                api_key=provider.api_key,
+                api_base=provider.api_base,
+                headers=provider.headers,
+                **decoding_args.__dict__,
             )
             break
         except Exception as e:
-            logging.warning("OpenAI error: %s.", e)
+            logging.warning("%s error: %s.", provider.name, e)
             if "Please reduce" not in str(e):
                 raise e
             new_max_tokens = int(decoding_args.max_tokens * 0.8)
@@ -62,6 +127,7 @@ def openai_batch_completion(
     decoding_args: OpenAIDecodingArguments = DEFAULT_ARGS,
     model_name: str = "gpt-4",
     sleep_time: int = 2,
+    provider_name: Optional[str] = None,
 ) -> List[str]:
     if not batch:
         return []
@@ -69,7 +135,10 @@ def openai_batch_completion(
     with ThreadPool(len(batch)) as pool:
         results = pool.starmap(
             openai_completion,
-            [(messages, decoding_args, model_name, sleep_time) for messages in batch],
+            [
+                (messages, decoding_args, model_name, sleep_time, provider_name)
+                for messages in batch
+            ],
         )
         for result in results:
             completions.append(result)

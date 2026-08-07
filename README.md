@@ -61,3 +61,17 @@ bash send.sh
 ```
 
 You can provide OPENAI_API_KEY environment variable to use LLM-related features.
+It can also be put into a `.env` file in the repo root:
+
+```
+OPENAI_API_KEY=...
+OPENROUTER_API_KEY=...
+# optional
+LLM_PROVIDER=openrouter
+OPENROUTER_SITE_URL=https://t.me/nyannews
+OPENROUTER_APP_NAME=nyan
+```
+
+OpenRouter is used automatically for namespaced model names, for example
+`python3 -m nyan.topics --model_name anthropic/claude-sonnet-4.5 ...`, and can be
+forced for any model with `--provider_name openrouter` or `LLM_PROVIDER=openrouter`.
