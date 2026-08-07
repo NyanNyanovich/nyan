@@ -13,30 +13,9 @@ from dotenv import load_dotenv
 
 
 MIN_MAX_TOKENS = 128
-REPO_DIR = Path(__file__).resolve().parent.parent
-DOTENV_PATH = REPO_DIR / ".env"
-DEFAULT_LLM_CONFIG_PATH = REPO_DIR / "configs/llm_config.json"
+DOTENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
 OPENAI_API_BASE = "https://api.openai.com/v1"
-
-
-def get_llm_config() -> Dict[str, Any]:
-    load_dotenv(DOTENV_PATH)
-    path = Path(os.environ.get("LLM_CONFIG_PATH", DEFAULT_LLM_CONFIG_PATH))
-    if not path.is_file():
-        raise RuntimeError(f"No LLM config: {path}")
-    with open(path) as f:
-        config: Dict[str, Any] = json.load(f)
-    return config
-
-
-def get_model_name(model_name: Optional[str] = None) -> str:
-    if model_name is not None:
-        return model_name
-    config_model_name = get_llm_config().get("model_name")
-    if not config_model_name:
-        raise RuntimeError("No model_name in the LLM config")
-    return str(config_model_name)
 
 
 @dataclass
@@ -52,8 +31,6 @@ def get_provider(model_name: str, provider_name: Optional[str] = None) -> Provid
 
     if provider_name is None:
         provider_name = os.environ.get("LLM_PROVIDER")
-    if provider_name is None:
-        provider_name = get_llm_config().get("provider_name")
     if provider_name is None:
         provider_name = "openrouter" if "/" in model_name else "openai"
     provider_name = provider_name.lower()
@@ -117,7 +94,7 @@ def openai_completion(
 ) -> str:
     decoding_args = copy.deepcopy(decoding_args)
     assert decoding_args.n == 1
-    model_name = get_model_name(model_name)
+    assert model_name, "No model_name, pass it explicitly or use LLM"
     provider = get_provider(model_name, provider_name)
     while True:
         try:
@@ -168,3 +145,24 @@ def openai_batch_completion(
         for result in results:
             completions.append(result)
     return completions
+
+
+class LLM:
+    def __init__(self, config_path: str) -> None:
+        assert os.path.exists(config_path)
+        with open(config_path) as r:
+            self.config: Dict[str, Any] = json.load(r)
+
+        self.model_name: str = self.config["model_name"]
+        self.provider_name: Optional[str] = self.config.get("provider_name")
+        self.decoding_args = OpenAIDecodingArguments(
+            **self.config.get("decoding_args", dict())
+        )
+
+    def __call__(self, messages: List[Dict[str, Any]]) -> str:
+        return openai_completion(
+            messages=messages,
+            decoding_args=self.decoding_args,
+            model_name=self.model_name,
+            provider_name=self.provider_name,
+        )

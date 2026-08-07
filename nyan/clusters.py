@@ -15,7 +15,7 @@ from nyan.client import MessageId
 from nyan.document import Document
 from nyan.mongo import get_clusters_collection
 from nyan.title import choose_title
-from nyan.openai import openai_completion
+from nyan.openai import LLM
 
 
 BASE_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -160,6 +160,11 @@ class Cluster:
 
     @property
     def diff(self) -> List[Dict[str, Any]]:
+        if self.saved_diff is None:
+            return []
+        return self.saved_diff
+
+    def compute_diff(self, llm: LLM) -> List[Dict[str, Any]]:
         if self.saved_diff is not None:
             return self.saved_diff
 
@@ -171,7 +176,7 @@ class Cluster:
 
         differences: List[Dict[str, Any]] = []
         try:
-            content = openai_completion(messages=messages)
+            content = llm(messages)
             content = content[content.find("{") : content.rfind("}") + 1]
             parsed_content: Dict[str, List[Dict[str, Any]]] = json.loads(content)
             differences = parsed_content["differences"]
@@ -189,6 +194,8 @@ class Cluster:
         except Exception:
             traceback.print_exc()
             differences = []
+
+        self.saved_diff = differences
         return differences
 
     @property

@@ -1,4 +1,4 @@
 {
-    "model_name": "gpt-4o",
-    "provider_name": null
+    "model_name": "deepseek/deepseek-v4-pro",
+    "provider_name": "openrouter"
 }

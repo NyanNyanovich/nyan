@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 import fire  # type: ignore
 from jinja2 import Template
@@ -7,7 +7,7 @@ from jinja2 import Template
 from nyan.clusters import Clusters
 from nyan.client import TelegramClient
 from nyan.util import get_current_ts, ts_to_dt
-from nyan.openai import openai_completion
+from nyan.openai import LLM
 from nyan.mongo import get_topics_collection
 
 
@@ -16,8 +16,7 @@ def extract_topics(
     issue_name: str,
     prompt_path: str,
     duration_hours: int,
-    model_name: Optional[str] = None,
-    provider_name: Optional[str] = None,
+    llm: LLM,
 ) -> List[Dict[str, Any]]:
     with open(prompt_path) as f:
         template = Template(f.read())
@@ -26,9 +25,7 @@ def extract_topics(
     print(prompt)
 
     messages = [{"role": "user", "content": prompt}]
-    content = openai_completion(
-        messages=messages, model_name=model_name, provider_name=provider_name
-    )
+    content = llm(messages)
     print(content)
 
     content = content[content.find("{") : content.rfind("}") + 1]
@@ -58,8 +55,7 @@ def main(
     issue_name: str = "main",
     prompt_path: str = "nyan/prompts/topics.txt",
     template_path: str = "nyan/templates/topics.html",
-    model_name: Optional[str] = None,
-    provider_name: Optional[str] = None,
+    llm_config_path: str = "configs/llm_config.json",
     auto: bool = False,
 ) -> None:
     duration = int(duration_hours * 3600)
@@ -99,8 +95,7 @@ def main(
         issue_name=issue_name,
         prompt_path=prompt_path,
         duration_hours=duration_hours,
-        model_name=model_name,
-        provider_name=provider_name,
+        llm=LLM(llm_config_path),
     )
 
     with open(template_path, "r") as f:

@@ -72,15 +72,16 @@ OPENROUTER_SITE_URL=https://t.me/nyannews
 OPENROUTER_APP_NAME=nyan
 ```
 
-OpenRouter is used automatically for namespaced model names, for example
-`python3 -m nyan.topics --model_name anthropic/claude-sonnet-4.5 ...`, and can be
-forced for any model with `--provider_name openrouter` or `LLM_PROVIDER=openrouter`.
-
-The model used by default is set in `configs/llm_config.json`:
+The model is set in `configs/llm_config.json`, passed to the daemon with
+`--llm-config-path` like every other config:
 
 ```
 {
-    "model_name": "gpt-4o",
-    "provider_name": null
+    "model_name": "deepseek/deepseek-v4-pro",
+    "provider_name": "openrouter"
 }
 ```
+
+With `provider_name` set to null the provider is taken from `LLM_PROVIDER`, and
+otherwise from the model name: namespaced names such as `anthropic/claude-sonnet-4.5`
+go to OpenRouter, bare ones such as `gpt-4o` to OpenAI.
