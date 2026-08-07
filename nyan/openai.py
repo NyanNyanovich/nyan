@@ -121,7 +121,17 @@ def openai_completion(
                 decoding_args.max_tokens,
             )
             sleep(sleep_time)
-    return cast(str, completions.choices[0].message.content.strip())
+    choice = completions.choices[0]
+    content = choice.message.get("content")
+    if not content:
+        raise RuntimeError(
+            "Empty content from {}, finish_reason: {}. "
+            "Reasoning models spend max_tokens ({}) on reasoning first, "
+            "raise decoding_args.max_tokens in the LLM config.".format(
+                model_name, choice.get("finish_reason"), decoding_args.max_tokens
+            )
+        )
+    return cast(str, content.strip())
 
 
 def openai_batch_completion(
