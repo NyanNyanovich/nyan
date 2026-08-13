@@ -17,11 +17,7 @@ from nyan.util import ts_to_dt
 
 class Renderer:
     def __init__(
-        self,
-        config_path: str,
-        channels: Channels,
-        llm: Optional[LLM] = None,
-        ad_remover: Optional[AdRemover] = None,
+        self, config_path: str, channels: Channels, llm: Optional[LLM] = None
     ) -> None:
         assert os.path.exists(config_path)
         with open(config_path) as r:
@@ -29,7 +25,10 @@ class Renderer:
 
         self.channels = channels
         self.llm = llm
-        self.ad_remover = ad_remover
+
+        self.ad_remover: Optional[AdRemover] = None
+        if llm is not None:
+            self.ad_remover = AdRemover(config.get("ad_remover", dict()), llm)
 
         file_loader = FileSystemLoader(".")
         env = Environment(loader=file_loader)

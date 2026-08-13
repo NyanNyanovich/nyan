@@ -21,14 +21,6 @@ def normalize_spaces(text: str) -> str:
 
 
 def compute_overlap(original: str, candidate: str) -> Tuple[float, float]:
-    """
-    Compares the candidate with the original char by char, ignoring whitespace.
-
-    Returns (kept_ratio, new_ratio), where kept_ratio is the share of
-    the original that survived in the candidate, and new_ratio is the share
-    of the candidate that is not found in the original.
-    A pure deletion has new_ratio == 0.0, a rewrite has new_ratio > 0.0.
-    """
     original = normalize_spaces(original)
     candidate = normalize_spaces(candidate)
     if not original or not candidate:
@@ -39,17 +31,8 @@ def compute_overlap(original: str, candidate: str) -> Tuple[float, float]:
 
 
 class AdRemover:
-    """
-    Removes ads from a text with an LLM, but only if the LLM actually
-    removed something instead of rewriting the news. Every candidate is
-    diffed against the original: anything that adds new text or strips
-    too much of the original is discarded and the original is kept.
-    """
-
-    def __init__(self, config_path: str) -> None:
-        assert os.path.exists(config_path)
-        with open(config_path) as r:
-            config: Dict[str, Any] = json.load(r)
+    def __init__(self, config: Dict[str, Any], llm: LLM) -> None:
+        self.llm = llm
 
         self.is_enabled: bool = config.get("is_enabled", True)
         self.max_new_ratio: float = config.get("max_new_ratio", 0.02)
@@ -62,8 +45,6 @@ class AdRemover:
         assert os.path.exists(prompt_path)
         with open(prompt_path) as f:
             self.prompt_template = Template(f.read())
-
-        self.llm = LLM(config=config["llm"])
 
     def __call__(self, text: str) -> str:
         if not self.is_enabled or not text:
@@ -102,9 +83,6 @@ class AdRemover:
             )
             return None
 
-        # A short post with a long boilerplate tail loses a big share of itself
-        # legitimately, so a small absolute cut is allowed to go below
-        # min_kept_ratio, but never below min_kept_ratio_hard.
         removed_length = round((1.0 - kept_ratio) * len(normalize_spaces(original)))
         is_small_cut = (
             removed_length <= self.max_removed_length

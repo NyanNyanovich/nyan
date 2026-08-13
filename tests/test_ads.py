@@ -1,4 +1,7 @@
+import json
+
 from nyan.ads import AdRemover, compute_overlap
+from nyan.openai import LLM
 
 
 ORIGINAL = (
@@ -14,12 +17,14 @@ CLEANED = (
 )
 
 
-def get_ad_remover_config_path() -> str:
-    return "configs/ad_remover_config.json"
+def get_renderer_config_path() -> str:
+    return "configs/renderer_config.json"
 
 
 def make_ad_remover() -> AdRemover:
-    return AdRemover(get_ad_remover_config_path())
+    with open(get_renderer_config_path()) as r:
+        config = json.load(r)
+    return AdRemover(config["ad_remover"], LLM(config={"model_name": "test"}))
 
 
 def test_compute_overlap_on_pure_deletion():

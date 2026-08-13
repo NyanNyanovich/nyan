@@ -16,7 +16,6 @@ def main(
     mongo_config_path: Optional[str],
     daemon_config_path: str,
     llm_config_path: str,
-    ad_remover_config_path: str,
 ) -> None:
     daemon = Daemon(
         client_config_path=client_config_path,
@@ -27,7 +26,6 @@ def main(
         renderer_config_path=renderer_config_path,
         daemon_config_path=daemon_config_path,
         llm_config_path=llm_config_path,
-        ad_remover_config_path=ad_remover_config_path,
     )
     daemon.run(input_path, mongo_config_path, posted_clusters_path)
 
@@ -58,11 +56,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--llm-config-path", type=str, default="configs/llm_config.json"
-    )
-    parser.add_argument(
-        "--ad-remover-config-path",
-        type=str,
-        default="configs/ad_remover_config.json",
     )
     args = parser.parse_args()
     main(**vars(args))
