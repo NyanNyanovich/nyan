@@ -1,5 +1,14 @@
 {
     "cluster_template": "nyan/templates/cluster.html",
     "tz_offset": 3,
-    "tz_name": "MSK"
+    "tz_name": "MSK",
+    "ad_remover": {
+        "is_enabled": true,
+        "prompt_path": "nyan/prompts/remove_ads.txt",
+        "max_new_ratio": 0.02,
+        "min_kept_ratio": 0.6,
+        "min_kept_ratio_hard": 0.35,
+        "max_removed_length": 250,
+        "min_length": 30
+    }
 }

@@ -158,10 +158,18 @@ def openai_batch_completion(
 
 
 class LLM:
-    def __init__(self, config_path: str) -> None:
-        assert os.path.exists(config_path)
-        with open(config_path) as r:
-            self.config: Dict[str, Any] = json.load(r)
+    def __init__(
+        self,
+        config_path: Optional[str] = None,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        assert config_path or config, "Pass either config_path or config"
+        if config is None:
+            assert config_path and os.path.exists(config_path)
+            with open(config_path) as r:
+                config = json.load(r)
+        assert config is not None
+        self.config: Dict[str, Any] = config
 
         self.model_name: str = self.config["model_name"]
         self.provider_name: Optional[str] = self.config.get("provider_name")
