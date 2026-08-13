@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from jinja2 import Environment, FileSystemLoader
 
+from nyan.ads import AdRemover
 from nyan.clusters import Cluster
 from nyan.channels import Channels
 from nyan.document import Document
@@ -16,7 +17,11 @@ from nyan.util import ts_to_dt
 
 class Renderer:
     def __init__(
-        self, config_path: str, channels: Channels, llm: Optional[LLM] = None
+        self,
+        config_path: str,
+        channels: Channels,
+        llm: Optional[LLM] = None,
+        ad_remover: Optional[AdRemover] = None,
     ) -> None:
         assert os.path.exists(config_path)
         with open(config_path) as r:
@@ -24,6 +29,7 @@ class Renderer:
 
         self.channels = channels
         self.llm = llm
+        self.ad_remover = ad_remover
 
         file_loader = FileSystemLoader(".")
         env = Environment(loader=file_loader)
@@ -83,8 +89,13 @@ class Renderer:
 
         views = self.views_to_str(cluster.views)
         diff = cluster.compute_diff(self.llm) if self.llm else cluster.diff
+        if self.ad_remover is not None and self.ad_remover.is_enabled:
+            annotation_text = cluster.compute_clean_annotation_text(self.ad_remover)
+        else:
+            annotation_text = cluster.clean_annotation_text
         return self.cluster_template.render(
             annotation_doc=cluster.annotation_doc,
+            annotation_text=annotation_text,
             diff=diff,
             first_doc=first_doc,
             groups=sorted_groups,

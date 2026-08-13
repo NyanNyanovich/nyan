@@ -7,6 +7,7 @@ from typing import Counter as CounterT
 
 from sklearn.metrics.pairwise import cosine_similarity  # type: ignore
 
+from nyan.ads import AdRemover
 from nyan.annotator import Annotator
 from nyan.client import TelegramClient
 from nyan.clusters import Clusters, Cluster
@@ -36,13 +37,17 @@ class Daemon:
         renderer_config_path: str,
         daemon_config_path: str,
         llm_config_path: str,
+        ad_remover_config_path: str,
     ) -> None:
         self.client = TelegramClient(client_config_path)
         self.channels = Channels(channels_info_path)
         self.annotator = Annotator(annotator_config_path, self.channels)
         self.clusterer = Clusterer(clusterer_config_path)
         self.llm = LLM(llm_config_path)
-        self.renderer = Renderer(renderer_config_path, self.channels, self.llm)
+        self.ad_remover = AdRemover(ad_remover_config_path)
+        self.renderer = Renderer(
+            renderer_config_path, self.channels, self.llm, self.ad_remover
+        )
         self.ranker = Ranker(ranker_config_path)
 
         assert os.path.exists(daemon_config_path)

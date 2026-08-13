@@ -11,6 +11,7 @@ from functools import cached_property
 
 from jinja2 import Template
 
+from nyan.ads import AdRemover
 from nyan.client import MessageId
 from nyan.document import Document
 from nyan.mongo import ensure_index, get_clusters_collection
@@ -47,6 +48,7 @@ class Cluster:
         self.saved_first_doc: Optional[Document] = None
         self.saved_hash: Optional[str] = None
         self.saved_diff: Optional[List[Dict[str, Any]]] = None
+        self.saved_clean_annotation_text: Optional[str] = None
 
     def invalidate_caches(self) -> None:
         for name in self.CACHED_PROPERTIES:
@@ -199,6 +201,21 @@ class Cluster:
         return differences
 
     @property
+    def clean_annotation_text(self) -> str:
+        if self.saved_clean_annotation_text is not None:
+            return self.saved_clean_annotation_text
+        return self.annotation_doc.patched_text or ""
+
+    def compute_clean_annotation_text(self, ad_remover: AdRemover) -> str:
+        if self.saved_clean_annotation_text is not None:
+            return self.saved_clean_annotation_text
+        text = self.annotation_doc.patched_text or ""
+        if not text:
+            return text
+        self.saved_clean_annotation_text = ad_remover(text)
+        return self.saved_clean_annotation_text
+
+    @property
     def annotation_doc(self) -> Document:
         if self.saved_annotation_doc is not None:
             return self.saved_annotation_doc
@@ -297,6 +314,7 @@ class Cluster:
             "first_doc": first_doc,
             "hash": self.hash,
             "diff": self.diff,
+            "clean_annotation_text": self.saved_clean_annotation_text,
             "is_important": self.is_important,
             "create_time": self.create_time,
         }
@@ -324,6 +342,7 @@ class Cluster:
             cluster.saved_first_doc = Document.fromdict(first_doc_dict)
         cluster.saved_hash = d.get("hash")
         cluster.saved_diff = d.get("diff", None)
+        cluster.saved_clean_annotation_text = d.get("clean_annotation_text", None)
         cluster.is_important = d.get("is_important", False)
         cluster.create_time = d.get("create_time", None)
 
@@ -435,6 +454,7 @@ class Clusters:
                     and cluster.saved_annotation_doc.url == url
                 ):
                     cluster.saved_annotation_doc = new_doc
+                    cluster.saved_clean_annotation_text = None
                 updates_count += 1
         return updates_count
 

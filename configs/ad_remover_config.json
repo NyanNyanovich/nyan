@@ -1,0 +1,16 @@
+{
+    "is_enabled": true,
+    "prompt_path": "nyan/prompts/remove_ads.txt",
+    "max_new_ratio": 0.02,
+    "min_kept_ratio": 0.6,
+    "min_kept_ratio_hard": 0.35,
+    "max_removed_length": 250,
+    "min_length": 30,
+    "llm": {
+        "model_name": "deepseek/deepseek-v4-flash-0731",
+        "provider_name": "openrouter",
+        "decoding_args": {
+            "max_tokens": 64000
+        }
+    }
+}
