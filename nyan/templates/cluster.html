@@ -1,4 +1,4 @@
-{{annotation_text|e}} — <a href="{{annotation_doc.url}}">{{annotation_doc.channel_title}}</a>
+{% if is_important %}⚡️{% endif %}{{annotation_text|e}} — <a href="{{annotation_doc.url}}">{{annotation_doc.channel_title}}</a>
 {% if external_link %}
 Вероятный первоисточник: <a href="{{external_link.url}}">{{external_link.host}}</a>
 {% endif %} {% if diff %}
