@@ -1,3 +1,5 @@
+import json
+import tempfile
 from typing import List, Dict
 from dataclasses import fields
 
@@ -29,9 +31,18 @@ def get_annotator_config_path() -> str:
     return "configs/annotator_config.json"
 
 
+def get_offline_annotator_config_path() -> str:
+    with open(get_annotator_config_path()) as r:
+        config = json.load(r)
+    config.pop("jev_cat_detector", None)
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as w:
+        json.dump(config, w)
+    return w.name
+
+
 @pytest.fixture
 def annotator_config_path() -> str:
-    return get_annotator_config_path()
+    return get_offline_annotator_config_path()
 
 
 def get_input_path() -> str:

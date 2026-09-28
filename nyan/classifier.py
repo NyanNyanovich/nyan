@@ -2,6 +2,22 @@ from typing import Dict, Any, Tuple, List
 from joblib import load  # type: ignore
 
 
+def choose_category(
+    scores: Dict[str, float],
+    not_news_threshold: float,
+    unknown_threshold: float,
+) -> str:
+    pairs = [(score, cat) for cat, score in scores.items()]
+    best_score, best_category = max(pairs)
+
+    category = best_category
+    if scores.get("not_news", 0.0) >= not_news_threshold:
+        category = "not_news"
+    elif best_score < unknown_threshold:
+        category = "unknown"
+    return category
+
+
 class ClassifierHead:
     def __init__(self, config: Dict[str, Any]) -> None:
         self.clf, self.label_encoder = load(config["path"])
@@ -18,12 +34,7 @@ class ClassifierHead:
         scores = {
             self.label_encoder.inverse_transform([k])[0]: v for k, v in scores.items()
         }
-        pairs = [(score, cat) for cat, score in scores.items()]
-        best_score, best_category = max(pairs)
-
-        category = best_category
-        if scores.get("not_news", 0.0) >= self.not_news_threshold:
-            category = "not_news"
-        elif best_score < self.unknown_threshold:
-            category = "unknown"
+        category = choose_category(
+            scores, self.not_news_threshold, self.unknown_threshold
+        )
         return category, scores

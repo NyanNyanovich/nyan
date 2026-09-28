@@ -1,6 +1,7 @@
 import json
+import logging
 import re
-from typing import List
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import unquote, urlparse
 
 from tqdm import tqdm
@@ -9,6 +10,7 @@ from nyan.channels import Channels
 from nyan.document import Document
 from nyan.fasttext_clf import FasttextClassifier
 from nyan.classifier import ClassifierHead
+from nyan.jev import JevClassifierHead
 from nyan.embedder import Embedder
 from nyan.text import TextProcessor
 from nyan.image import ImageProcessor
@@ -37,6 +39,11 @@ class Annotator:
         if "cat_detector" in config:
             self.cat_detector = ClassifierHead(config["cat_detector"])
 
+        self.jev_cat_detector = None
+        jev_config = config.get("jev_cat_detector")
+        if jev_config and jev_config.get("enabled", True):
+            self.jev_cat_detector = JevClassifierHead(jev_config)
+
         self.channels = channels
 
     def __call__(self, docs: List[Document]) -> List[Document]:
@@ -59,13 +66,7 @@ class Annotator:
         if self.embedder is not None:
             docs = self.calc_embeddings(docs)
 
-        post_pipeline = (self.predict_category,)
-        processed_docs = list()
-        for doc in tqdm(docs, desc="Annotator post-embeddings pipeline"):
-            for step in post_pipeline:
-                doc = step(doc)
-            processed_docs.append(doc)
-        return processed_docs
+        return self.predict_categories(docs)
 
     def postprocess(self, docs: List[Document]) -> List[Document]:
         return [doc for doc in docs if not doc.is_discarded()]
@@ -139,6 +140,33 @@ class Annotator:
         language, prob = self.lang_detector(doc.patched_text)
         doc.language = language
         return doc
+
+    def predict_categories(self, docs: List[Document]) -> List[Document]:
+        results: List[Optional[Tuple[str, Dict[str, float]]]] = [None] * len(docs)
+        if self.jev_cat_detector:
+            indices = [i for i, doc in enumerate(docs) if doc.patched_text]
+            texts = [docs[i].patched_text or "" for i in indices]
+            jev_results = self.jev_cat_detector.classify_many(texts)
+            for i, result in zip(indices, jev_results):
+                results[i] = result
+            failed_count = sum(1 for r in jev_results if r is None)
+            if failed_count:
+                logging.warning(
+                    "Jev failed on %d/%d docs, using the local classifier for them",
+                    failed_count,
+                    len(jev_results),
+                )
+
+        processed_docs = list()
+        for doc, result in tqdm(
+            zip(docs, results), total=len(docs), desc="Annotator category pipeline"
+        ):
+            if result is not None:
+                doc.category, doc.category_scores = result
+            else:
+                doc = self.predict_category(doc)
+            processed_docs.append(doc)
+        return processed_docs
 
     def predict_category(self, doc: Document) -> Document:
         if not self.cat_detector:
