@@ -4,7 +4,7 @@ from tests.conftest import (
     get_input_path,
     get_annotator_output_path,
     get_ranker_output_path,
-    get_annotator_config_path,
+    get_offline_annotator_config_path,
     get_channels_info_path,
     get_clusterer_config_path,
     get_ranker_config_path
@@ -15,7 +15,7 @@ from nyan.clusterer import Clusterer
 from nyan.ranker import Ranker
 from nyan.document import read_documents_file, Document
 
-annotator = Annotator(get_annotator_config_path(), Channels(get_channels_info_path()))
+annotator = Annotator(get_offline_annotator_config_path(), Channels(get_channels_info_path()))
 clusterer = Clusterer(get_clusterer_config_path())
 ranker = Ranker(get_ranker_config_path())
 
